@@ -1,0 +1,23 @@
+name: auto-publish
+on:
+  push:
+    branches:
+      -  develop
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: npm install
+        run: npm install
+      - name: build
+        run: npm run build
+      - name: GitHub Pages
+        if: success()
+        with:
+          target_branch: master
+          build_dir: public
+        uses: crazy-max/ghaction-github-pages@v1.2.5
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          GITHUB_PAT: ${{ secrets.GH_PAT }}
