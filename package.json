@@ -16,11 +16,13 @@
     "lint-fix": "eslint ./src --fix"
   },
   "dependencies": {
+    "bootstrap": "^4.5.2",
     "gatsby": "^2.24.50",
     "gatsby-plugin-react-helmet": "^3.3.10",
     "gatsby-plugin-sass": "^2.3.12",
     "node-sass": "^4.14.1",
     "react": "^16.12.0",
+    "react-bootstrap": "^1.3.0",
     "react-dom": "^16.12.0",
     "react-helmet": "^6.1.0"
   },
