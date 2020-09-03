@@ -1,6 +1,10 @@
 import React from "react"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
+
+import Row from "react-bootstrap/Row"
+import Col from "react-bootstrap/Col"
+
 import "../styles/index.scss"
 
 export default function Home() {
@@ -21,9 +25,40 @@ export default function Home() {
 				최대한 객관적으로 소개하기 위해 만들었습니다. 최대한 경험에 기반하여, 해보았고, 할 수 있는 일들 위주로 채워보았습니다.</p>
 			</div>
 
-			<div className="overall-experiences">
-				<h1>OVERALL EXPERIENCES</h1>
-			</div>
+			<Row className="overall-experiences">
+				<Col>
+					<h1>OVERALL EXPERIENCES</h1>
+				</Col>
+				<Col className="career-box">
+					<CareerItem
+						title="화이트블록"
+						startDate="2020.04.02"
+						resignationDate="2020.06.29"
+						role="Backend Developer"
+					/>
+					<CareerItem
+						title="페칭"
+						startDate="2020.08.03"
+						resignationDate=""
+						role="Software Engineer"
+					/>
+					<CareerItem
+						title="건국대학교 컴퓨터공학부"
+						startDate="2020.03.13"
+						resignationDate=""
+						role="Academic"
+					/>
+				</Col>
+			</Row>
 		</Layout>
 	)
 }
+
+const CareerItem = props => (
+	<div>
+		<div>{props.title}</div>
+		<div>{props.startDate} ~ {props.resignationDate}</div>
+		<div>{props.role}</div>
+		<br/>
+	</div>
+)
