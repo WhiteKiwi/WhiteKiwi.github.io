@@ -7,7 +7,13 @@ export default function Layout({ children }) {
         <>
             <Header />
 
-            <div>{children}</div>
+            <div
+                style={{
+                    backgroundColor: "#202125",
+                }}
+            >
+                {children}
+            </div>
 
             <Footer />
         </>

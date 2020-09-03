@@ -1,5 +1,31 @@
-$background: #e5eef7;
+.intro {
+	padding: {
+		top: 200px;
+		left: 100px;
+		bottom: 40px;
+	}
+	
+	> p:nth-child(1) {
+		font-size: 16pt;
+	}
+	> p:nth-child(3) {
+		font-size: 11pt;
+	}
 
-body {
-	background-color: $background;
+	> h1 {
+		margin-top: 90px;
+		margin-bottom: 40px;
+	}
+}
+
+.overall-experiences {
+    background-color: #18191C;
+    padding-top: 80px;
+    padding-left: 100px;
+    padding-bottom: 80px;
+}
+
+.career-box {
+    background-color: white;
+    border-radius: 10px;
 }
