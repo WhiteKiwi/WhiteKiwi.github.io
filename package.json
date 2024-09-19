@@ -16,7 +16,7 @@
     "lint-fix": "eslint ./src --fix"
   },
   "dependencies": {
-    "bootstrap": "^4.5.2",
+    "bootstrap": "^5.0.0",
     "gatsby": "^5.9.1",
     "gatsby-plugin-react-helmet": "^3.3.10",
     "gatsby-plugin-sass": "^6.11.0",
