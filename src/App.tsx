@@ -40,26 +40,20 @@ function Egg({ variant }: { variant: EggVariant }) {
   return (
     <svg className={`egg egg-${variant}`} viewBox="0 0 260 330" aria-hidden="true">
       <defs>
-        <linearGradient id="egg-fill" x1="0.12" x2="0.88" y1="0.05" y2="0.95">
-          <stop offset="0" stopColor="#fffdf4" />
-          <stop offset="0.34" stopColor="#f4edda" />
-          <stop offset="0.74" stopColor="#d9d7bd" />
-          <stop offset="1" stopColor="#a8b89a" />
-        </linearGradient>
-        <radialGradient id="egg-glow" cx="30%" cy="18%" r="70%">
-          <stop offset="0" stopColor="#ffffff" stopOpacity=".9" />
-          <stop offset=".5" stopColor="#ffffff" stopOpacity=".1" />
-          <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
-        </radialGradient>
+        <clipPath id="egg-clip">
+          <path d="M135 9C82 8 44 48 30 112c-14 63-3 134 38 177 28 30 68 38 103 17 43-26 65-85 61-144-4-72-35-150-97-153Z" />
+        </clipPath>
       </defs>
       <path className="egg-shell" d="M135 9C82 8 44 48 30 112c-14 63-3 134 38 177 28 30 68 38 103 17 43-26 65-85 61-144-4-72-35-150-97-153Z" />
-      <path className="egg-glow" d="M135 9C82 8 44 48 30 112c-14 63-3 134 38 177 28 30 68 38 103 17 43-26 65-85 61-144-4-72-35-150-97-153Z" />
-      <path className="egg-lumen" d="M85 61c-25 36-31 81-25 119 5 33 18 60 36 77" />
-      <path className="egg-rim" d="M164 17c35 19 51 67 57 113" />
-      <path className="egg-rim egg-rim-lower" d="M54 263c26 40 66 53 102 32" />
+      <g clipPath="url(#egg-clip)">
+        <circle className="egg-cheek egg-cheek-left" cx="76" cy="167" r="13" />
+        <circle className="egg-cheek egg-cheek-right" cx="188" cy="167" r="13" />
+        <path className="egg-face-eye" d="M91 148v10m78-10v10" />
+        <path className="egg-face-mouth" d="M119 169c8 9 16 9 24 0" />
+        <path className="egg-shine" d="M78 71c-17 25-24 54-24 86" />
+      </g>
       <path className="egg-crack egg-crack-top" d="M34 158l47-17 18 24 28-35 22 31 28-18 43 16" />
       <path className="egg-crack egg-crack-bottom" d="M34 158c12 34 40 63 96 63 52 0 84-23 98-62" />
-      <circle className="egg-dot" cx="183" cy="91" r="5" />
     </svg>
   )
 }
