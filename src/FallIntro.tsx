@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState, type RefObject } from 'react'
 import './fall-intro.css'
 
 function FallingEgg({ onLanded }: { onLanded: () => void }) {
@@ -54,30 +54,32 @@ function GlassGround() {
   )
 }
 
-function WalkingIntroduction({ isActive }: { isActive: boolean }) {
+function WalkingIntroduction({ trackRef }: { trackRef: RefObject<HTMLElement | null> }) {
   return (
-    <section className="walking-intro" aria-label="장지훈 개발자 소개" aria-hidden={!isActive}>
-      <div className="intro-paper-sky" aria-hidden="true">
-        <span className="intro-sun" />
-        <span className="intro-cloud intro-cloud-one" />
-        <span className="intro-cloud intro-cloud-two" />
-      </div>
-      <div className="intro-landscape" aria-hidden="true">
-        <span className="intro-hill intro-hill-back" />
-        <span className="intro-hill intro-hill-front" />
-        <span className="intro-ground-line" />
-      </div>
+    <section className="walking-intro-track" ref={trackRef} aria-label="장지훈 개발자 소개">
+      <div className="walking-intro">
+        <div className="intro-paper-sky" aria-hidden="true">
+          <span className="intro-sun" />
+          <span className="intro-cloud intro-cloud-one" />
+          <span className="intro-cloud intro-cloud-two" />
+        </div>
+        <div className="intro-landscape" aria-hidden="true">
+          <span className="intro-hill intro-hill-back" />
+          <span className="intro-hill intro-hill-front" />
+          <span className="intro-ground-line" />
+        </div>
 
-      <div className="intro-copy">
-        <p className="intro-line intro-hello">안녕하세요.</p>
-        <p className="intro-line intro-role"><strong>Node.js</strong>{' '}Developer</p>
-        <p className="intro-line intro-name">장지훈입니다.</p>
-      </div>
+        <div className="intro-copy">
+          <p className="intro-line intro-hello"><span>01</span>안녕하세요.</p>
+          <p className="intro-line intro-role"><strong>Node.js</strong>{' '}Developer</p>
+          <p className="intro-line intro-name">장지훈입니다.<span>JIHUN JANG</span></p>
+        </div>
 
-      <div className="kiwi-walk-path" aria-hidden="true">
-        <div className="kiwi-walk-shadow" />
-        <div className="kiwi-walk-sprite">
-          <img src="/assets/characters/kiwi-walk-cycle.png" alt="" />
+        <div className="kiwi-walk-path" aria-hidden="true">
+          <div className="kiwi-walk-shadow" />
+          <div className="kiwi-walk-sprite">
+            <img src="/assets/characters/kiwi-walk-cycle.png" alt="" />
+          </div>
         </div>
       </div>
     </section>
@@ -90,7 +92,8 @@ const clouds = [
 ]
 
 export default function FallIntro() {
-  const [phase, setPhase] = useState<'idle' | 'descending' | 'landed' | 'introducing'>('idle')
+  const [phase, setPhase] = useState<'idle' | 'descending' | 'landed' | 'ready'>('idle')
+  const introTrackRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     if (phase !== 'idle') return
@@ -125,42 +128,52 @@ export default function FallIntro() {
 
   useEffect(() => {
     if (phase !== 'landed') return
+    const readyTimer = window.setTimeout(() => setPhase('ready'), 2350)
+    return () => window.clearTimeout(readyTimer)
+  }, [phase])
 
-    let touchY = 0
-    let isReady = false
-    const readyTimer = window.setTimeout(() => { isReady = true }, 2350)
-    const beginIntroduction = () => {
-      if (isReady) setPhase('introducing')
+  useEffect(() => {
+    if (phase !== 'ready') return
+    const track = introTrackRef.current
+    if (!track) return
+
+    let animationFrame = 0
+    const updateProgress = () => {
+      animationFrame = 0
+      const rect = track.getBoundingClientRect()
+      const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
+      const progress = Math.min(Math.max(-rect.top / distance, 0), 1)
+      const frame = Math.floor(progress * 32) % 4
+      const step = Math.floor(progress * 32)
+      const reveal = (start: number, end: number) => Math.min(Math.max((progress - start) / (end - start), 0), 1)
+
+      track.style.setProperty('--kiwi-x', `${-18 + progress * 136}vw`)
+      track.style.setProperty('--kiwi-frame', `${frame * -25}%`)
+      track.style.setProperty('--kiwi-bob', `${step % 2 === 0 ? 0 : -5}px`)
+      track.style.setProperty('--kiwi-tilt', `${step % 2 === 0 ? -0.35 : 0.35}deg`)
+      track.style.setProperty('--hello-reveal', String(reveal(.08, .18)))
+      track.style.setProperty('--role-reveal', String(reveal(.3, .42)))
+      track.style.setProperty('--name-reveal', String(reveal(.55, .67)))
+      track.style.setProperty('--world-shift', `${progress * -18}px`)
     }
-    const onWheel = (event: WheelEvent) => {
-      if (event.deltaY > 4) beginIntroduction()
-    }
-    const onTouchStart = (event: TouchEvent) => {
-      touchY = event.touches[0]?.clientY ?? 0
-    }
-    const onTouchMove = (event: TouchEvent) => {
-      const currentY = event.touches[0]?.clientY ?? touchY
-      if (touchY - currentY > 8) beginIntroduction()
-    }
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (['ArrowDown', 'PageDown', ' ', 'Enter'].includes(event.key)) beginIntroduction()
+    const requestUpdate = () => {
+      if (!animationFrame) animationFrame = window.requestAnimationFrame(updateProgress)
     }
 
-    window.addEventListener('wheel', onWheel, { passive: true })
-    window.addEventListener('touchstart', onTouchStart, { passive: true })
-    window.addEventListener('touchmove', onTouchMove, { passive: true })
-    window.addEventListener('keydown', onKeyDown)
+    updateProgress()
+    window.addEventListener('scroll', requestUpdate, { passive: true })
+    window.addEventListener('resize', requestUpdate)
     return () => {
-      window.clearTimeout(readyTimer)
-      window.removeEventListener('wheel', onWheel)
-      window.removeEventListener('touchstart', onTouchStart)
-      window.removeEventListener('touchmove', onTouchMove)
-      window.removeEventListener('keydown', onKeyDown)
+      if (animationFrame) window.cancelAnimationFrame(animationFrame)
+      window.removeEventListener('scroll', requestUpdate)
+      window.removeEventListener('resize', requestUpdate)
     }
   }, [phase])
 
+  const hasLanded = phase === 'landed' || phase === 'ready'
+
   return (
-    <main className={`fall-intro-scroll ${phase !== 'idle' ? 'has-descended' : ''} ${phase === 'landed' ? 'is-landed' : ''} ${phase === 'introducing' ? 'has-introduction' : ''}`}>
+    <main className={`fall-intro-scroll ${phase !== 'idle' ? 'has-descended' : ''} ${hasLanded ? 'is-landed' : ''} ${phase === 'ready' ? 'is-scroll-ready' : ''}`}>
       <section className="fall-intro">
         <div className="sky-depth sky-depth-back" aria-hidden="true" />
         <div className="sky-depth sky-depth-front" aria-hidden="true" />
@@ -193,7 +206,7 @@ export default function FallIntro() {
         <FallingEgg onLanded={() => setPhase('landed')} />
         <div className="fall-vignette" aria-hidden="true" />
       </section>
-      <WalkingIntroduction isActive={phase === 'introducing'} />
+      <WalkingIntroduction trackRef={introTrackRef} />
     </main>
   )
 }
