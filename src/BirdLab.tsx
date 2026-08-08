@@ -1,146 +1,143 @@
 import './bird-lab.css'
 
-function FieldSketchBird() {
+function TallWildBird() {
   return (
-    <svg className="bird-study-svg field-sketch" viewBox="0 0 380 310" role="img" aria-label="손으로 그린 탐험가 키위새">
-      <path className="sketch-wash" d="M43 222c62-93 151-143 276-147-48 72-102 130-214 166Z" />
-      <path className="sketch-body" d="M126 205c-3-30 10-53 38-64 2-48 34-77 81-75 48 1 85 32 92 77 7 47-22 86-70 92-37 5-69-5-88-25-18 20-50 20-53-5Z" />
-      <path className="sketch-beak" d="M171 147c-58 17-97 42-126 77 43-12 85-29 128-58" />
-      <circle className="sketch-eye" cx="184" cy="123" r="8" />
-      <path className="sketch-feathers" d="m215 84 9 18m11-23 7 20m13-14 4 22m21-11-4 19m24 2-13 13m31 11-19 6m20 18-21-2m10 24-20-10m-1 30-15-17m-11 32-7-22m-15 26-1-23m-20 18 6-21" />
-      <path className="sketch-feet" d="m170 211-9 40m8-2-24 10m25-10 14 9m67-24-3 31m2-2-20 8m20-8 16 7" />
-      <ellipse className="sketch-fruit" cx="76" cy="264" rx="43" ry="22" transform="rotate(-7 76 264)" />
-      <ellipse className="sketch-fruit-core" cx="76" cy="264" rx="18" ry="8" transform="rotate(-7 76 264)" />
-      <path className="sketch-question" d="M101 85c-5-17 6-28 22-27 16 1 23 16 14 28-6 8-17 8-18 20m-1 17h1" />
-    </svg>
-  )
-}
-
-function LongBeanBird() {
-  return (
-    <svg className="bird-study-svg long-bean" viewBox="0 0 440 280" role="img" aria-label="길쭉하고 털북숭이인 키위새">
-      <path className="long-shadow" d="M43 234c92-18 214-18 304 2-74 25-226 24-304-2Z" />
-      <path className="long-body" d="M28 161 19 143l15-7-8-18 18-3-2-20 21 4 6-21 20 10 13-19 17 15 18-16 14 18 24-12 9 23 26-5 3 25c41-13 82 4 96 40 17 45-14 88-66 92l-145 1c-63-2-101-37-90-89Z" />
-      <path className="long-belly" d="M43 175c28 39 79 51 144 44 45-5 77-22 96-50-7 42-39 66-88 69l-105-1c-37-3-54-22-47-62Z" />
-      <circle className="long-eye long-eye-back" cx="249" cy="121" r="20" />
-      <circle className="long-eye" cx="278" cy="123" r="22" />
-      <circle className="long-pupil" cx="285" cy="123" r="8" />
-      <circle className="long-pupil" cx="255" cy="121" r="7" />
-      <path className="long-beak-top" d="M292 143c61 4 104 22 137 54-51-7-96-19-143-37Z" />
-      <path className="long-beak-bottom" d="m286 160 143 37c-55 1-101-6-149-23Z" />
-      <path className="long-feet" d="M104 228c1 21-6 31-23 37m24-19 19 14m74-32c3 20-2 31-18 39m19-21 19 12" />
-    </svg>
-  )
-}
-
-function BeanMarks() {
-  return (
-    <svg className="bird-study-svg bean-marks" viewBox="0 0 390 300" role="img" aria-label="간단한 도형으로 만든 키위새 세 마리">
-      <g className="bean bean-one">
-        <path d="M38 199c0-57 25-113 67-113 43 0 68 55 68 113 0 42-27 66-68 66s-67-24-67-66Z" />
-        <circle cx="123" cy="131" r="7" /><path className="bean-beak" d="m134 145 72 8-72 15Z" /><path className="bean-leg" d="M82 260v25m44-25v25" />
-      </g>
-      <g className="bean bean-two">
-        <path d="M204 186c0-66 26-132 70-132 45 0 70 65 70 132 0 48-28 75-70 75-43 0-70-27-70-75Z" />
-        <circle cx="289" cy="101" r="7" /><path className="bean-beak" d="m300 115 67-35-58 51Z" /><path className="bean-leg" d="M252 256v29m45-29v29" />
-      </g>
-    </svg>
-  )
-}
-
-function WhiteSproutBird() {
-  return (
-    <svg className="bird-study-svg white-sprout" viewBox="0 0 360 310" role="img" aria-label="새싹을 닮은 흰 키위새">
-      <defs><linearGradient id="sprout-white" x1="0" x2="1" y1="0" y2="1"><stop stopColor="#fff" /><stop offset="1" stopColor="#dfe8e1" /></linearGradient></defs>
-      <ellipse className="sprout-shadow" cx="161" cy="270" rx="98" ry="15" />
-      <path className="sprout-body" d="M57 198c0-63 42-117 101-129 10-37 35-54 69-52-14 17-16 36-6 56 45 18 72 58 72 107 0 68-50 90-125 90-68 0-111-21-111-72Z" />
-      <path className="sprout-leaf" d="M164 69c-12-36 5-59 40-69 5 28-8 52-40 69Z" />
-      <path className="sprout-wing" d="M90 178c17-39 52-55 91-39-25 22-37 54-34 91-34-1-53-20-57-52Z" />
-      <circle className="sprout-eye" cx="236" cy="119" r="8" />
-      <path className="sprout-beak" d="M248 133c45-3 78 7 104 29-38 14-73 10-107-8Z" />
-      <path className="sprout-leg" d="M129 256v28m69-31v31m-91 1h27m42 0h28" />
-    </svg>
-  )
-}
-
-function RoadRunnerBird() {
-  return (
-    <svg className="bird-study-svg road-runner" viewBox="0 0 420 300" role="img" aria-label="달리는 여행자 키위새">
-      <path className="runner-speed speed-one" d="M5 138h96" /><path className="runner-speed speed-two" d="M27 166h68" />
-      <path className="runner-body" d="M83 174c12-59 73-97 154-88 69 8 106 45 94 93-12 50-67 75-143 65-75-10-116-32-105-70Z" />
-      <path className="runner-neck" d="M239 104c22-45 51-63 87-49 30 12 37 41 17 68-19 26-53 30-88 10Z" />
-      <circle className="runner-eye" cx="318" cy="78" r="8" />
-      <path className="runner-beak" d="M332 90c39 0 68 11 88 31-34 9-63 4-94-14Z" />
-      <path className="runner-scarf" d="M259 112c-38 13-76 9-113-10l13 27c35 15 68 17 101 4Z" />
-      <path className="runner-scarf-tail" d="m157 111-58-23 30 42Z" />
-      <path className="runner-leg" d="m177 230-35 48m42-33 28 34m54-48-15 47m14-30 39 17" />
-      <path className="runner-pack" d="M104 136c5-27 27-40 57-31l20 71-80 7Z" />
-    </svg>
-  )
-}
-
-function FruitSuitBird() {
-  return (
-    <svg className="bird-study-svg fruit-suit" viewBox="0 0 360 320" role="img" aria-label="키위 열매 옷을 입은 키위새">
+    <svg className="bird-study-svg tall-wild" viewBox="0 0 400 430" role="img" aria-label="키가 큰 자연형 키위새">
       <defs>
-        <radialGradient id="fruit-flesh" cx="43%" cy="42%" r="58%"><stop stopColor="#f6ffc1" /><stop offset=".28" stopColor="#c9f466" /><stop offset="1" stopColor="#80bd43" /></radialGradient>
+        <radialGradient id="wild-tall-body" cx="37%" cy="20%" r="86%"><stop stopColor="#a9876a" /><stop offset=".62" stopColor="#735340" /><stop offset="1" stopColor="#4a362e" /></radialGradient>
+        <pattern id="tall-feather-pattern" width="13" height="13" patternUnits="userSpaceOnUse" patternTransform="rotate(16)"><path d="M0 7h13" stroke="#e4c6a1" strokeWidth="2" opacity=".25" /></pattern>
       </defs>
-      <ellipse className="fruit-shadow" cx="161" cy="284" rx="102" ry="14" />
-      <ellipse className="fruit-rind" cx="158" cy="169" rx="116" ry="108" />
-      <ellipse className="fruit-flesh" cx="158" cy="169" rx="94" ry="87" />
-      <ellipse className="fruit-core" cx="158" cy="169" rx="31" ry="47" />
-      <g className="fruit-seeds"><circle cx="158" cy="105" r="6" /><circle cx="198" cy="116" r="6" /><circle cx="221" cy="150" r="6" /><circle cx="216" cy="191" r="6" /><circle cx="191" cy="222" r="6" /><circle cx="151" cy="232" r="6" /><circle cx="113" cy="215" r="6" /><circle cx="92" cy="180" r="6" /><circle cx="96" cy="140" r="6" /><circle cx="119" cy="112" r="6" /></g>
-      <circle className="fruit-head" cx="236" cy="103" r="53" />
-      <circle className="fruit-eye" cx="251" cy="88" r="7" />
-      <path className="fruit-beak" d="M272 105c37 2 64 13 83 31-32 8-59 3-88-13Z" />
-      <path className="fruit-leg" d="M119 264v26m74-27v27m-96 1h28m46 0h29" />
+      <ellipse className="tall-wild-shadow" cx="190" cy="395" rx="105" ry="14" />
+      <path className="tall-wild-body" d="M91 303c-5-67 19-139 78-192 7-42 37-68 77-62 44 6 66 50 45 87-6 11-15 19-26 25 30 55 39 126 9 178-25 44-76 58-121 39-39-17-59-41-62-75Z" />
+      <path className="tall-wild-feathers" d="M91 303c-5-67 19-139 78-192 7-42 37-68 77-62 44 6 66 50 45 87-6 11-15 19-26 25 30 55 39 126 9 178-25 44-76 58-121 39-39-17-59-41-62-75Z" />
+      <path className="tall-wild-beak" d="M268 105c54 0 95 15 126 46-52 4-96-6-139-29Z" />
+      <circle className="tall-wild-eye" cx="249" cy="89" r="8" /><circle className="tall-wild-glint" cx="251" cy="87" r="2.4" />
+      <path className="tall-wild-whisker" d="m247 116 28 13m-31-7 24 19" />
+      <path className="tall-wild-leg" d="M146 356v39m78-43v43m-102 1h30m49 0h30" />
+      <path className="tall-wild-strokes" d="m143 155 22 12m-33 11 25 9m-33 18 26 5m-35 28 29 1m-31 29 31-4m-24 37 30-9m-11 42 27-17m41-162 24 11m-15 22 27 8m-18 21 28 5m-20 28 27 1m-26 29 28-5m-28 34 24-10" />
     </svg>
   )
 }
 
-function PaperPuppetBird() {
+function WhiteGentleBird() {
   return (
-    <svg className="bird-study-svg paper-puppet" viewBox="0 0 380 310" role="img" aria-label="종이 인형 키위새">
-      <ellipse className="puppet-shadow" cx="168" cy="273" rx="105" ry="13" />
-      <polygon className="puppet-tail" points="49,170 98,121 112,194" />
-      <ellipse className="puppet-body" cx="168" cy="177" rx="91" ry="75" transform="rotate(8 168 177)" />
-      <circle className="puppet-head" cx="247" cy="111" r="52" />
-      <polygon className="puppet-wing" points="102,169 172,127 191,222" />
-      <circle className="puppet-pin pin-wing" cx="169" cy="177" r="8" />
-      <circle className="puppet-pin pin-neck" cx="224" cy="135" r="8" />
-      <circle className="puppet-eye" cx="263" cy="96" r="7" />
-      <polygon className="puppet-beak" points="280,112 373,145 276,134" />
-      <path className="puppet-leg" d="m132 235-9 47m89-43 10 43" />
-      <circle className="puppet-pin" cx="132" cy="236" r="7" /><circle className="puppet-pin" cx="211" cy="238" r="7" />
+    <svg className="bird-study-svg white-gentle" viewBox="0 0 400 430" role="img" aria-label="키가 큰 흰색 키위새">
+      <defs><linearGradient id="gentle-body" x1=".2" x2=".9" y1="0" y2="1"><stop stopColor="#fff" /><stop offset=".65" stopColor="#eef1ee" /><stop offset="1" stopColor="#cbd4ce" /></linearGradient></defs>
+      <ellipse className="gentle-shadow" cx="185" cy="395" rx="105" ry="15" />
+      <path className="gentle-body" d="M91 311c-1-79 28-164 91-210 11-36 42-57 76-46 36 11 52 51 34 83-7 12-17 20-30 26 26 55 29 125 2 175-24 45-72 58-115 39-36-16-58-38-58-67Z" />
+      <path className="gentle-sprout" d="M196 87c-17-40 0-68 41-81 3 33-10 60-41 81Zm28 2c8-37 33-53 68-47-14 29-35 45-68 47Z" />
+      <path className="gentle-wing" d="M112 249c10-56 43-91 91-92-19 45-22 93-5 144-44 10-75-7-86-52Z" />
+      <path className="gentle-beak" d="M276 117c50-2 90 11 122 38-47 10-90 2-129-20Z" />
+      <circle className="gentle-eye" cx="260" cy="99" r="8" />
+      <circle className="gentle-cheek" cx="270" cy="132" r="8" />
+      <path className="gentle-leg" d="M139 362v34m83-37v37m-107 1h30m52 0h31" />
     </svg>
   )
 }
 
-function PixelBird() {
+function BeanpoleBird() {
   return (
-    <svg className="bird-study-svg pixel-bird" viewBox="0 0 360 310" role="img" aria-label="픽셀 아트 키위새">
-      <g className="pixel-shadow"><rect x="74" y="263" width="208" height="14" /><rect x="103" y="277" width="150" height="8" /></g>
-      <g className="pixel-body">
-        <rect x="73" y="108" width="30" height="119" /><rect x="103" y="78" width="30" height="179" /><rect x="133" y="63" width="90" height="194" /><rect x="223" y="78" width="30" height="164" /><rect x="253" y="108" width="30" height="104" />
-      </g>
-      <g className="pixel-wing"><rect x="103" y="153" width="30" height="60" /><rect x="133" y="168" width="30" height="60" /><rect x="163" y="183" width="30" height="45" /></g>
-      <rect className="pixel-eye" x="223" y="108" width="17" height="17" />
-      <g className="pixel-beak"><rect x="270" y="132" width="75" height="15" /><rect x="253" y="147" width="62" height="15" /></g>
-      <g className="pixel-leg"><rect x="128" y="242" width="15" height="31" /><rect x="218" y="233" width="15" height="40" /><rect x="103" y="272" width="55" height="11" /><rect x="202" y="272" width="55" height="11" /></g>
-      <path className="pixel-cursor" d="m27 51 50 21-21 7 14 28-14 7-14-28-15 15Z" />
+    <svg className="bird-study-svg beanpole" viewBox="0 0 400 430" role="img" aria-label="세로로 긴 미니멀 키위새">
+      <ellipse className="beanpole-shadow" cx="190" cy="399" rx="91" ry="11" />
+      <path className="beanpole-body" d="M120 320c0-96 25-257 91-257 67 0 92 160 92 257 0 47-36 70-92 70-55 0-91-23-91-70Z" />
+      <circle className="beanpole-eye" cx="239" cy="117" r="8" />
+      <path className="beanpole-beak" d="M251 132c59-3 105 9 143 36-56 11-105 5-149-17Z" />
+      <path className="beanpole-leg" d="M170 378v31m82-31v31" />
+      <circle className="beanpole-button button-one" cx="180" cy="213" r="5" /><circle className="beanpole-button button-two" cx="180" cy="239" r="5" />
+    </svg>
+  )
+}
+
+function KiwiScoutBird() {
+  return (
+    <svg className="bird-study-svg kiwi-scout" viewBox="0 0 400 430" role="img" aria-label="키가 큰 여행자 키위새">
+      <ellipse className="scout-shadow" cx="190" cy="399" rx="111" ry="13" />
+      <path className="scout-pack" d="M79 185c-21 18-29 57-19 117l72-3 8-130c-24-7-44-2-61 16Z" />
+      <path className="scout-body" d="M102 304c-2-78 29-165 92-207 13-35 43-53 75-41 36 14 48 54 26 84-8 10-18 18-30 23 25 56 27 126-2 177-25 44-72 56-114 36-32-16-47-38-47-72Z" />
+      <path className="scout-hat" d="M188 75c12-48 44-67 91-52l-10 45c-32-11-59-9-81 7Z" />
+      <path className="scout-hat-brim" d="M174 76c38-18 82-15 132 8" />
+      <path className="scout-scarf" d="M207 153c29 12 60 13 92 3l-10 27c-29 7-57 4-83-9Z" />
+      <path className="scout-scarf-tail" d="m285 176 40 37-48-9Z" />
+      <path className="scout-beak" d="M279 117c49 0 88 13 118 40-48 7-90-2-126-23Z" />
+      <circle className="scout-eye" cx="262" cy="98" r="8" />
+      <path className="scout-leg" d="M150 360v37m81-40v40m-105 1h30m50 0h31" />
+      <path className="scout-map" d="M105 225 156 211l47 16-49 17Z" />
+    </svg>
+  )
+}
+
+function StiltBird() {
+  return (
+    <svg className="bird-study-svg stilt-bird" viewBox="0 0 400 430" role="img" aria-label="긴 다리를 가진 키위새">
+      <ellipse className="stilt-shadow" cx="194" cy="402" rx="112" ry="11" />
+      <path className="stilt-body" d="M93 153c0-58 45-98 112-98 65 0 109 37 109 91 0 55-43 91-111 91-66 0-110-31-110-84Z" />
+      <path className="stilt-beak" d="M283 123c48-1 85 12 114 39-44 10-83 2-120-20Z" />
+      <circle className="stilt-eye" cx="267" cy="106" r="9" />
+      <path className="stilt-leg leg-left" d="M150 220c-8 55-10 110-6 168m0 0-33 14m33-14 27 13" />
+      <path className="stilt-leg leg-right" d="M241 219c12 57 15 113 9 169m0 0-29 13m29-13 31 13" />
+      <path className="stilt-knee" d="m145 303 17 12m87-8-16 12" />
+      <path className="stilt-tuft" d="M166 67c-1-31 15-48 48-51-6 25-22 42-48 51Z" />
+    </svg>
+  )
+}
+
+function FruitTotemBird() {
+  return (
+    <svg className="bird-study-svg fruit-totem" viewBox="0 0 400 430" role="img" aria-label="키위 열매 모양의 키 큰 키위새">
+      <defs><radialGradient id="totem-flesh" cx="45%" cy="38%" r="62%"><stop stopColor="#f7ffc4" /><stop offset=".25" stopColor="#c8f268" /><stop offset="1" stopColor="#7cb840" /></radialGradient></defs>
+      <ellipse className="totem-shadow" cx="185" cy="400" rx="103" ry="13" />
+      <path className="totem-rind" d="M84 304c0-93 29-240 104-240 76 0 105 146 105 240 0 54-41 85-105 85S84 358 84 304Z" />
+      <path className="totem-flesh" d="M106 296c0-78 23-202 82-202 60 0 83 123 83 202 0 45-33 69-83 69s-82-24-82-69Z" />
+      <ellipse className="totem-core" cx="188" cy="229" rx="25" ry="50" />
+      <g className="totem-seeds"><circle cx="188" cy="143" r="6" /><circle cx="226" cy="157" r="6" /><circle cx="246" cy="194" r="6" /><circle cx="240" cy="242" r="6" /><circle cx="219" cy="286" r="6" /><circle cx="187" cy="315" r="6" /><circle cx="155" cy="286" r="6" /><circle cx="133" cy="242" r="6" /><circle cx="130" cy="194" r="6" /><circle cx="150" cy="157" r="6" /></g>
+      <circle className="totem-eye" cx="239" cy="106" r="7" />
+      <path className="totem-beak" d="M251 119c57-2 103 10 143 39-57 10-107 4-149-19Z" />
+      <path className="totem-leg" d="M147 375v25m83-25v25m-104 1h27m55 0h28" />
+    </svg>
+  )
+}
+
+function PaperMarionetteBird() {
+  return (
+    <svg className="bird-study-svg paper-marionette" viewBox="0 0 400 430" role="img" aria-label="키가 큰 종이 인형 키위새">
+      <ellipse className="marionette-shadow" cx="186" cy="401" rx="105" ry="12" />
+      <polygon className="marionette-body" points="115,340 151,113 270,163 267,343" />
+      <circle className="marionette-head" cx="248" cy="102" r="55" />
+      <polygon className="marionette-wing" points="137,218 212,168 216,304" />
+      <polygon className="marionette-beak" points="285,107 397,145 281,133" />
+      <circle className="marionette-eye" cx="264" cy="87" r="7" />
+      <circle className="marionette-pin pin-neck" cx="239" cy="146" r="8" /><circle className="marionette-pin pin-wing" cx="206" cy="220" r="8" />
+      <path className="marionette-leg" d="m151 337-9 48 17 17m77-65 9 48-15 17" />
+      <circle className="marionette-pin" cx="151" cy="338" r="7" /><circle className="marionette-pin" cx="236" cy="338" r="7" />
+      <path className="marionette-string" d="M151 113 137 0m111 47 12-47m-54 220L198 0" />
+    </svg>
+  )
+}
+
+function PixelRangerBird() {
+  return (
+    <svg className="bird-study-svg pixel-ranger" viewBox="0 0 400 430" role="img" aria-label="키가 큰 픽셀 키위새">
+      <g className="pixel-ranger-shadow"><rect x="78" y="396" width="223" height="13" /><rect x="119" y="409" width="148" height="8" /></g>
+      <g className="pixel-ranger-body"><rect x="119" y="157" width="31" height="207" /><rect x="150" y="95" width="31" height="285" /><rect x="181" y="64" width="93" height="316" /><rect x="274" y="95" width="31" height="253" /></g>
+      <g className="pixel-ranger-wing"><rect x="119" y="219" width="31" height="93" /><rect x="150" y="250" width="31" height="93" /><rect x="181" y="281" width="31" height="62" /></g>
+      <rect className="pixel-ranger-eye" x="258" y="112" width="17" height="17" />
+      <g className="pixel-ranger-beak"><rect x="289" y="143" width="103" height="16" /><rect x="274" y="159" width="87" height="16" /></g>
+      <g className="pixel-ranger-leg"><rect x="157" y="364" width="16" height="34" /><rect x="265" y="348" width="16" height="50" /><rect x="126" y="397" width="62" height="11" /><rect x="245" y="397" width="62" height="11" /></g>
+      <g className="pixel-ranger-pack"><rect x="88" y="204" width="31" height="111" /><rect x="72" y="235" width="16" height="65" /></g>
+      <path className="pixel-ranger-cursor" d="m36 57 54 23-23 7 16 31-15 8-16-31-16 16Z" />
     </svg>
   )
 }
 
 const birds = [
-  { id: 'A', name: 'Field Sketch', kind: 'HAND DRAWN', note: '굽은 자세, 거친 깃털 선, 호기심 많은 표정. 경력마다 새로운 것을 발견하는 탐험가.', className: 'bird-card-sketch', visual: <FieldSketchBird /> },
-  { id: 'B', name: 'Long Bean', kind: 'COMIC CREATURE', note: '추천 · 납작하고 긴 몸, 아주 긴 부리, 큰 눈을 과장한 개성 강한 코믹 캐릭터.', className: 'bird-card-long', visual: <LongBeanBird /> },
-  { id: 'C', name: 'Bean Marks', kind: 'ICON SYSTEM', note: '배 모양 몸과 막대 다리만 남긴 초간단 심볼. 방향과 자세를 다양하게 만들기 쉽습니다.', className: 'bird-card-bean', visual: <BeanMarks /> },
-  { id: 'D', name: 'White Sprout', kind: 'BRAND MASCOT', note: '흰 몸이 위로 자라 새싹이 된 실루엣. whitekiwi라는 이름을 가장 독자적으로 해석.', className: 'bird-card-sprout', visual: <WhiteSproutBird /> },
-  { id: 'E', name: 'Road Runner', kind: 'ADVENTURE', note: '수평으로 기울어진 몸, 달리는 다리, 스카프와 가방. 여정과 배달 장면에 최적화.', className: 'bird-card-runner', visual: <RoadRunnerBird /> },
-  { id: 'F', name: 'Fruit Suit', kind: 'ABSURD CUTE', note: '키위 열매가 몸이고 새의 머리가 붙은 엉뚱한 설정. 기억에 남는 밈 같은 주인공.', className: 'bird-card-fruit', visual: <FruitSuitBird /> },
-  { id: 'G', name: 'Paper Puppet', kind: 'KINETIC COLLAGE', note: '원·삼각형·핀으로 조립한 종이 인형. 관절을 실제로 움직이는 애니메이션에 적합.', className: 'bird-card-puppet', visual: <PaperPuppetBird /> },
-  { id: 'H', name: 'Pixel Kiwi', kind: 'DEVELOPER MODE', note: '8비트 픽셀로 만든 키위새. 커서와 코드 세계를 여행하는 개발자 캐릭터.', className: 'bird-card-pixel', visual: <PixelBird /> },
+  { id: 'A', name: 'Tall Wild', kind: 'NATURAL', note: '작은 머리로 좁아지는 긴 배 모양 몸과 강한 다리. 실제 키위의 비율을 가장 많이 살린 타입.', className: 'bird-card-wild', visual: <TallWildBird /> },
+  { id: 'B', name: 'White Gentle', kind: 'SOFT MASCOT', note: '추천 · Milk Glass에서 태어난 듯한 흰 몸, 높은 머리와 키위색 새싹을 가진 부드러운 주인공.', className: 'bird-card-gentle', visual: <WhiteGentleBird /> },
+  { id: 'C', name: 'Beanpole', kind: 'MINIMAL ICON', note: '세로로 길게 선 하나의 콩 모양. 가장 단순하지만 키가 큰 인상이 확실한 아이콘형.', className: 'bird-card-beanpole', visual: <BeanpoleBird /> },
+  { id: 'D', name: 'Kiwi Scout', kind: 'TRAVELER', note: '모자, 가방, 스카프와 지도를 지닌 장신 여행자. 경력 여정을 직접 이끄는 캐릭터.', className: 'bird-card-scout', visual: <KiwiScoutBird /> },
+  { id: 'E', name: 'Stilt Kiwi', kind: 'ABSURD TALL', note: '작은 몸 아래 긴 다리를 과장한 엉뚱한 타입. 걷기와 바이크 장면에서 코믹한 매력이 큽니다.', className: 'bird-card-stilt', visual: <StiltBird /> },
+  { id: 'F', name: 'Fruit Totem', kind: 'KIWI WITHIN', note: '세로로 긴 키위 단면 자체가 몸이 된 토템형. 닉네임을 한눈에 기억시키는 방향.', className: 'bird-card-totem', visual: <FruitTotemBird /> },
+  { id: 'G', name: 'Marionette', kind: 'PAPER MOTION', note: '길쭉한 종이 조각과 핀으로 조립한 인형. 관절과 부화 연출을 손맛 있게 만들 수 있습니다.', className: 'bird-card-marionette', visual: <PaperMarionetteBird /> },
+  { id: 'H', name: 'Pixel Ranger', kind: 'DEVELOPER MODE', note: '높은 픽셀 몸과 배낭을 가진 개발자 모험가. 코드 세계로 전환되는 장면에 강합니다.', className: 'bird-card-ranger', visual: <PixelRangerBird /> },
 ]
 
 export default function BirdLab() {
@@ -148,14 +145,14 @@ export default function BirdLab() {
     <main className="bird-lab-page">
       <header className="bird-lab-header">
         <a href="/" className="bird-wordmark">whitekiwi®</a>
-        <span>CHARACTER STUDY · ROUND 02</span>
+        <span>CHARACTER STUDY · ROUND 03</span>
         <a href="/?view=glass">BACK TO THE EGG ↗</a>
       </header>
 
       <section className="bird-lab-intro">
-        <p>THE MAIN CHARACTER</p>
-        <h1>같은 새 말고,<br />다른 세계관 여덟 개.</h1>
-        <p className="bird-intro-copy">몸의 비율부터 선, 재료, 움직임 방식까지 전부 다르게 잡았습니다. 색이 아니라 실루엣으로 골라주세요.</p>
+        <p>THE TALL KIWI</p>
+        <h1>이번엔 모두,<br />키가 큰 키위새.</h1>
+        <p className="bird-intro-copy">높은 머리, 세로로 긴 몸, 드러난 다리를 공통 조건으로 잡고 현실성부터 엉뚱함까지 다시 넓혔습니다.</p>
       </section>
 
       <section className="bird-study-grid">
@@ -169,8 +166,8 @@ export default function BirdLab() {
       </section>
 
       <footer className="bird-lab-footer">
-        <span>CHOOSE A WORLD</span>
-        <p>이제는 색이 아니라 실루엣으로 고를 수 있습니다. 하나를 고르면 그 세계관으로 표정과 움직임을 확장합니다.</p>
+        <span>FIND THE HEIGHT</span>
+        <p>마음에 드는 한 마리가 없어도 괜찮습니다. 몸은 B, 다리는 A, 성격은 D처럼 조합해도 됩니다.</p>
       </footer>
     </main>
   )
