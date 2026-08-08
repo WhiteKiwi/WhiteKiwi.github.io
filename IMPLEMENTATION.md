@@ -35,16 +35,18 @@ pnpm build
 
 ### Egg state machine
 
-1. `idle`: 낙하 루프를 보여주고 첫 하향 제스처를 기다린다.
-2. `descending`: 제스처를 한 번의 트리거로 사용해 자동 착지 시퀀스를 실행한다.
-3. `landed`: 흔들림과 균열을 재생한다.
-4. `ready`: 문서 높이를 확장해 다음 페이지로 실제 스크롤할 수 있게 한다.
+1. `opening`: SVG stroke로 `Hello, world`를 그리고 `o`를 Milk Glass 알 실루엣으로 응축한다.
+2. `idle`: 낙하 루프를 보여주고 첫 하향 제스처를 기다린다.
+3. `descending`: 제스처를 한 번의 트리거로 사용해 자동 착지 시퀀스를 실행한다.
+4. `landed`: 흔들림과 균열을 재생한다.
+5. `ready`: 문서 높이를 확장해 다음 페이지로 실제 스크롤할 수 있게 한다.
 
 스크롤바가 뒤늦게 생겨도 가로 레이아웃이 움직이지 않도록 풀 블리드 장면을 viewport 폭으로 유지하고 문서의 가로 초과분을 잘라낸다. 별도의 흰 scrollbar gutter를 미리 예약하지 않는다.
+`ready` 전에는 `html`과 `body`의 native overflow·overscroll을 잠그고 프롤로그 자체의 `touch-action`을 막는다. 첫 제스처는 상태 전환만 일으키며 실제 문서는 움직이지 않고, 착지가 끝난 뒤 원래 문서 스크롤 속성을 복원한다.
 
 ### Opening title morph
 
-- 글라스 필기체 `Hello, world`를 SVG stroke 또는 canvas path로 그려 실제 필기 순서처럼 나타낸다.
+- `Hello, w`와 `rld`, 가운데 `o`를 분리한 SVG stroke로 그려 획이 진행되는 것처럼 나타낸다.
 - 글자의 소멸과 알의 등장은 별도 장면 전환이 아니라 `world`의 `o`가 같은 화면 좌표에서 Milk Glass 알로 형태를 바꾸는 매치컷으로 연결한다.
 - 자동 인트로가 너무 길어지지 않도록 첫 필기부터 낙하 대기 상태까지 짧은 단일 시퀀스로 구성하고, 재방문·모션 감소 설정의 건너뛰기 상태를 제공한다.
 

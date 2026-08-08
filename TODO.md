@@ -4,7 +4,7 @@
 
 ## P0 — 다음 사용자 확인 범위
 
-- [ ] `Hello, world` 필기와 `o → Milk Glass 알` 매치컷 구현
+- [ ] `Hello, world` 필기와 `o → Milk Glass 알` 매치컷의 속도·글자 스타일 사용자 확인
 - [ ] 01 소개 페이지의 키네틱 타이포와 Contact Dock 디자인 최종 확인
 - [ ] 02 학력 페이지의 CNSA 블루·벚꽃·교정 톤과 스크롤 모션 확인
 - [ ] 충남삼성고 IT 과정 프로젝트별 역할·기술·결과를 확인해 제목 이상의 설명을 추가
@@ -25,10 +25,10 @@
 
 ## Experience gaps
 
-- [ ] 모바일에서 알 낙하 트리거 시 native scroll/elastic overscroll 때문에 전체 장면이 위로 끌리고 아래 흰 영역이 드러나는 문제 해결
 - [ ] 스크롤을 빠르게 왕복할 때 상태와 프레임이 튀지 않는지 실제 기기에서 확인
 - [ ] 모바일 플릭 한 번으로 소개·학력의 핵심 구간을 건너뛰지 않는지 실제 Safari/Chrome에서 감도 확인
 - [ ] iOS Safari의 `svh`, sticky, backdrop filter 동작 확인
+- [ ] 실제 iOS Safari에서 프롤로그 스크롤 잠금이 주소창 높이 변화와 elastic overscroll까지 막는지 확인
 - [ ] 작은 노트북·초광폭 화면에서 최종 조립 타이포 위치 확인
 - [ ] `prefers-reduced-motion` 사용자를 위한 완성된 정적 대체 흐름 제공
 - [ ] 키보드만으로 프롤로그를 지나 링크에 도달할 수 있는지 점검

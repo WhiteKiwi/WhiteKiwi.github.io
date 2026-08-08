@@ -3,6 +3,20 @@ import EducationJourney from './EducationJourney'
 import CareerJourney from './CareerJourney'
 import './fall-intro.css'
 
+function OpeningTitle() {
+  return (
+    <div className="opening-title" aria-label="Hello, world. whitekiwi의 포트폴리오가 시작됩니다">
+      <span className="opening-status">INITIALIZING A NEW JOURNEY</span>
+      <svg className="opening-lettering" viewBox="0 0 1000 300" aria-hidden="true">
+        <text className="opening-stroke opening-stroke-left" x="470" y="185" textAnchor="end">Hello, w</text>
+        <ellipse className="opening-world-o" cx="510" cy="145" rx="27" ry="38" />
+        <text className="opening-stroke opening-stroke-right" x="550" y="185">rld</text>
+      </svg>
+      <span className="opening-signature">A PORTFOLIO BY WHITEKIWI · 2026</span>
+    </div>
+  )
+}
+
 function FallingEgg({ onLanded }: { onLanded: () => void }) {
   return (
     <div
@@ -115,8 +129,41 @@ const clouds = [
 ]
 
 export default function FallIntro() {
-  const [phase, setPhase] = useState<'idle' | 'descending' | 'landed' | 'ready'>('idle')
+  const [phase, setPhase] = useState<'opening' | 'idle' | 'descending' | 'landed' | 'ready'>('opening')
   const introTrackRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    if (phase !== 'opening') return
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const openingTimer = window.setTimeout(() => setPhase('idle'), reducedMotion ? 220 : 4000)
+    return () => window.clearTimeout(openingTimer)
+  }, [phase])
+
+  const isScrollLocked = phase !== 'ready'
+  useEffect(() => {
+    if (!isScrollLocked) return
+    const html = document.documentElement
+    const body = document.body
+    const previous = {
+      htmlOverflow: html.style.overflow,
+      htmlOverscroll: html.style.overscrollBehavior,
+      bodyOverflow: body.style.overflow,
+      bodyOverscroll: body.style.overscrollBehavior,
+      bodyBackground: body.style.background,
+    }
+    html.style.overflow = 'hidden'
+    html.style.overscrollBehavior = 'none'
+    body.style.overflow = 'hidden'
+    body.style.overscrollBehavior = 'none'
+    body.style.background = '#8ec4eb'
+    return () => {
+      html.style.overflow = previous.htmlOverflow
+      html.style.overscrollBehavior = previous.htmlOverscroll
+      body.style.overflow = previous.bodyOverflow
+      body.style.overscrollBehavior = previous.bodyOverscroll
+      body.style.background = previous.bodyBackground
+    }
+  }, [isScrollLocked])
 
   useEffect(() => {
     if (phase !== 'idle') return
@@ -247,11 +294,13 @@ export default function FallIntro() {
     }
   }, [phase])
 
+  const hasDescended = phase === 'descending' || phase === 'landed' || phase === 'ready'
   const hasLanded = phase === 'landed' || phase === 'ready'
 
   return (
-    <main className={`fall-intro-scroll ${phase !== 'idle' ? 'has-descended' : ''} ${hasLanded ? 'is-landed' : ''} ${phase === 'ready' ? 'is-scroll-ready' : ''}`}>
+    <main className={`fall-intro-scroll ${phase === 'opening' ? 'is-opening' : ''} ${hasDescended ? 'has-descended' : ''} ${hasLanded ? 'is-landed' : ''} ${phase === 'ready' ? 'is-scroll-ready' : ''}`}>
       <section className="fall-intro">
+        {phase === 'opening' && <OpeningTitle />}
         <div className="sky-depth sky-depth-back" aria-hidden="true" />
         <div className="sky-depth sky-depth-front" aria-hidden="true" />
         <div className="sky-sun" aria-hidden="true" />
