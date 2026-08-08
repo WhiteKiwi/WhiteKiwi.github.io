@@ -1,9 +1,16 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import './fall-intro.css'
 
-function FallingEgg() {
+function FallingEgg({ onLanded }: { onLanded: () => void }) {
   return (
-    <div className="egg-scroll-rig" role="img" aria-label="유리 하늘에서 숲의 나뭇잎으로 떨어지는 흰색 유리 알">
+    <div
+      className="egg-scroll-rig"
+      role="img"
+      aria-label="유리 하늘에서 숲의 나뭇잎으로 떨어지는 흰색 유리 알"
+      onAnimationEnd={(event) => {
+        if (event.animationName === 'egg-camera-arrival') onLanded()
+      }}
+    >
       <div className="falling-egg-rig">
         <div className="egg-wake" aria-hidden="true"><i /><i /><i /></div>
         <div className="falling-egg">
@@ -54,63 +61,41 @@ const clouds = [
 ]
 
 export default function FallIntro() {
-  const scrollRef = useRef<HTMLElement>(null)
+  const [phase, setPhase] = useState<'idle' | 'descending' | 'landed'>('idle')
 
   useEffect(() => {
-    const root = scrollRef.current
-    if (!root) return
+    if (phase !== 'idle') return
 
-    let frame = 0
-    const clamp = (value: number) => Math.min(1, Math.max(0, value))
-    const range = (from: number, to: number, value: number) => {
-      const point = clamp((value - from) / (to - from))
-      return point * point * (3 - 2 * point)
+    let touchY = 0
+    const beginDescent = () => setPhase((current) => current === 'idle' ? 'descending' : current)
+    const onWheel = (event: WheelEvent) => {
+      if (event.deltaY > 4) beginDescent()
     }
-    const update = () => {
-      frame = 0
-      const bounds = root.getBoundingClientRect()
-      const travel = Math.max(root.offsetHeight - window.innerHeight, 1)
-      const progress = clamp(-bounds.top / travel)
-      const zoom = range(0.02, 0.42, progress)
-      const forest = range(0.12, 0.68, progress)
-      const descent = range(0.26, 0.94, progress)
-      const caught = range(0.84, 1, progress)
-
-      root.style.setProperty('--scroll', progress.toFixed(4))
-      root.style.setProperty('--zoom', zoom.toFixed(4))
-      root.style.setProperty('--forest', forest.toFixed(4))
-      root.style.setProperty('--descent', descent.toFixed(4))
-      root.style.setProperty('--caught', caught.toFixed(4))
-      root.style.setProperty('--airborne', (1 - caught).toFixed(4))
-      root.style.setProperty('--egg-x', `${(descent * 18).toFixed(3)}vw`)
-      root.style.setProperty('--egg-y', `${(descent * 14).toFixed(3)}vh`)
-      root.style.setProperty('--egg-scale', (1 - zoom * 0.54).toFixed(4))
-      root.style.setProperty('--forest-y', `${((1 - forest) * 38).toFixed(2)}vh`)
-      root.style.setProperty('--sky-opacity', (1 - forest * 0.88).toFixed(4))
-      root.style.setProperty('--leaf-bend', `${(-2 - caught * 8).toFixed(2)}deg`)
-      root.style.setProperty('--flight-up', `${(-10 * (1 - caught)).toFixed(2)}px`)
-      root.style.setProperty('--flight-down', `${(12 * (1 - caught)).toFixed(2)}px`)
-      root.style.setProperty('--tumble-left', `${(-5 * (1 - caught)).toFixed(2)}deg`)
-      root.style.setProperty('--tumble-right', `${(4 * (1 - caught)).toFixed(2)}deg`)
-      root.style.setProperty('--wake-opacity', (0.52 * (1 - caught)).toFixed(4))
-      root.style.setProperty('--air-pulse-opacity', (0.55 * (1 - caught)).toFixed(4))
+    const onTouchStart = (event: TouchEvent) => {
+      touchY = event.touches[0]?.clientY ?? 0
     }
-    const requestUpdate = () => {
-      if (!frame) frame = window.requestAnimationFrame(update)
+    const onTouchMove = (event: TouchEvent) => {
+      const currentY = event.touches[0]?.clientY ?? touchY
+      if (touchY - currentY > 8) beginDescent()
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (['ArrowDown', 'PageDown', ' ', 'Enter'].includes(event.key)) beginDescent()
     }
 
-    update()
-    window.addEventListener('scroll', requestUpdate, { passive: true })
-    window.addEventListener('resize', requestUpdate)
+    window.addEventListener('wheel', onWheel, { passive: true })
+    window.addEventListener('touchstart', onTouchStart, { passive: true })
+    window.addEventListener('touchmove', onTouchMove, { passive: true })
+    window.addEventListener('keydown', onKeyDown)
     return () => {
-      window.removeEventListener('scroll', requestUpdate)
-      window.removeEventListener('resize', requestUpdate)
-      if (frame) window.cancelAnimationFrame(frame)
+      window.removeEventListener('wheel', onWheel)
+      window.removeEventListener('touchstart', onTouchStart)
+      window.removeEventListener('touchmove', onTouchMove)
+      window.removeEventListener('keydown', onKeyDown)
     }
-  }, [])
+  }, [phase])
 
   return (
-    <main className="fall-intro-scroll" ref={scrollRef}>
+    <main className={`fall-intro-scroll ${phase !== 'idle' ? 'has-descended' : ''} ${phase === 'landed' ? 'is-landed' : ''}`}>
       <section className="fall-intro">
         <div className="sky-depth sky-depth-back" aria-hidden="true" />
         <div className="sky-depth sky-depth-front" aria-hidden="true" />
@@ -140,7 +125,7 @@ export default function FallIntro() {
         </div>
 
         <ForestArrival />
-        <FallingEgg />
+        <FallingEgg onLanded={() => setPhase('landed')} />
         <div className="fall-vignette" aria-hidden="true" />
       </section>
     </main>
