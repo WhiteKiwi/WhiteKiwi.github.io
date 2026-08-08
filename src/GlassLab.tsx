@@ -77,6 +77,18 @@ function PrismSeed() {
   )
 }
 
+function WhiteGlass() {
+  return (
+    <GlassShell variant="shell-white-glass">
+      <span className="white-glass-light" />
+      <svg className="white-glass-crack" viewBox="0 0 238 292" aria-hidden="true">
+        <path d="M41 146 79 135l18 17 20-30 20 28 19-16 41 12" />
+        <path className="white-glass-split" d="M41 146c10 36 38 61 78 61 41 0 68-25 78-61" />
+      </svg>
+    </GlassShell>
+  )
+}
+
 const studies = [
   { id: 'A', title: 'Kiwi Specimen', subtitle: 'GLASS × KIWI WITHIN', note: '추천 · 키위 단면을 유리 안에 표본처럼 띄운 가장 직접적인 조합.', className: 'study-specimen', visual: <KiwiSpecimen /> },
   { id: 'B', title: 'Seed Halo', subtitle: 'MINIMAL ORGANIC', note: '과육은 빼고 씨앗의 궤도만 남겨 더 절제된 whitekiwi 심볼.', className: 'study-halo', visual: <SeedHalo /> },
@@ -84,6 +96,7 @@ const studies = [
   { id: 'D', title: 'Before I Hatch', subtitle: 'STORY OBJECT', note: '껍질 너머로 키위새 실루엣이 먼저 보이는 서사 중심 시안.', className: 'study-embryo', visual: <KiwiEmbryo /> },
   { id: 'E', title: 'Frosted Kiwi', subtitle: 'QUIET PREMIUM', note: '반투명 껍질 아래쪽에만 키위의 색과 씨앗이 은은하게 비치는 버전.', className: 'study-frosted', visual: <FrostedKiwi /> },
   { id: 'F', title: 'Prism Seed', subtitle: 'DIGITAL GEM', note: '키위색 코어를 보석처럼 각지게 만들어 개발자 정체성을 강조.', className: 'study-prism', visual: <PrismSeed /> },
+  { id: 'G', title: 'Milk Glass', subtitle: 'OPAQUE GLASS · NEW', note: '추천 · 내부는 완전히 숨기고, 깨지는 순간에만 키위색 빛이 새어 나오는 흰색 유리 알.', className: 'study-white', visual: <WhiteGlass /> },
 ]
 
 export default function GlassLab() {
@@ -98,7 +111,7 @@ export default function GlassLab() {
       <section className="glass-lab-intro">
         <p>SELECTED DIRECTION / 04</p>
         <h1>Glass outside.<br /><em>Kiwi inside.</em></h1>
-        <p className="glass-intro-copy">유리의 차갑고 세련된 인상 안에 키위의 유기적인 생명력을 얼마나 드러낼지, 여섯 단계로 나눴습니다.</p>
+        <p className="glass-intro-copy">유리의 차갑고 세련된 인상 안에 키위의 생명력을 얼마나 드러낼지 비교하고, 마지막에는 내부를 완전히 감춘 흰색 유리로 확장했습니다.</p>
       </section>
 
       <section className="glass-study-grid">

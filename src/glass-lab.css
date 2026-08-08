@@ -11,7 +11,8 @@
 .glass-study-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 18px; }
 .glass-study-card { position: relative; grid-column: span 6; min-height: 680px; padding: 24px; display: flex; flex-direction: column; overflow: hidden; border: 1px solid rgba(255,255,255,.08); border-radius: 34px; isolation: isolate; }
 .glass-study-card:nth-child(n+3) { grid-column: span 4; min-height: 590px; }
-.glass-study-card:last-child { grid-column: 5 / span 4; }
+.glass-study-card:nth-child(6) { grid-column: 5 / span 4; }
+.glass-study-card:last-child { grid-column: span 12; min-height: 720px; }
 .glass-study-meta { position: relative; z-index: 4; display: flex; justify-content: space-between; color: rgba(255,255,255,.64); font: 600 .58rem 'DM Mono', monospace; letter-spacing: .09em; }
 .glass-study-visual { position: relative; z-index: 2; min-height: 0; flex: 1; display: grid; place-items: center; perspective: 1000px; }
 .glass-study-copy { position: relative; z-index: 4; display: grid; grid-template-columns: 1fr 1fr; gap: 26px; align-items: end; }
@@ -25,6 +26,10 @@
 .study-embryo { background: radial-gradient(circle at 49% 43%, #684364, #24172d 74%); }
 .study-frosted { background: radial-gradient(circle at 50% 44%, #384a5c, #151b25 76%); }
 .study-prism { background: radial-gradient(circle at 50% 42%, #35366f, #151527 75%); }
+.study-white { background: radial-gradient(circle at 50% 43%, #e8edf1, #aab4bd 68%, #7e8b98); color: #26313b; }
+.study-white .glass-study-meta, .study-white .glass-study-copy p { color: rgba(38,49,59,.7); }
+.study-white .glass-study-copy h2 { color: #202a33; }
+.study-white .glass-study-egg { width: 270px; height: 332px; }
 
 .glass-study-egg { position: relative; width: 238px; height: 292px; border: 1px solid rgba(255,255,255,.48); border-radius: 50% 50% 46% 46% / 59% 59% 41% 41%; background: linear-gradient(145deg, rgba(255,255,255,.3), rgba(255,255,255,.035) 55%, rgba(143,255,222,.08)); box-shadow: inset 17px 18px 28px rgba(255,255,255,.19), inset -20px -24px 34px rgba(90,246,213,.08), 0 34px 64px rgba(0,0,0,.38); backdrop-filter: blur(11px); transform-style: preserve-3d; animation: glass-hover 4.4s ease-in-out infinite; transition: transform .7s cubic-bezier(.2,.8,.2,1); }
 .glass-study-card:hover .glass-study-egg { transform: translateY(-8px) rotateY(-6deg) rotateX(3deg); }
@@ -67,6 +72,16 @@
 .shell-prism { background: linear-gradient(145deg, rgba(218,219,255,.27), rgba(255,255,255,.025)); }
 .prism-core { position: absolute; left: 50%; top: 54%; width: 145px; overflow: visible; filter: drop-shadow(0 0 28px rgba(148,255,99,.4)); transform: translate(-50%,-50%); animation: prism-turn 6s ease-in-out infinite; }
 .prism-a { fill: #63c75a; }.prism-b { fill: #aef55e; }.prism-c { fill: #ddff83; }.prism-d { fill: #72d852; }
+
+.shell-white-glass { border: 1px solid rgba(255,255,255,.95); background: radial-gradient(circle at 31% 20%, #fff 0 7%, transparent 25%), linear-gradient(145deg, #fff 3%, #f5f7f7 35%, #d8dee1 72%, #f8faf9 100%); box-shadow: inset 18px 17px 24px rgba(255,255,255,.98), inset -19px -24px 34px rgba(92,112,124,.17), inset 0 -5px 8px rgba(255,255,255,.7), 0 35px 58px rgba(44,58,69,.28); }
+.shell-white-glass .shell-glint { border-color: rgba(255,255,255,.95); filter: drop-shadow(0 2px 2px rgba(88,103,113,.08)); }
+.shell-white-glass .shell-rim { border-color: rgba(255,255,255,.7); opacity: .55; }
+.white-glass-light { position: absolute; left: 50%; top: 51%; width: 146px; height: 96px; border-radius: 50%; background: #b7ff5c; box-shadow: 0 0 30px 14px rgba(164,255,76,.72); opacity: 0; transform: translate(-50%,-50%) scale(.72); transition: opacity .5s, transform .8s cubic-bezier(.2,.8,.2,1); }
+.white-glass-crack { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.white-glass-crack path { fill: none; stroke: #66757f; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 260; stroke-dashoffset: 260; filter: drop-shadow(0 1px 0 rgba(255,255,255,.9)); transition: stroke-dashoffset 1.1s cubic-bezier(.2,.8,.2,1), stroke .5s, filter .5s; }
+.white-glass-crack .white-glass-split { opacity: .45; transition-delay: .16s; }
+.study-white:hover .white-glass-light { opacity: .82; transform: translate(-50%,-50%) scale(1); }
+.study-white:hover .white-glass-crack path { stroke: #9bea45; stroke-dashoffset: 0; filter: drop-shadow(0 0 5px rgba(160,255,73,.9)); }
 
 .glass-lab-footer { display: grid; grid-template-columns: .4fr 1fr; gap: 4vw; margin-top: 18px; padding: 7vw 2vw; border: 1px solid rgba(255,255,255,.09); border-radius: 34px; background: #181c2c; }
 .glass-lab-footer span { color: #77829a; font: 600 .62rem 'DM Mono', monospace; letter-spacing: .1em; }
