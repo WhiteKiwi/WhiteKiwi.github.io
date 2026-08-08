@@ -3,6 +3,7 @@ import { lazy, Suspense, useEffect, useState } from 'react'
 const EggLab = lazy(() => import('./EggLab'))
 const GlassLab = lazy(() => import('./GlassLab'))
 const BirdLab = lazy(() => import('./BirdLab'))
+const FallIntro = lazy(() => import('./FallIntro'))
 
 type JourneyStage = 'egg' | 'cracked' | 'hatched' | 'riding' | 'whiteblock'
 
@@ -133,7 +134,8 @@ function App() {
   if (view === 'eggs') return <Suspense fallback={<main className="egg-lab" />}><EggLab /></Suspense>
   if (view === 'glass') return <Suspense fallback={<main className="glass-lab-page" />}><GlassLab /></Suspense>
   if (view === 'birds') return <Suspense fallback={<main className="bird-lab-page" />}><BirdLab /></Suspense>
-  return <JourneyApp />
+  if (view === 'journey') return <JourneyApp />
+  return <Suspense fallback={<main className="fall-intro" />}><FallIntro /></Suspense>
 }
 
 export default App
