@@ -25,6 +25,7 @@
 
 ## Experience gaps
 
+- [ ] 모바일에서 알 낙하 트리거 시 native scroll/elastic overscroll 때문에 전체 장면이 위로 끌리고 아래 흰 영역이 드러나는 문제 해결
 - [ ] 스크롤을 빠르게 왕복할 때 상태와 프레임이 튀지 않는지 실제 기기에서 확인
 - [ ] iOS Safari의 `svh`, sticky, backdrop filter 동작 확인
 - [ ] 작은 노트북·초광폭 화면에서 최종 조립 타이포 위치 확인
@@ -39,7 +40,9 @@
 - [ ] 스크롤 계산을 재사용 가능한 chapter hook/component로 분리
 - [ ] 실험용 EggLab 번들의 500 kB 초과 경고 해소 또는 실험 뷰를 배포에서 제외
 - [ ] 이미지 크기와 포맷 최적화, preload 정책 결정
-- [ ] SEO metadata, Open Graph 이미지, favicon, 구조화 데이터 추가
+- [ ] SEO metadata와 기본 구조화 데이터 추가
+- [ ] `whitekiwi` 정체성에 맞는 Open Graph 이미지 제작·설정
+- [ ] 알 또는 키위 심볼 기반 favicon 세트 제작·설정
 - [ ] GitHub Pages 배포 workflow가 실제 저장소 권한과 브랜치 보호 규칙에서 성공하는지 첫 실행 확인
 - [ ] 커스텀 도메인을 다시 사용할지 결정하고 필요하면 `CNAME` 복원
 

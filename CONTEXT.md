@@ -120,3 +120,8 @@
 - 최종 사이트의 한국어/영어 범위
 - 커스텀 도메인 재사용 여부
 - 실험용 시안 페이지를 최종 배포에 남길지 여부
+
+## Reported issues and launch tasks
+
+- 모바일에서 알 낙하를 시작하려고 스크롤하면 프롤로그 장면 자체가 위로 끌리고 화면 아래 흰 영역이 드러난다. 프롤로그 잠금 중 native scroll과 iOS elastic overscroll을 막고 `svh/dvh`, body 배경, touch event 기본 동작을 함께 확인해야 한다.
+- 출시 전 Open Graph 메타데이터·대표 이미지와 favicon 세트를 추가해야 한다.
