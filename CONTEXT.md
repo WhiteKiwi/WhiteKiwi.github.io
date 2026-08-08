@@ -137,3 +137,9 @@
 - 에이임팩트는 공식 어레인지 소개의 농산물 주문 관리 맥락을 따뜻한 밭과 시스템 레이어의 성장으로 표현했다: <https://aimpact.kr/>
 - 당근은 공식 서비스 소개의 동네 연결 맥락과 오렌지 포인트를 지도·매물 핀·채팅으로 표현했다: <https://about.daangn.com/service/>
 - FETCHING은 현재 확인 가능한 공식 사이트가 없어 이력서의 명품 편집숍 크롤링 경험을 기준으로 버건디·블랙·브라스 쇼윈도 톤을 구성했다.
+
+## Deployment state
+
+- `develop` push에서 `master` 정적 산출물을 만드는 GitHub Actions가 실제 저장소에서 연속 성공했다.
+- Route 53의 `portfolio.whitekiwi.link` CNAME은 `whitekiwi.github.io`를 가리키고, 배포 workflow도 `CNAME` 파일을 보존한다.
+- GitHub Pages 커스텀 도메인은 등록됐지만 2026-08-09 현재 전용 TLS 인증서 발급을 기다리고 있다. 발급 전 `*.github.io` 인증서 경고를 우회하지 않는다.

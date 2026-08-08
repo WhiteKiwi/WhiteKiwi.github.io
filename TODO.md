@@ -44,7 +44,6 @@
 - [ ] SEO metadata와 기본 구조화 데이터 추가
 - [ ] `whitekiwi` 정체성에 맞는 Open Graph 이미지 제작·설정
 - [ ] 알 또는 키위 심볼 기반 favicon 세트 제작·설정
-- [ ] GitHub Pages 배포 workflow가 실제 저장소 권한과 브랜치 보호 규칙에서 성공하는지 첫 실행 확인
 - [ ] GitHub Pages가 `portfolio.whitekiwi.link` 인증서를 발급하면 HTTPS 강제를 활성화하고 인증서 이름 검증
 
 ## Known intentional differences
