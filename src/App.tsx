@@ -34,9 +34,11 @@ function Bike() {
   )
 }
 
-function Egg() {
+type EggVariant = 'soft' | 'kiwi' | 'paper'
+
+function Egg({ variant }: { variant: EggVariant }) {
   return (
-    <svg className="egg" viewBox="0 0 260 330" aria-hidden="true">
+    <svg className={`egg egg-${variant}`} viewBox="0 0 260 330" aria-hidden="true">
       <defs>
         <linearGradient id="egg-fill" x1="0" x2="1" y1="0" y2="1">
           <stop offset="0" stopColor="#fff8e9" />
@@ -44,17 +46,20 @@ function Egg() {
           <stop offset="1" stopColor="#e7c895" />
         </linearGradient>
       </defs>
-      <path className="egg-shell" d="M130 12C61 12 28 86 28 166c0 87 44 151 102 151s102-64 102-151C232 86 199 12 130 12Z" />
+      <path className="egg-shell" d={variant === 'paper' ? 'M130 14C67 11 31 83 29 163c-2 90 41 151 100 154 60 2 104-63 101-152-2-79-38-148-100-151Z' : 'M130 12C61 12 28 86 28 166c0 87 44 151 102 151s102-64 102-151C232 86 199 12 130 12Z'} />
       <path className="egg-crack egg-crack-top" d="M34 158l47-17 18 24 28-35 22 31 28-18 43 16" />
       <path className="egg-crack egg-crack-bottom" d="M34 158c12 34 40 63 96 63 52 0 84-23 98-62" />
       <path className="egg-highlight" d="M83 57c-22 27-31 59-32 89" />
       <circle className="egg-dot" cx="183" cy="91" r="5" />
+      {variant === 'kiwi' && <><circle className="egg-speck" cx="77" cy="126" r="4" /><circle className="egg-speck" cx="176" cy="70" r="3" /><circle className="egg-speck" cx="188" cy="180" r="5" /><circle className="egg-speck" cx="91" cy="231" r="3" /><path className="egg-leaf" d="M202 239c18 9 22 24 19 38-15-4-23-16-19-38Z" /></>}
     </svg>
   )
 }
 
 function App() {
   const [stage, setStage] = useState<JourneyStage>('egg')
+  const queryVariant = new URLSearchParams(window.location.search).get('egg')
+  const eggVariant: EggVariant = queryVariant === 'kiwi' || queryVariant === 'paper' ? queryVariant : 'soft'
 
   useEffect(() => {
     const onScroll = () => {
@@ -96,7 +101,7 @@ function App() {
           <div className="road" />
           <div className="orbit orbit-one" />
           <div className="orbit orbit-two" />
-          <Egg />
+          <Egg variant={eggVariant} />
           <KiwiBird />
           <div className="ride-wrap"><Bike /></div>
           <span className="spark spark-one">✳</span>
