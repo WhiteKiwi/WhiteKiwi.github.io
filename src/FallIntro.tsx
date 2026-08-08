@@ -6,7 +6,7 @@ function FallingEgg({ onLanded }: { onLanded: () => void }) {
     <div
       className="egg-scroll-rig"
       role="img"
-      aria-label="유리 하늘에서 숲의 이끼밭으로 떨어지는 흰색 유리 알"
+      aria-label="유리 하늘에서 유리 지면으로 떨어져 금이 가는 흰색 유리 알"
       onAnimationEnd={(event) => {
         if (event.animationName === 'egg-camera-arrival') onLanded()
       }}
@@ -17,6 +17,11 @@ function FallingEgg({ onLanded }: { onLanded: () => void }) {
           <span className="falling-shell" />
           <span className="falling-shell-glint" />
           <span className="falling-shell-rim" />
+          <svg className="shell-cracks" viewBox="0 0 260 330" aria-hidden="true">
+            <path className="shell-crack shell-crack-main" d="m106 265 23-23-11-23 25-21-11-22 19-22" />
+            <path className="shell-crack shell-crack-left" d="m120 222-23-8-14-20M134 181l-24-10-7-20" />
+            <path className="shell-crack shell-crack-right" d="m136 204 24-11 12-23M146 160l21-14" />
+          </svg>
         </div>
         <span className="air-ring air-ring-one" />
         <span className="air-ring air-ring-two" />
@@ -25,52 +30,26 @@ function FallingEgg({ onLanded }: { onLanded: () => void }) {
   )
 }
 
-function MossLanding() {
+function GlassGround() {
   return (
-    <svg className="moss-landing" viewBox="0 0 1200 360" preserveAspectRatio="none">
-      <path className="moss-haze" d="M0 139c91-48 180-52 269-13 95-65 191-66 289-4 83-63 174-71 273-23 111-51 234-41 369 31v230H0Z" />
-      <path className="moss-bank" d="M0 157c74-38 140-38 201 0 62-57 136-60 221-9 55-36 113-39 174-8 74-52 153-51 237 5 77-45 155-38 235 21 40-28 84-29 132-4v198H0Z" />
-      <path className="moss-bank-light" d="M0 197c83-32 156-26 218 20 55-42 119-44 194-5 66-47 134-49 205-6 72-41 143-35 213 16 63-41 132-36 207 15 51-28 106-25 163 12v111H0Z" />
-
-      <ellipse className="moss-impact-shadow" cx="600" cy="115" rx="88" ry="18" />
-      <g className="moss-cushion">
-        <path d="M447 139c24-49 63-66 114-51 33-38 76-39 111-3 49-12 86 7 105 55-97 39-207 38-330-1Z" />
-        <path className="moss-cushion-light" d="M486 127c29-27 61-31 96-13 25-29 57-28 81 0 32-15 61-10 87 14-76 23-164 23-264-1Z" />
-      </g>
-
-      <g className="moss-tufts">
-        <path d="M87 177c-2-28 8-48 30-60-5 23 0 41 16 54 0-26 11-43 33-54-8 24-6 45 8 63" />
-        <path d="M319 157c-4-24 4-42 24-54-3 22 4 38 20 47 2-20 11-34 28-43-4 20 0 36 13 49" />
-        <path d="M824 159c-4-27 5-47 26-61-3 24 3 42 20 54 3-22 13-38 32-48-5 23-1 41 13 54" />
-        <path d="M1045 176c0-28 11-47 33-58-6 24-1 43 15 56 2-24 12-41 32-51-6 23-3 42 11 56" />
-      </g>
-
-      <g className="moss-speckles">
-        <circle cx="223" cy="186" r="7" /><circle cx="256" cy="168" r="4" /><circle cx="418" cy="207" r="6" />
-        <circle cx="790" cy="194" r="5" /><circle cx="947" cy="183" r="7" /><circle cx="980" cy="205" r="4" />
-      </g>
-      <ellipse className="moss-impact-ring" cx="600" cy="120" rx="72" ry="14" />
-      <g className="moss-pop moss-pop-left"><circle cx="560" cy="108" r="7" /><circle cx="577" cy="101" r="4" /></g>
-      <g className="moss-pop moss-pop-right"><circle cx="640" cy="106" r="6" /><circle cx="657" cy="99" r="3" /></g>
-    </svg>
-  )
-}
-
-function ForestArrival() {
-  return (
-    <div className="forest-arrival" aria-hidden="true">
-      <div className="forest-sky-wash" />
-      <div className="distant-canopy canopy-back"><i /><i /><i /><i /><i /></div>
-      <div className="distant-canopy canopy-front"><i /><i /><i /><i /><i /><i /></div>
-
-      <div className="leaf-stream">
-        {Array.from({ length: 9 }, (_, index) => <i key={index} />)}
+    <div className="glass-ground" aria-hidden="true">
+      <div className="glass-ridges glass-ridges-back">
+        <i /><i /><i /><i />
       </div>
-
-      <MossLanding />
-
-      <div className="foreground-canopy canopy-left"><i /><i /><i /><i /></div>
-      <div className="foreground-canopy canopy-right"><i /><i /><i /><i /><i /></div>
+      <div className="glass-ground-plane">
+        <span className="ground-caustic caustic-left" />
+        <span className="ground-caustic caustic-right" />
+      </div>
+      <svg className="ground-impact-site" viewBox="0 0 600 180">
+        <ellipse className="ground-contact-shadow" cx="300" cy="92" rx="66" ry="13" />
+        <ellipse className="ground-impact-ring ring-inner" cx="300" cy="92" rx="74" ry="18" />
+        <ellipse className="ground-impact-ring ring-outer" cx="300" cy="92" rx="112" ry="30" />
+        <g className="ground-fractures">
+          <path d="m245 95-42 20-29-3-25 13M355 96l45 18 27-7 31 14M274 104l-19 34-24 15M327 104l17 34 28 17" />
+        </g>
+        <g className="ground-shards shard-left"><path d="m259 88-18-34 30 18Z" /><path d="m232 91-25-20 30 5Z" /></g>
+        <g className="ground-shards shard-right"><path d="m341 88 18-34-30 18Z" /><path d="m368 91 25-20-30 5Z" /></g>
+      </svg>
     </div>
   )
 }
@@ -144,7 +123,7 @@ export default function FallIntro() {
           ))}
         </div>
 
-        <ForestArrival />
+        <GlassGround />
         <FallingEgg onLanded={() => setPhase('landed')} />
         <div className="fall-vignette" aria-hidden="true" />
       </section>
