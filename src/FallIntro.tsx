@@ -6,7 +6,7 @@ function FallingEgg({ onLanded }: { onLanded: () => void }) {
     <div
       className="egg-scroll-rig"
       role="img"
-      aria-label="유리 하늘에서 숲의 나뭇잎으로 떨어지는 흰색 유리 알"
+      aria-label="유리 하늘에서 숲의 이끼밭으로 떨어지는 흰색 유리 알"
       onAnimationEnd={(event) => {
         if (event.animationName === 'egg-camera-arrival') onLanded()
       }}
@@ -25,6 +25,37 @@ function FallingEgg({ onLanded }: { onLanded: () => void }) {
   )
 }
 
+function MossLanding() {
+  return (
+    <svg className="moss-landing" viewBox="0 0 1200 360" preserveAspectRatio="none">
+      <path className="moss-haze" d="M0 139c91-48 180-52 269-13 95-65 191-66 289-4 83-63 174-71 273-23 111-51 234-41 369 31v230H0Z" />
+      <path className="moss-bank" d="M0 157c74-38 140-38 201 0 62-57 136-60 221-9 55-36 113-39 174-8 74-52 153-51 237 5 77-45 155-38 235 21 40-28 84-29 132-4v198H0Z" />
+      <path className="moss-bank-light" d="M0 197c83-32 156-26 218 20 55-42 119-44 194-5 66-47 134-49 205-6 72-41 143-35 213 16 63-41 132-36 207 15 51-28 106-25 163 12v111H0Z" />
+
+      <ellipse className="moss-impact-shadow" cx="600" cy="115" rx="88" ry="18" />
+      <g className="moss-cushion">
+        <path d="M447 139c24-49 63-66 114-51 33-38 76-39 111-3 49-12 86 7 105 55-97 39-207 38-330-1Z" />
+        <path className="moss-cushion-light" d="M486 127c29-27 61-31 96-13 25-29 57-28 81 0 32-15 61-10 87 14-76 23-164 23-264-1Z" />
+      </g>
+
+      <g className="moss-tufts">
+        <path d="M87 177c-2-28 8-48 30-60-5 23 0 41 16 54 0-26 11-43 33-54-8 24-6 45 8 63" />
+        <path d="M319 157c-4-24 4-42 24-54-3 22 4 38 20 47 2-20 11-34 28-43-4 20 0 36 13 49" />
+        <path d="M824 159c-4-27 5-47 26-61-3 24 3 42 20 54 3-22 13-38 32-48-5 23-1 41 13 54" />
+        <path d="M1045 176c0-28 11-47 33-58-6 24-1 43 15 56 2-24 12-41 32-51-6 23-3 42 11 56" />
+      </g>
+
+      <g className="moss-speckles">
+        <circle cx="223" cy="186" r="7" /><circle cx="256" cy="168" r="4" /><circle cx="418" cy="207" r="6" />
+        <circle cx="790" cy="194" r="5" /><circle cx="947" cy="183" r="7" /><circle cx="980" cy="205" r="4" />
+      </g>
+      <ellipse className="moss-impact-ring" cx="600" cy="120" rx="72" ry="14" />
+      <g className="moss-pop moss-pop-left"><circle cx="560" cy="108" r="7" /><circle cx="577" cy="101" r="4" /></g>
+      <g className="moss-pop moss-pop-right"><circle cx="640" cy="106" r="6" /><circle cx="657" cy="99" r="3" /></g>
+    </svg>
+  )
+}
+
 function ForestArrival() {
   return (
     <div className="forest-arrival" aria-hidden="true">
@@ -36,18 +67,7 @@ function ForestArrival() {
         {Array.from({ length: 9 }, (_, index) => <i key={index} />)}
       </div>
 
-      <svg className="catch-perch" viewBox="0 0 800 420" preserveAspectRatio="none">
-        <path className="perch-branch-shadow" d="M825 335C713 321 642 296 565 255c-55-30-102-42-158-43" />
-        <path className="perch-branch" d="M825 322C711 309 646 287 567 247c-58-30-105-40-163-37" />
-        <path className="branch-twig" d="M650 281c-13-41-5-76 24-111M735 310c18-29 42-47 75-53" />
-        <g className="catch-leaf">
-          <path className="catch-leaf-shadow" d="M405 205c55-74 132-89 220-49-34 83-103 121-207 76Z" />
-          <path className="catch-leaf-body" d="M402 195c58-70 134-82 219-40-39 76-108 108-211 67Z" />
-          <path className="catch-leaf-vein" d="M418 214c58-28 111-45 181-54M487 195l-9-28M532 180l12-25M566 170l21 14" />
-        </g>
-        <path className="side-leaf leaf-one" d="M646 274c-25-43-20-80 18-111 31 48 25 85-18 111Z" />
-        <path className="side-leaf leaf-two" d="M733 306c22-38 52-54 92-46-15 43-46 59-92 46Z" />
-      </svg>
+      <MossLanding />
 
       <div className="foreground-canopy canopy-left"><i /><i /><i /><i /></div>
       <div className="foreground-canopy canopy-right"><i /><i /><i /><i /><i /></div>
