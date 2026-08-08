@@ -56,10 +56,10 @@ function GlassGround() {
 
 function WalkingIntroduction({ trackRef }: { trackRef: RefObject<HTMLElement | null> }) {
   const contactLinks = [
-    { label: 'Instagram', href: 'https://www.instagram.com/whitekiwi_' },
     { label: 'GitHub', href: 'https://github.com/whitekiwi' },
     { label: 'Blog', href: 'https://blog.whitekiwi.link' },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/whitekiwi/' },
+    { label: 'Instagram', href: 'https://www.instagram.com/whitekiwi_' },
   ]
 
   return (
