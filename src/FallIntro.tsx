@@ -70,9 +70,9 @@ function WalkingIntroduction({ trackRef }: { trackRef: RefObject<HTMLElement | n
         </div>
 
         <div className="intro-copy">
-          <p className="intro-line intro-hello"><span>01</span>안녕하세요.</p>
+          <p className="intro-line intro-hello">안녕하세요.</p>
           <p className="intro-line intro-role"><strong>Node.js</strong>{' '}Developer</p>
-          <p className="intro-line intro-name">장지훈입니다.<span>JIHUN JANG</span></p>
+          <p className="intro-line intro-name">장지훈입니다.<span>JIHOON JANG · whitekiwi</span></p>
         </div>
 
         <div className="kiwi-walk-path" aria-hidden="true">
@@ -146,14 +146,47 @@ export default function FallIntro() {
       const frame = Math.floor(progress * 32) % 4
       const step = Math.floor(progress * 32)
       const reveal = (start: number, end: number) => Math.min(Math.max((progress - start) / (end - start), 0), 1)
+      const lerp = (from: number, to: number, amount: number) => from + (to - from) * amount
+      const isMobile = window.innerWidth <= 700
+      const centerY = isMobile ? 36 : 40
+      const finalY = isMobile ? 13 : 14
+      const lineTargets = isMobile
+        ? { hello: [13, .3], role: [39, .25], name: [73, .28] }
+        : { hello: [11, .34], role: [29, .27], name: [51, .32] }
+      const setLineState = (
+        name: 'hello' | 'role' | 'name',
+        revealStart: number,
+        revealEnd: number,
+        settleStart: number,
+        settleEnd: number,
+      ) => {
+        const opacity = reveal(revealStart, revealEnd)
+        const settled = reveal(settleStart, settleEnd)
+        const [targetX, targetScale] = lineTargets[name]
+        const entryScale = lerp(.82, 1, opacity)
+        const entryY = centerY + (1 - opacity) * 5
+        track.style.setProperty(`--${name}-opacity`, String(opacity))
+        track.style.setProperty(`--${name}-x`, `${lerp(50, targetX, settled)}vw`)
+        track.style.setProperty(`--${name}-y`, `${lerp(entryY, finalY, settled)}vh`)
+        track.style.setProperty(`--${name}-scale`, String(lerp(entryScale, targetScale, settled)))
+        track.style.setProperty(`--${name}-blur`, `${(1 - opacity) * 12}px`)
+      }
 
+      track.style.setProperty('--intro-progress', String(progress))
+      track.style.setProperty('--identity-progress', String(reveal(.12, .77)))
       track.style.setProperty('--kiwi-x', `${-18 + progress * 136}vw`)
       track.style.setProperty('--kiwi-frame', `${frame * -25}%`)
       track.style.setProperty('--kiwi-bob', `${step % 2 === 0 ? 0 : -5}px`)
       track.style.setProperty('--kiwi-tilt', `${step % 2 === 0 ? -0.35 : 0.35}deg`)
-      track.style.setProperty('--hello-reveal', String(reveal(.08, .18)))
-      track.style.setProperty('--role-reveal', String(reveal(.3, .42)))
-      track.style.setProperty('--name-reveal', String(reveal(.55, .67)))
+      track.style.setProperty('--sun-shift', `${progress * 22}px`)
+      track.style.setProperty('--sun-rotate', `${progress * 24}deg`)
+      track.style.setProperty('--cloud-near-shift', `${progress * -9}vw`)
+      track.style.setProperty('--cloud-far-shift', `${progress * 7}vw`)
+      track.style.setProperty('--hill-shift', `${progress * -3}vw`)
+      track.style.setProperty('--hill-shift-opposite', `${progress * 3}vw`)
+      setLineState('hello', .04, .11, .15, .25)
+      setLineState('role', .27, .34, .39, .5)
+      setLineState('name', .52, .59, .64, .75)
       track.style.setProperty('--world-shift', `${progress * -18}px`)
     }
     const requestUpdate = () => {
