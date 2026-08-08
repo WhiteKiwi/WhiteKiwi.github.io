@@ -170,10 +170,28 @@ export default function FallIntro() {
       const lerp = (from: number, to: number, amount: number) => from + (to - from) * amount
       const isMobile = window.innerWidth <= 700
       const centerY = isMobile ? 36 : 40
-      const finalY = isMobile ? 13 : 14
+      const targetScales = isMobile
+        ? { hello: .32, role: .44, name: .32 }
+        : { hello: .34, role: .31, name: .32 }
+      const lineWidths = {
+        hello: (track.querySelector<HTMLElement>('.intro-hello')?.offsetWidth ?? 0) * targetScales.hello,
+        role: (track.querySelector<HTMLElement>('.intro-role')?.offsetWidth ?? 0) * targetScales.role,
+        name: (track.querySelector<HTMLElement>('.intro-name')?.offsetWidth ?? 0) * targetScales.name,
+      }
+      const leftEdge = window.innerWidth * (isMobile ? .06 : .065)
+      const toVw = (pixels: number) => pixels / window.innerWidth * 100
+      const desktopGap = Math.max(34, window.innerWidth * .032)
       const lineTargets = isMobile
-        ? { hello: [13, .3], role: [39, .25], name: [73, .28] }
-        : { hello: [11, .34], role: [29, .27], name: [51, .32] }
+        ? {
+            hello: { x: toVw(leftEdge + lineWidths.hello / 2), y: 11.5, scale: targetScales.hello },
+            role: { x: toVw(leftEdge + lineWidths.role / 2), y: 15.5, scale: targetScales.role },
+            name: { x: toVw(leftEdge + lineWidths.name / 2), y: 19.5, scale: targetScales.name },
+          }
+        : {
+            hello: { x: toVw(leftEdge + lineWidths.hello / 2), y: 14, scale: targetScales.hello },
+            role: { x: toVw(leftEdge + lineWidths.hello + desktopGap + lineWidths.role / 2), y: 14, scale: targetScales.role },
+            name: { x: toVw(leftEdge + lineWidths.hello + desktopGap + lineWidths.role + desktopGap + lineWidths.name / 2), y: 14, scale: targetScales.name },
+          }
       const setLineState = (
         name: 'hello' | 'role' | 'name',
         revealStart: number,
@@ -183,13 +201,13 @@ export default function FallIntro() {
       ) => {
         const opacity = reveal(revealStart, revealEnd)
         const settled = reveal(settleStart, settleEnd)
-        const [targetX, targetScale] = lineTargets[name]
+        const target = lineTargets[name]
         const entryScale = lerp(.82, 1, opacity)
         const entryY = centerY + (1 - opacity) * 5
         track.style.setProperty(`--${name}-opacity`, String(opacity))
-        track.style.setProperty(`--${name}-x`, `${lerp(50, targetX, settled)}vw`)
-        track.style.setProperty(`--${name}-y`, `${lerp(entryY, finalY, settled)}vh`)
-        track.style.setProperty(`--${name}-scale`, String(lerp(entryScale, targetScale, settled)))
+        track.style.setProperty(`--${name}-x`, `${lerp(50, target.x, settled)}vw`)
+        track.style.setProperty(`--${name}-y`, `${lerp(entryY, target.y, settled)}vh`)
+        track.style.setProperty(`--${name}-scale`, String(lerp(entryScale, target.scale, settled)))
         track.style.setProperty(`--${name}-blur`, `${(1 - opacity) * 12}px`)
       }
 
