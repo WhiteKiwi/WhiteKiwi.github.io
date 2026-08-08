@@ -3,6 +3,7 @@ import './fall-intro.css'
 function FallingEgg() {
   return (
     <div className="falling-egg-rig" role="img" aria-label="유리 하늘을 계속 낙하하는 흰색 유리 알">
+      <div className="egg-wake" aria-hidden="true"><i /><i /><i /></div>
       <div className="falling-egg">
         <span className="falling-shell" />
         <span className="falling-shell-glint" />
@@ -33,6 +34,12 @@ export default function FallIntro() {
       </div>
       <div className="fall-streaks streaks-near" aria-hidden="true">
         {Array.from({ length: 8 }, (_, index) => <i key={index} />)}
+      </div>
+      <div className="fall-particles" aria-hidden="true">
+        {Array.from({ length: 18 }, (_, index) => <i key={index} />)}
+      </div>
+      <div className="foreground-rush" aria-hidden="true">
+        <span className="rush-one" /><span className="rush-two" /><span className="rush-three" />
       </div>
 
       <div className="glass-cloud-field" aria-hidden="true">
