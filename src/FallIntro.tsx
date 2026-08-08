@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
+import EducationJourney from './EducationJourney'
 import './fall-intro.css'
 
 function FallingEgg({ onLanded }: { onLanded: () => void }) {
@@ -282,6 +283,7 @@ export default function FallIntro() {
         <div className="fall-vignette" aria-hidden="true" />
       </section>
       <WalkingIntroduction trackRef={introTrackRef} />
+      <EducationJourney active={phase === 'ready'} />
     </main>
   )
 }
