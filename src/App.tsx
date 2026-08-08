@@ -38,23 +38,13 @@ type EggVariant = 'soft' | 'kiwi' | 'paper'
 
 function Egg({ variant }: { variant: EggVariant }) {
   return (
-    <svg className={`egg egg-${variant}`} viewBox="0 0 260 330" aria-hidden="true">
-      <defs>
-        <clipPath id="egg-clip">
-          <path d="M135 9C82 8 44 48 30 112c-14 63-3 134 38 177 28 30 68 38 103 17 43-26 65-85 61-144-4-72-35-150-97-153Z" />
-        </clipPath>
-      </defs>
-      <path className="egg-shell" d="M135 9C82 8 44 48 30 112c-14 63-3 134 38 177 28 30 68 38 103 17 43-26 65-85 61-144-4-72-35-150-97-153Z" />
-      <g clipPath="url(#egg-clip)">
-        <circle className="egg-cheek egg-cheek-left" cx="76" cy="167" r="13" />
-        <circle className="egg-cheek egg-cheek-right" cx="188" cy="167" r="13" />
-        <path className="egg-face-eye" d="M91 148v10m78-10v10" />
-        <path className="egg-face-mouth" d="M119 169c8 9 16 9 24 0" />
-        <path className="egg-shine" d="M78 71c-17 25-24 54-24 86" />
-      </g>
-      <path className="egg-crack egg-crack-top" d="M34 158l47-17 18 24 28-35 22 31 28-18 43 16" />
-      <path className="egg-crack egg-crack-bottom" d="M34 158c12 34 40 63 96 63 52 0 84-23 98-62" />
-    </svg>
+    <div className={`egg egg-${variant}`} role="img" aria-label="부화를 기다리는 알">
+      <span className="tossface-egg" aria-hidden="true">🥚</span>
+      <svg className="egg-cracks" viewBox="0 0 260 260" aria-hidden="true">
+        <path className="egg-crack egg-crack-top" d="M62 132l35-10 16 16 18-28 19 26 18-14 30 10" />
+        <path className="egg-crack egg-crack-bottom" d="M62 132c10 29 34 48 68 48 35 0 59-19 68-48" />
+      </svg>
+    </div>
   )
 }
 
