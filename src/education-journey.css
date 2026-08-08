@@ -14,6 +14,9 @@
   --education-kiwi-frame: 0%;
   --education-kiwi-bob: 0px;
   --education-kiwi-tilt: 0deg;
+  --education-cap-opacity: 0;
+  --education-cap-y: -54px;
+  --education-cap-turn: -9deg;
   --branch-left-x: 0vw;
   --branch-right-x: 0vw;
   --education-transition-y: 0%;
@@ -24,7 +27,7 @@
   --education-gust-turn: 0deg;
   --education-campus-scale: 1.075;
   position: relative;
-  height: 430svh;
+  height: 500svh;
   background: #eaf5fb;
 }
 
@@ -520,6 +523,11 @@
   word-break: keep-all;
 }
 
+.education-project-heading h2 > span {
+  font-size: .8em;
+  letter-spacing: -.055em;
+}
+
 .education-school-copy p,
 .education-university-copy p {
   margin: clamp(11px, 2vh, 21px) 0 0;
@@ -720,6 +728,77 @@
   filter: blur(4px);
 }
 
+.education-kiwi-cap {
+  position: absolute;
+  z-index: 5;
+  top: 2.5%;
+  left: 12%;
+  width: 46%;
+  aspect-ratio: 1.55;
+  opacity: var(--education-cap-opacity);
+  transform: translate3d(0, var(--education-cap-y), 0) rotate(var(--education-cap-turn));
+  transform-origin: 50% 80%;
+  filter: drop-shadow(0 7px 5px rgba(16, 45, 73, .18));
+  will-change: opacity, transform;
+}
+
+.education-kiwi-cap::before {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: 4%;
+  left: 0;
+  width: 100%;
+  height: 58%;
+  background: linear-gradient(145deg, #167ec2, #005daa 54%, #073b67);
+  clip-path: polygon(50% 0, 100% 42%, 51% 83%, 0 42%);
+}
+
+.education-kiwi-cap::after {
+  content: '';
+  position: absolute;
+  top: 42%;
+  left: 27%;
+  width: 48%;
+  height: 42%;
+  background: #00518e;
+  border-radius: 3px 3px 45% 45%;
+}
+
+.education-kiwi-cap i {
+  position: absolute;
+  z-index: 3;
+  top: 27%;
+  right: 8%;
+  width: 2px;
+  height: 48%;
+  background: #f2b851;
+  transform: rotate(-8deg);
+  transform-origin: top;
+}
+
+.education-kiwi-cap i::after {
+  content: '';
+  position: absolute;
+  right: -3px;
+  bottom: -7px;
+  width: 7px;
+  height: 12px;
+  background: #f2b851;
+  border-radius: 60% 60% 45% 45%;
+}
+
+.education-kiwi-cap b {
+  position: absolute;
+  z-index: 4;
+  top: 25%;
+  left: 48%;
+  width: 7px;
+  aspect-ratio: 1;
+  background: #f5c66f;
+  border-radius: 50%;
+}
+
 .education-progress {
   position: absolute;
   z-index: 31;
@@ -757,7 +836,7 @@
 }
 
 @media (max-width: 700px) {
-  .education-track { height: 440svh; }
+  .education-track { height: 620svh; }
   .education-stage { min-height: 560px; }
   .education-meta { top: 3.5vh; right: 6vw; left: 6vw; }
   .education-transition { padding: 0 8vw 16vh; }

@@ -27,6 +27,7 @@
 
 - [ ] 모바일에서 알 낙하 트리거 시 native scroll/elastic overscroll 때문에 전체 장면이 위로 끌리고 아래 흰 영역이 드러나는 문제 해결
 - [ ] 스크롤을 빠르게 왕복할 때 상태와 프레임이 튀지 않는지 실제 기기에서 확인
+- [ ] 모바일 플릭 한 번으로 소개·학력의 핵심 구간을 건너뛰지 않는지 실제 Safari/Chrome에서 감도 확인
 - [ ] iOS Safari의 `svh`, sticky, backdrop filter 동작 확인
 - [ ] 작은 노트북·초광폭 화면에서 최종 조립 타이포 위치 확인
 - [ ] `prefers-reduced-motion` 사용자를 위한 완성된 정적 대체 흐름 제공

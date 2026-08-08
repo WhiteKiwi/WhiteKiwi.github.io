@@ -128,6 +128,7 @@ export default function EducationJourney({ active }: { active: boolean }) {
       const archiveOpacity = visibility(progress, .385, .455, .66, .735)
       const universityOpacity = reveal(progress, .71, .81)
       const gateOpacity = reveal(progress, .74, .88)
+      const capProgress = smoothstep(reveal(progress, .735, .795))
       const transitionProgress = smoothstep(reveal(progress, .008, .205))
 
       track.style.setProperty('--education-progress', String(progress))
@@ -152,6 +153,9 @@ export default function EducationJourney({ active }: { active: boolean }) {
       track.style.setProperty('--education-kiwi-frame', `${frame * -25}%`)
       track.style.setProperty('--education-kiwi-bob', `${step % 2 === 0 ? 0 : -5}px`)
       track.style.setProperty('--education-kiwi-tilt', `${step % 2 === 0 ? -.4 : .45}deg`)
+      track.style.setProperty('--education-cap-opacity', String(capProgress))
+      track.style.setProperty('--education-cap-y', `${-54 + capProgress * 54}px`)
+      track.style.setProperty('--education-cap-turn', `${-9 + capProgress * 9}deg`)
       track.style.setProperty('--branch-left-x', `${progress * -5.5}vw`)
       track.style.setProperty('--branch-right-x', `${progress * 4}vw`)
 
@@ -215,7 +219,7 @@ export default function EducationJourney({ active }: { active: boolean }) {
         <article className="education-project-archive">
           <div className="education-project-heading">
             <span>SELECTED PROJECTS · 2017—2019</span>
-            <h2>세 번의 봄,<br /><strong>그 사이 만든 것들</strong></h2>
+            <h2><span>세 번의 봄,</span><br /><strong>그 사이</strong></h2>
             <div className="education-school-notes">
               <span>학생회장</span>
               <span>2018 정보올림피아드 · 은상</span>
@@ -244,6 +248,7 @@ export default function EducationJourney({ active }: { active: boolean }) {
           <div className="education-kiwi-sprite">
             <img src="/assets/characters/kiwi-walk-cycle.png" alt="" />
           </div>
+          <span className="education-kiwi-cap"><i /><b /></span>
         </div>
 
         <div className="education-progress" aria-hidden="true"><i /></div>
