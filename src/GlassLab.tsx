@@ -80,7 +80,6 @@ function PrismSeed() {
 function WhiteGlass() {
   return (
     <GlassShell variant="shell-white-glass">
-      <span className="white-glass-light" />
       <svg className="white-glass-crack" viewBox="0 0 238 292" aria-hidden="true">
         <path d="M41 146 79 135l18 17 20-30 20 28 19-16 41 12" />
         <path className="white-glass-split" d="M41 146c10 36 38 61 78 61 41 0 68-25 78-61" />
@@ -96,7 +95,7 @@ const studies = [
   { id: 'D', title: 'Before I Hatch', subtitle: 'STORY OBJECT', note: '껍질 너머로 키위새 실루엣이 먼저 보이는 서사 중심 시안.', className: 'study-embryo', visual: <KiwiEmbryo /> },
   { id: 'E', title: 'Frosted Kiwi', subtitle: 'QUIET PREMIUM', note: '반투명 껍질 아래쪽에만 키위의 색과 씨앗이 은은하게 비치는 버전.', className: 'study-frosted', visual: <FrostedKiwi /> },
   { id: 'F', title: 'Prism Seed', subtitle: 'DIGITAL GEM', note: '키위색 코어를 보석처럼 각지게 만들어 개발자 정체성을 강조.', className: 'study-prism', visual: <PrismSeed /> },
-  { id: 'G', title: 'Milk Glass', subtitle: 'OPAQUE GLASS · NEW', note: '추천 · 내부는 완전히 숨기고, 깨지는 순간에만 키위색 빛이 새어 나오는 흰색 유리 알.', className: 'study-white', visual: <WhiteGlass /> },
+  { id: 'G', title: 'Milk Glass', subtitle: 'SELECTED · OPAQUE GLASS', note: '선택됨 · 내부는 완전히 숨기고, 회백색 균열을 따라 평범하게 깨지는 흰색 유리 알.', className: 'study-white', visual: <WhiteGlass /> },
 ]
 
 export default function GlassLab() {
@@ -126,7 +125,7 @@ export default function GlassLab() {
 
       <footer className="glass-lab-footer">
         <span>NEXT STEP</span>
-        <p>하나를 고르면 균열 → 내부 빛 → 키위새 등장까지 같은 재질 언어로 연결합니다.</p>
+        <p>Milk Glass를 골랐습니다. 이제 <a href="/?view=birds">키위새 디자인을 고르러 갑니다 ↗</a></p>
       </footer>
     </main>
   )

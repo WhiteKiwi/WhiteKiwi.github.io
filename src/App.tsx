@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react'
 
 const EggLab = lazy(() => import('./EggLab'))
 const GlassLab = lazy(() => import('./GlassLab'))
+const BirdLab = lazy(() => import('./BirdLab'))
 
 type JourneyStage = 'egg' | 'cracked' | 'hatched' | 'riding' | 'whiteblock'
 
@@ -37,15 +38,15 @@ function Bike() {
   )
 }
 
-type EggVariant = 'soft' | 'kiwi' | 'paper'
-
-function Egg({ variant }: { variant: EggVariant }) {
+function Egg() {
   return (
-    <div className={`egg egg-${variant}`} role="img" aria-label="부화를 기다리는 알">
-      <span className="tossface-egg" aria-hidden="true">🥚</span>
-      <svg className="egg-cracks" viewBox="0 0 260 260" aria-hidden="true">
-        <path className="egg-crack egg-crack-top" d="M62 132l35-10 16 16 18-28 19 26 18-14 30 10" />
-        <path className="egg-crack egg-crack-bottom" d="M62 132c10 29 34 48 68 48 35 0 59-19 68-48" />
+    <div className="egg" role="img" aria-label="부화를 기다리는 흰색 유리 알">
+      <span className="milk-shell" aria-hidden="true" />
+      <span className="milk-shell-glint" aria-hidden="true" />
+      <span className="milk-shell-rim" aria-hidden="true" />
+      <svg className="egg-cracks" viewBox="0 0 260 330" aria-hidden="true">
+        <path className="egg-crack egg-crack-top" d="M35 166 78 153l20 18 23-34 22 32 22-18 48 15" />
+        <path className="egg-crack egg-crack-bottom" d="M35 166c12 41 43 68 88 68 46 0 78-27 90-68" />
       </svg>
     </div>
   )
@@ -53,8 +54,6 @@ function Egg({ variant }: { variant: EggVariant }) {
 
 function JourneyApp() {
   const [stage, setStage] = useState<JourneyStage>('egg')
-  const queryVariant = new URLSearchParams(window.location.search).get('egg')
-  const eggVariant: EggVariant = queryVariant === 'kiwi' || queryVariant === 'paper' ? queryVariant : 'soft'
 
   useEffect(() => {
     const onScroll = () => {
@@ -96,7 +95,7 @@ function JourneyApp() {
           <div className="road" />
           <div className="orbit orbit-one" />
           <div className="orbit orbit-two" />
-          <Egg variant={eggVariant} />
+          <Egg />
           <KiwiBird />
           <div className="ride-wrap"><Bike /></div>
           <span className="spark spark-one">✳</span>
@@ -133,6 +132,7 @@ function App() {
   const view = new URLSearchParams(window.location.search).get('view')
   if (view === 'eggs') return <Suspense fallback={<main className="egg-lab" />}><EggLab /></Suspense>
   if (view === 'glass') return <Suspense fallback={<main className="glass-lab-page" />}><GlassLab /></Suspense>
+  if (view === 'birds') return <Suspense fallback={<main className="bird-lab-page" />}><BirdLab /></Suspense>
   return <JourneyApp />
 }
 

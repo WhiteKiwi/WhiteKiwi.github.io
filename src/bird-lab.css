@@ -1,0 +1,114 @@
+.bird-lab-page { min-height: 100vh; padding: 0 3vw 7vw; overflow: hidden; background: #f3f4ef; color: #1d2722; }
+.bird-lab-header { height: 82px; display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; border-bottom: 1px solid #dce1db; font: 600 .62rem 'DM Mono', monospace; letter-spacing: .09em; }
+.bird-lab-header > span { justify-self: center; color: #8a958e; }
+.bird-lab-header > a:last-child { justify-self: end; color: #64736b; }
+.bird-wordmark { font-size: 1rem; font-weight: 800; letter-spacing: -.08em; }
+.bird-lab-intro { display: grid; grid-template-columns: .55fr 1.3fr .7fr; gap: 4vw; align-items: end; padding: 9vw 2vw 7vw; }
+.bird-lab-intro > p:first-child { align-self: start; margin: 7px 0 0; color: #829087; font: 500 .62rem 'DM Mono', monospace; letter-spacing: .12em; }
+.bird-lab-intro h1 { margin: 0; font: 700 clamp(4rem, 7.4vw, 8rem)/.91 Manrope, sans-serif; letter-spacing: -.09em; }
+.bird-intro-copy { max-width: 330px; margin: 0; color: #6c7871; font-size: .88rem; line-height: 1.8; letter-spacing: -.03em; }
+.bird-study-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 18px; }
+.bird-study-card { position: relative; grid-column: span 6; min-height: 660px; padding: 24px; display: flex; flex-direction: column; overflow: hidden; border-radius: 34px; isolation: isolate; }
+.bird-study-card:nth-child(n+3) { grid-column: span 4; min-height: 570px; }
+.bird-study-card:last-child { grid-column: 5 / span 4; }
+.bird-study-meta { position: relative; z-index: 4; display: flex; justify-content: space-between; font: 600 .58rem 'DM Mono', monospace; letter-spacing: .09em; }
+.bird-study-visual { position: relative; z-index: 2; min-height: 0; flex: 1; display: grid; place-items: center; }
+.bird-study-copy { position: relative; z-index: 4; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: end; }
+.bird-study-copy h2 { margin: 0; font: 700 clamp(2.1rem, 3.5vw, 4.2rem)/.93 Manrope, sans-serif; letter-spacing: -.075em; }
+.bird-study-copy p { max-width: 280px; justify-self: end; margin: 0; font-size: .73rem; line-height: 1.65; letter-spacing: -.025em; }
+.bird-study-svg { width: min(72%, 380px); overflow: visible; transition: transform .7s cubic-bezier(.2,.8,.2,1); }
+.bird-study-card:hover .bird-study-svg { transform: translateY(-9px) rotate(-1deg); }
+
+.bird-card-pebble { background: #d7e2d4; color: #294236; }
+.bird-card-pebble::after { content: ''; position: absolute; left: 50%; top: 46%; z-index: -1; width: 390px; height: 390px; border-radius: 50%; background: #edf3e9; transform: translate(-50%,-50%); }
+.bird-ground { fill: #506454; opacity: .17; }
+.pebble-body { fill: url(#pebble-body); filter: drop-shadow(8px 13px 12px rgba(42,63,51,.18)); }
+.pebble-wing { fill: #849b74; opacity: .82; }
+.pebble-eye { fill: #fff; }.pebble-glint { fill: #263a31; }
+.pebble-beak { fill: url(#pebble-beak); }
+.pebble-leg, .pebble-foot { fill: none; stroke: #c87548; stroke-width: 6; stroke-linecap: round; }
+.soft-pebble-bird { animation: bird-breathe 3.6s ease-in-out infinite; }
+
+.bird-card-white { background: #b8e986; color: #21442e; }
+.bird-card-white::before { content: 'RECOMMENDED'; position: absolute; top: 56px; right: 24px; z-index: 5; padding: 7px 9px; border-radius: 100px; background: #234b32; color: #efffdd; font: 700 .52rem 'DM Mono', monospace; letter-spacing: .08em; }
+.white-bird-ground { fill: #345a3f; opacity: .14; }
+.white-bird-body { fill: url(#white-body); filter: drop-shadow(8px 15px 10px rgba(39,72,47,.16)); }
+.white-bird-wing { fill: #8fc65b; }
+.white-bird-tuft { fill: #f5f7f4; }
+.white-bird-eye { fill: #263a31; }.white-bird-eye-glint { fill: #fff; }
+.white-bird-beak { fill: #ef9764; }
+.white-bird-cheek { fill: #f0aa9a; opacity: .75; }
+.white-bird-leg, .white-bird-foot { fill: none; stroke: #de8456; stroke-width: 6; stroke-linecap: round; }
+.white-kiwi-bird { animation: bird-breathe 3.3s .3s ease-in-out infinite; }
+
+.bird-card-tiny { background: #f4be76; color: #543621; }
+.tiny-ground { fill: #563b28; opacity: .13; }
+.tiny-body { fill: #536d52; filter: drop-shadow(9px 13px 0 rgba(84,54,33,.1)); }
+.tiny-belly { fill: #78946a; }
+.tiny-eye { fill: #fff9df; }.tiny-eye-glint { fill: #283d31; }
+.tiny-beak { fill: #ef7651; }
+.tiny-leg, .tiny-foot { fill: none; stroke: #b85b3f; stroke-width: 7; stroke-linecap: round; }
+.tiny-tuft { fill: #536d52; }
+.bird-card-tiny:hover .tiny-bird { transform: translateY(-12px) rotate(3deg) scale(1.04); }
+
+.bird-card-paper { background: #f2d6c8; color: #563b36; }
+.paper-ground { fill: #734a3d; opacity: .11; }
+.paper-body-back { fill: #c97763; filter: drop-shadow(10px 13px 0 rgba(90,53,45,.12)); }
+.paper-body-front { fill: #fff1df; }
+.paper-wing { fill: #ddb29a; }
+.paper-scarf, .paper-scarf-tail { fill: #e4604d; }
+.paper-eye { fill: #553830; }
+.paper-beak { fill: #e9a05d; }
+.paper-bag { fill: #91a968; }.paper-bag-strap { fill: none; stroke: #647c4e; stroke-width: 6; stroke-linecap: round; }
+.paper-leg { fill: none; stroke: #b4694d; stroke-width: 6; stroke-linecap: round; }
+.paper-bird { filter: drop-shadow(0 12px 12px rgba(90,53,45,.12)); }
+
+.bird-card-line { background: #17241f; color: #e9fff2; }
+.line-bird { width: min(75%, 390px); }
+.line-body, .line-wing, .line-beak, .line-leg, .line-motion { fill: none; stroke: #d9f9e5; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.line-eye { fill: #e2ff74; stroke: none; }
+.line-motion { stroke: #79c49b; opacity: .55; stroke-dasharray: 7 12; animation: line-dash 3s linear infinite; }
+.motion-two { animation-delay: -.8s; }
+.line-star { fill: #e2ff74; animation: line-star 2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+
+.bird-card-wild { background: #d2b99e; color: #422f27; }
+.wild-ground { fill: #4a332b; opacity: .14; }
+.wild-body-shape { fill: url(#wild-body); filter: drop-shadow(8px 14px 9px rgba(59,41,35,.2)); }
+.wild-feather-layer { fill: url(#wild-feathers); }
+.wild-wing { fill: #604537; opacity: .72; }
+.wild-eye { fill: #171412; }.wild-eye-glint { fill: #fff8e8; }
+.wild-beak { fill: #b99772; }
+.wild-leg, .wild-foot { fill: none; stroke: #795f4b; stroke-width: 5; stroke-linecap: round; }
+
+.bird-lab-footer { display: grid; grid-template-columns: .4fr 1fr; gap: 4vw; margin-top: 18px; padding: 7vw 2vw; border-radius: 34px; background: #1d2722; color: #f4f7f2; }
+.bird-lab-footer span { color: #7e9186; font: 600 .62rem 'DM Mono', monospace; letter-spacing: .1em; }
+.bird-lab-footer p { max-width: 900px; margin: 0; font-size: clamp(2rem, 4.4vw, 5.2rem); font-weight: 700; line-height: 1.02; letter-spacing: -.075em; }
+
+@keyframes bird-breathe { 50% { transform: translateY(-8px) rotate(1deg); } }
+@keyframes line-dash { to { stroke-dashoffset: -38; } }
+@keyframes line-star { 50% { opacity: .45; transform: rotate(25deg) scale(.75); } }
+
+@media (max-width: 900px) {
+  .bird-lab-intro { grid-template-columns: 1fr; padding: 14vw 2vw 10vw; }
+  .bird-lab-intro > p:first-child { margin-bottom: 5vw; }
+  .bird-intro-copy { margin-top: 3vw; }
+  .bird-study-card, .bird-study-card:nth-child(n+3), .bird-study-card:last-child { grid-column: span 12; min-height: 620px; }
+}
+
+@media (max-width: 600px) {
+  .bird-lab-page { padding: 0 14px 40px; }
+  .bird-lab-header { grid-template-columns: 1fr 1fr; }
+  .bird-lab-header > span { display: none; }
+  .bird-lab-intro { padding: 80px 10px 56px; }
+  .bird-lab-intro h1 { font-size: 3.45rem; }
+  .bird-study-card, .bird-study-card:nth-child(n+3), .bird-study-card:last-child { min-height: 520px; padding: 20px; border-radius: 27px; }
+  .bird-study-copy { grid-template-columns: 1fr; gap: 12px; }
+  .bird-study-copy p { justify-self: start; }
+  .bird-study-svg { width: 88%; }
+  .bird-lab-footer { grid-template-columns: 1fr; padding: 48px 24px; }
+  .bird-lab-footer p { margin-top: 70px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bird-lab-page *, .bird-lab-page *::before, .bird-lab-page *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
