@@ -77,9 +77,9 @@ function WalkingIntroduction({ trackRef }: { trackRef: RefObject<HTMLElement | n
         </div>
 
         <div className="intro-copy">
-          <p className="intro-line intro-hello">안녕하세요.</p>
+          <p className="intro-line intro-hello">안녕하세요</p>
           <p className="intro-line intro-role"><strong>Node.js</strong>{' '}Developer</p>
-          <p className="intro-line intro-name">장지훈입니다.<span>JIHOON JANG · whitekiwi</span></p>
+          <p className="intro-line intro-name">장지훈입니다</p>
         </div>
 
         <div className="kiwi-walk-path" aria-hidden="true">
@@ -195,7 +195,7 @@ export default function FallIntro() {
 
       track.style.setProperty('--intro-progress', String(progress))
       track.style.setProperty('--identity-progress', String(reveal(.12, .77)))
-      const contactReveal = reveal(.72, .86)
+      const contactReveal = reveal(.6, .74)
       track.style.setProperty('--contact-reveal', String(contactReveal))
       track.style.setProperty('--contact-y', `${(1 - contactReveal) * 28}px`)
       track.style.setProperty('--kiwi-x', `${-18 + progress * 136}vw`)

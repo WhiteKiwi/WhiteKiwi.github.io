@@ -96,7 +96,6 @@
 .intro-role { opacity: var(--role-opacity); font-size: clamp(3.4rem, 6vw, 7rem); white-space: nowrap; filter: blur(var(--role-blur)); transform: translate(-50%,-50%) translate(var(--role-x),var(--role-y)) scale(var(--role-scale)); }
 .intro-role strong { margin-right: .12em; color: #427159; font-weight: 800; }
 .intro-name { opacity: var(--name-opacity); font-size: clamp(3.4rem, 6vw, 7rem); text-align: center; filter: blur(var(--name-blur)); transform: translate(-50%,-50%) translate(var(--name-x),var(--name-y)) scale(var(--name-scale)); }
-.intro-name > span { display: block; margin-top: 17px; color: #61776a; font: 600 clamp(.64rem, .75vw, .82rem) 'DM Mono', monospace; letter-spacing: .13em; }
 .kiwi-walk-path { position: absolute; z-index: 5; bottom: 24%; left: 0; width: clamp(165px, 16vw, 235px); aspect-ratio: 443.5 / 548; transform: translate3d(var(--kiwi-x),0,0); will-change: transform; }
 .kiwi-walk-sprite { position: absolute; inset: 0; overflow: hidden; transform: translateY(var(--kiwi-bob)) rotate(var(--kiwi-tilt)); }
 .kiwi-walk-sprite img { display: block; width: 400%; max-width: none; height: 100%; object-fit: fill; transform: translateX(var(--kiwi-frame)); }
