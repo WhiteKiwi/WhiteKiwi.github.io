@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
+
+const EggLab = lazy(() => import('./EggLab'))
 
 type JourneyStage = 'egg' | 'cracked' | 'hatched' | 'riding' | 'whiteblock'
 
@@ -48,7 +50,7 @@ function Egg({ variant }: { variant: EggVariant }) {
   )
 }
 
-function App() {
+function JourneyApp() {
   const [stage, setStage] = useState<JourneyStage>('egg')
   const queryVariant = new URLSearchParams(window.location.search).get('egg')
   const eggVariant: EggVariant = queryVariant === 'kiwi' || queryVariant === 'paper' ? queryVariant : 'soft'
@@ -124,6 +126,11 @@ function App() {
       </section>
     </main>
   )
+}
+
+function App() {
+  const view = new URLSearchParams(window.location.search).get('view')
+  return view === 'eggs' ? <Suspense fallback={<main className="egg-lab" />}><EggLab /></Suspense> : <JourneyApp />
 }
 
 export default App
