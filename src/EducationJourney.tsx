@@ -123,6 +123,7 @@ export default function EducationJourney({ active }: { active: boolean }) {
       const progress = clamp(-rect.top / distance)
       const frame = Math.floor(progress * 48) % 4
       const step = Math.floor(progress * 48)
+      const kiwiTravel = progress <= .67 ? progress : .67 + (progress - .67) * .3
 
       const schoolOpacity = visibility(progress, .155, .235, .335, .415)
       const archiveOpacity = visibility(progress, .385, .455, .66, .735)
@@ -149,7 +150,7 @@ export default function EducationJourney({ active }: { active: boolean }) {
       track.style.setProperty('--gate-y', `${(1 - gateOpacity) * 50}px`)
       track.style.setProperty('--campus-x', `${progress * -12}vw`)
       track.style.setProperty('--campus-fade', String(1 - reveal(progress, .7, .88) * .72))
-      track.style.setProperty('--education-kiwi-x', `${-17 + progress * 137}vw`)
+      track.style.setProperty('--education-kiwi-x', `${-17 + kiwiTravel * 137}vw`)
       track.style.setProperty('--education-kiwi-frame', `${frame * -25}%`)
       track.style.setProperty('--education-kiwi-bob', `${step % 2 === 0 ? 0 : -5}px`)
       track.style.setProperty('--education-kiwi-tilt', `${step % 2 === 0 ? -.4 : .45}deg`)
