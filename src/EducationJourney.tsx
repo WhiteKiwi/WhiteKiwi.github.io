@@ -215,7 +215,7 @@ export default function EducationJourney({ active }: { active: boolean }) {
         <article className="education-project-archive">
           <div className="education-project-heading">
             <span>SELECTED PROJECTS · 2017—2019</span>
-            <h2>교정에서<br /><strong>코드로 만든 것들</strong></h2>
+            <h2>세 번의 봄,<br /><strong>그 사이 만든 것들</strong></h2>
             <div className="education-school-notes">
               <span>학생회장</span>
               <span>2018 정보올림피아드 · 은상</span>
