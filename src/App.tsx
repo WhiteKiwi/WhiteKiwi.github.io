@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 
 const EggLab = lazy(() => import('./EggLab'))
+const GlassLab = lazy(() => import('./GlassLab'))
 
 type JourneyStage = 'egg' | 'cracked' | 'hatched' | 'riding' | 'whiteblock'
 
@@ -130,7 +131,9 @@ function JourneyApp() {
 
 function App() {
   const view = new URLSearchParams(window.location.search).get('view')
-  return view === 'eggs' ? <Suspense fallback={<main className="egg-lab" />}><EggLab /></Suspense> : <JourneyApp />
+  if (view === 'eggs') return <Suspense fallback={<main className="egg-lab" />}><EggLab /></Suspense>
+  if (view === 'glass') return <Suspense fallback={<main className="glass-lab-page" />}><GlassLab /></Suspense>
+  return <JourneyApp />
 }
 
 export default App

@@ -12,6 +12,7 @@
 .concept-card:nth-child(3), .concept-card:nth-child(4), .concept-card:nth-child(5) { grid-column: span 4; min-height: 570px; }
 .concept-card:last-child { grid-column: span 6; }
 .concept-meta { position: relative; z-index: 3; display: flex; justify-content: space-between; font: 600 .59rem 'DM Mono', monospace; letter-spacing: .08em; }
+.concept-meta a { margin-left: 15px; padding: 6px 8px; border: 1px solid currentColor; border-radius: 100px; }
 .concept-visual { position: relative; z-index: 1; min-height: 0; flex: 1; display: grid; place-items: center; }
 .concept-copy { position: relative; z-index: 3; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: end; }
 .concept-copy h2 { font: 700 clamp(2rem, 3vw, 3.7rem)/.95 Manrope, sans-serif; letter-spacing: -.07em; }
