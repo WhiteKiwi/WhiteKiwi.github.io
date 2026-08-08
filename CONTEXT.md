@@ -24,6 +24,9 @@
 - 2024년 세무회계 3급과 2급을 취득했다.
 - 2025년 3월 Toss Income 계열사로 전적했다.
 - 2017년 충남삼성고등학교에 입학해 IT 과정을 이수했고 학생회장을 했다.
+- 충남삼성고등학교 IT 과정에서 여러 프로젝트를 만들었다. 구체적인 프로젝트명은 아직 확인되지 않았다.
+- 2018년 정보올림피아드 경시대회 은상을 수상했다. 이전 이력서에서 확인했다.
+- 2020년 건국대학교 컴퓨터공학과에 진학했고 현재 휴학 상태다. 이전 이력서에서 확인했다.
 
 ## Current design decisions
 
@@ -45,6 +48,10 @@
 - `Node.js Developer`는 한글 문장보다 작아 보이지 않도록 별도의 시각 보정을 적용한다.
 - scrollbar gutter를 예약해 생긴 오른쪽 흰 띠는 허용하지 않는다. 풀 블리드 배경과 안정적인 중심을 함께 유지해야 한다.
 - `whitekiwi`는 등록상표 표기를 사용하지 않으므로 장식용 `®` 기호를 메인 소개 헤더에서 제거한다.
+- 02 학력 장면은 학교 교정과 벚꽃이 아름다웠던 개인 기억을 중심에 둔다.
+- 충남삼성고등학교 공식 UI 기준색은 CNSA Navy `#005DAA`, CNSA Blue `#007DC3`, CNSA Sky `#13B5EA`다.
+- 공식 CNSA 심볼은 큐브와 삼성의 S자를 형상화한다. 심볼 비례를 변형해 재현하지 않고 장면에는 워드마크와 색 체계만 차용한다.
+- 학력 장면은 `충남삼성고등학교 IT 과정`에서 시작해 `건국대학교 컴퓨터공학과 진학`으로 마무리한다.
 
 ## Motion direction
 
@@ -59,6 +66,7 @@
 - Tossface: <https://toss.im/tossface>
 - Takeit 사업 제안서 PDF: 사용자가 다운로드 폴더에 저장했다고 알려줌. 저장소에는 포함하지 않음.
 - 이전 이력서 `장지훈.pdf`: 사용자가 다운로드 폴더에 있다고 알려줌. 저장소에는 포함하지 않음.
+- 충남삼성고등학교 UI: <https://www.cnsa.hs.kr/sub01/sub05.php>
 - Kiwi reference images:
   - <https://ai-illustrator-file.com/wp-content/uploads/2020/04/101_0012_1.jpg.webp>
   - <https://www.shutterstock.com/image-vector/kiwi-bird-standing-profile-long-260nw-2744800461.jpg>

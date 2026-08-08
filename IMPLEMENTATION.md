@@ -20,8 +20,10 @@ pnpm build
 
 ## Source layout
 
-- `src/FallIntro.tsx` — 현재 메인 프롤로그와 01 소개 페이지의 상태·스크롤 계산
-- `src/fall-intro.css` — 유리 낙하 장면, 2D 배경, 캐릭터 보행, 키네틱 타이포, Contact Dock
+- `src/FallIntro.tsx` — 메인 프롤로그와 01 소개 페이지의 상태·스크롤 계산
+- `src/fall-intro.css` — 유리 낙하 장면, 01 배경, 캐릭터 보행, 키네틱 타이포, Contact Dock
+- `src/EducationJourney.tsx` — 02 학력 페이지의 교정 구성과 스크롤 진행률 계산
+- `src/education-journey.css` — CNSA 컬러, 학교 건물, 벚꽃, 학력 타이포와 반응형 표현
 - `public/assets/characters/kiwi-walk-cycle.png` — 3-C를 기준으로 만든 4프레임 보행 스프라이트
 - `src/EggLab.tsx`, `src/GlassLab.tsx`, `src/BirdLab.tsx` — 시안 비교를 위해 남긴 실험 페이지
 - `src/App.tsx` — 메인과 `?view=eggs|glass|birds|journey` 실험 뷰 진입점
@@ -51,6 +53,16 @@ pnpm build
 - 데스크톱 최종 위치는 각 문장의 실제 렌더 폭을 기준으로 동일한 간격을 계산한다.
 - 모바일에서는 세 문장의 최종 X축을 맞추고 Y축으로 쌓아 긴 영문 직함이 화면 밖으로 나가지 않게 한다.
 
+### Education scroll track
+
+- 01 바로 아래에 별도의 긴 트랙과 sticky 무대를 배치해 실제 문서 스크롤 흐름을 유지한다.
+- CNSA 공식 UI의 `CNSA Navy #005DAA`, `CNSA Blue #007DC3`, `CNSA Sky #13B5EA`를 학교 장면의 기준색으로 사용한다.
+- 교정은 코드로 만든 2D 건물, 운동장 경계, 캠퍼스 길과 벚나무 실루엣으로 구성해 외부 이미지 로딩에 의존하지 않는다.
+- 학교 입학·IT 과정·프로젝트·대학 진학 문구는 진행률 구간별로 등장, 정착, 퇴장한다.
+- 벚꽃잎은 각 꽃잎의 고정 seed와 현재 진행률로 X/Y/회전값을 계산해 역방향 스크롤에서도 같은 상태로 돌아간다.
+- 4프레임 키위 보행 스프라이트를 재사용하되 학교 배경과의 대비를 위해 크기와 그림자를 장면별로 조정한다.
+- 모바일에서는 학교 건물을 단순화하고 큰 문구를 세로로 재배치하며, 꽃잎 수와 레이어 크기를 줄이지 않고 화면 밖 overflow만 잘라 밀도를 유지한다.
+
 ## Visual system
 
 ### Prologue
@@ -65,6 +77,7 @@ pnpm build
 - 3-C의 키 큰 측면형 키위를 일관된 기본 외형으로 사용한다.
 - 캐릭터 외형을 경력마다 다시 만들기보다 보행 리그를 재사용하고 소품·행동·색상·배경을 교체한다.
 - Manrope와 DM Mono를 조합해 큰 키네틱 문장과 작은 에디토리얼 메타 정보를 구분한다.
+- 장면마다 팔레트와 배경 문법은 바꾸되 동일한 보행 방향, 챕터 번호, 진행선으로 하나의 여정임을 유지한다.
 
 ## Chapter extension strategy
 
