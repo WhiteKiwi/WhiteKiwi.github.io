@@ -55,6 +55,13 @@ function GlassGround() {
 }
 
 function WalkingIntroduction({ trackRef }: { trackRef: RefObject<HTMLElement | null> }) {
+  const contactLinks = [
+    { label: 'Instagram', href: 'https://www.instagram.com/whitekiwi_' },
+    { label: 'GitHub', href: 'https://github.com/whitekiwi' },
+    { label: 'Blog', href: 'https://blog.whitekiwi.link' },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/whitekiwi/' },
+  ]
+
   return (
     <section className="walking-intro-track" ref={trackRef} aria-label="장지훈 개발자 소개">
       <div className="walking-intro">
@@ -81,6 +88,20 @@ function WalkingIntroduction({ trackRef }: { trackRef: RefObject<HTMLElement | n
             <img src="/assets/characters/kiwi-walk-cycle.png" alt="" />
           </div>
         </div>
+
+        <nav className="intro-contact" aria-label="연락처와 외부 링크">
+          <div className="intro-contact-primary">
+            <span>CONTACT</span>
+            <a href="mailto:jh145478@gmail.com">jh145478@gmail.com</a>
+          </div>
+          <div className="intro-contact-links">
+            {contactLinks.map((link) => (
+              <a href={link.href} target="_blank" rel="noreferrer" key={link.label}>
+                {link.label}<span aria-hidden="true">↗</span>
+              </a>
+            ))}
+          </div>
+        </nav>
       </div>
     </section>
   )
@@ -174,6 +195,9 @@ export default function FallIntro() {
 
       track.style.setProperty('--intro-progress', String(progress))
       track.style.setProperty('--identity-progress', String(reveal(.12, .77)))
+      const contactReveal = reveal(.72, .86)
+      track.style.setProperty('--contact-reveal', String(contactReveal))
+      track.style.setProperty('--contact-y', `${(1 - contactReveal) * 28}px`)
       track.style.setProperty('--kiwi-x', `${-18 + progress * 136}vw`)
       track.style.setProperty('--kiwi-frame', `${frame * -25}%`)
       track.style.setProperty('--kiwi-bob', `${step % 2 === 0 ? 0 : -5}px`)
