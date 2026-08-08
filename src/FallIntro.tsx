@@ -14,6 +14,9 @@ function FallingEgg({ onLanded }: { onLanded: () => void }) {
       <div className="falling-egg-rig">
         <div className="egg-wake" aria-hidden="true"><i /><i /><i /></div>
         <div className="falling-egg">
+          <div className="hatching-bird" aria-hidden="true">
+            <img src="/assets/characters/kiwi-baby-brown.png" alt="" />
+          </div>
           <span className="falling-shell" />
           <span className="falling-shell-glint" />
           <span className="falling-shell-rim" />
@@ -22,6 +25,9 @@ function FallingEgg({ onLanded }: { onLanded: () => void }) {
             <path className="shell-crack shell-crack-left" d="m120 222-23-8-14-20M134 181l-24-10-7-20" />
             <path className="shell-crack shell-crack-right" d="m136 204 24-11 12-23M146 160l21-14" />
           </svg>
+          <span className="hatch-shell-cup" />
+          <span className="hatch-shell-lid" />
+          <span className="hatch-chip" />
         </div>
         <span className="air-ring air-ring-one" />
         <span className="air-ring air-ring-two" />
@@ -60,7 +66,7 @@ const clouds = [
 ]
 
 export default function FallIntro() {
-  const [phase, setPhase] = useState<'idle' | 'descending' | 'landed'>('idle')
+  const [phase, setPhase] = useState<'idle' | 'descending' | 'landed' | 'hatched'>('idle')
 
   useEffect(() => {
     if (phase !== 'idle') return
@@ -93,8 +99,16 @@ export default function FallIntro() {
     }
   }, [phase])
 
+  useEffect(() => {
+    if (phase !== 'landed') return
+    const hatchTimer = window.setTimeout(() => setPhase('hatched'), 2650)
+    return () => window.clearTimeout(hatchTimer)
+  }, [phase])
+
+  const hasLanded = phase === 'landed' || phase === 'hatched'
+
   return (
-    <main className={`fall-intro-scroll ${phase !== 'idle' ? 'has-descended' : ''} ${phase === 'landed' ? 'is-landed' : ''}`}>
+    <main className={`fall-intro-scroll ${phase !== 'idle' ? 'has-descended' : ''} ${hasLanded ? 'is-landed' : ''} ${phase === 'hatched' ? 'is-hatched' : ''}`}>
       <section className="fall-intro">
         <div className="sky-depth sky-depth-back" aria-hidden="true" />
         <div className="sky-depth sky-depth-front" aria-hidden="true" />
