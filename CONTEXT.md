@@ -39,6 +39,7 @@
 - 문구의 마침표와 이름 아래 영문 보조 문구는 시각적 복잡도를 줄이기 위해 제거했다.
 - Contact Dock은 우상단 대신 하단 크림색 여백에 배치한다.
 - Contact Dock은 이름이 완전히 정착하기 전부터 조금 일찍 등장한다.
+- Contact Dock의 외부 링크 순서는 `GitHub → Blog → LinkedIn → Instagram`이다.
 - 데스크톱 최종 소개 문장은 세 문장 사이의 실제 빈 간격을 동일하게 맞춘다.
 - 모바일 최종 소개 문장은 가로 연결 대신 왼쪽 정렬 세로 스택을 사용한다.
 - `Node.js Developer`는 한글 문장보다 작아 보이지 않도록 별도의 시각 보정을 적용한다.
@@ -85,6 +86,7 @@
 - 배포 산출물 브랜치: `master` / `origin/master`
 - 기존 Gatsby CI는 `develop` push 시 Gatsby `public/`을 `master`로 게시했다.
 - 현재 앱은 Vite이므로 산출물 디렉터리는 `dist/`이다.
+- 현재 CI는 `develop` push 또는 수동 실행 시 빌드하고, develop ref일 때만 `dist/`를 orphan `master`에 게시하도록 현대화했다.
 - 커스텀 도메인 `CNAME`은 과거 master에 추가되었다가 삭제된 상태다.
 
 ## Open questions

@@ -1,25 +1,46 @@
-name: auto-publish
+name: build-and-publish
+
 on:
   push:
     branches:
-      -  develop
+      - develop
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-master
+  cancel-in-progress: true
+
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
+      - name: Checkout source
+        uses: actions/checkout@v6
+
+      - name: Install toolchain from mise
+        uses: jdx/mise-action@v4.2.4
         with:
-          node-version: 14
-      - name: npm install
-        run: npm install
-      - name: build
-        run: npm run build
-      - name: GitHub Pages
-        if: success()
+          cache: true
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build portfolio
+        run: pnpm build
+
+      - name: Publish dist to master
+        if: github.ref == 'refs/heads/develop'
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          target_branch: master
-          build_dir: public
-        uses: crazy-max/ghaction-github-pages@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: master
+          publish_dir: ./dist
+          force_orphan: true
+          user_name: github-actions[bot]
+          user_email: 41898282+github-actions[bot]@users.noreply.github.com
+          full_commit_message: "deploy: publish ${{ github.sha }}"
