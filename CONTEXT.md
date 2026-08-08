@@ -31,6 +31,7 @@
 ## Current design decisions
 
 - 첫 화면에는 텍스트 없이 큰 알과 낙하감만 보여준다.
+- 2026-08-09 정정: 알보다 먼저 글라스틱한 `Hello, world` 필기 장면을 추가한다. `world`의 `o`가 Milk Glass 알로 변해 기존 낙하 장면으로 이어지는 구성을 선호한다.
 - 알 시안 중 Glass Life를 선호했지만 투명한 알은 부화 서사와 충돌해 Milk Glass로 변경했다.
 - 알이 깨질 때 키위색 빛은 사용하지 않고 평범한 균열을 사용한다.
 - 유리 하늘에서 유리 지면으로 착지하고, 구름·낙하선은 착지 중 사라진다.
@@ -49,6 +50,7 @@
 - scrollbar gutter를 예약해 생긴 오른쪽 흰 띠는 허용하지 않는다. 풀 블리드 배경과 안정적인 중심을 함께 유지해야 한다.
 - `whitekiwi`는 등록상표 표기를 사용하지 않으므로 장식용 `®` 기호를 메인 소개 헤더에서 제거한다.
 - 02 학력 장면은 학교 교정과 벚꽃이 아름다웠던 개인 기억을 중심에 둔다.
+- 02의 벚꽃잎은 스크롤 위치와 무관하게 계속 생성되고 흩날리는 ambient motion으로 사용한다.
 - 충남삼성고등학교 공식 UI 기준색은 CNSA Navy `#005DAA`, CNSA Blue `#007DC3`, CNSA Sky `#13B5EA`다.
 - 공식 CNSA 심볼은 큐브와 삼성의 S자를 형상화한다. 심볼 비례를 변형해 재현하지 않고 장면에는 워드마크와 색 체계만 차용한다.
 - 학력 장면은 `충남삼성고등학교 IT 과정`에서 시작해 `건국대학교 컴퓨터공학과 진학`으로 마무리한다.
@@ -67,6 +69,8 @@
 - Takeit 사업 제안서 PDF: 사용자가 다운로드 폴더에 저장했다고 알려줌. 저장소에는 포함하지 않음.
 - 이전 이력서 `장지훈.pdf`: 사용자가 다운로드 폴더에 있다고 알려줌. 저장소에는 포함하지 않음.
 - 충남삼성고등학교 UI: <https://www.cnsa.hs.kr/sub01/sub05.php>
+- Renaud Rohlinger Portfolio: <https://renaudrohlinger.com/> — 연속된 세계와 스크롤 타임라인 기반 장면 전환 참고
+- Supah Portfolio: <https://www.supah.it/portfolio/> — 첫 화면의 `Hello` 드로잉 모션 참고
 - Kiwi reference images:
   - <https://ai-illustrator-file.com/wp-content/uploads/2020/04/101_0012_1.jpg.webp>
   - <https://www.shutterstock.com/image-vector/kiwi-bird-standing-profile-long-260nw-2744800461.jpg>
