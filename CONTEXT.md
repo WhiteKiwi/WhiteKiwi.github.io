@@ -111,7 +111,7 @@
 - 기존 Gatsby CI는 `develop` push 시 Gatsby `public/`을 `master`로 게시했다.
 - 현재 앱은 Vite이므로 산출물 디렉터리는 `dist/`이다.
 - 현재 CI는 `develop` push 또는 수동 실행 시 빌드하고, develop ref일 때만 `dist/`를 orphan `master`에 게시하도록 현대화했다.
-- 커스텀 도메인 `CNAME`은 과거 master에 추가되었다가 삭제된 상태다.
+- 2026-08-09부터 포트폴리오 custom domain은 `portfolio.whitekiwi.link`를 사용하며 Route 53 CNAME으로 `whitekiwi.github.io`에 연결한다.
 
 ## Open questions
 

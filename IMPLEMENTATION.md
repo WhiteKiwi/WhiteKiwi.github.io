@@ -134,6 +134,7 @@ pnpm build
 - `master`는 생성물 전용이므로 직접 수정하지 않는다.
 - `.github/workflows/auto-publish.yml`에서 `actions/checkout@v6`과 `jdx/mise-action@v4.2.4`로 `mise.toml`의 도구 버전을 설치한다.
 - `peaceiris/actions-gh-pages@v4`가 `dist/`를 orphan `master`로 게시하고 `.nojekyll`을 생성한다.
+- 배포 action이 `portfolio.whitekiwi.link`를 CNAME으로 함께 게시해 배포마다 custom domain 설정을 유지한다.
 - workflow는 `contents: write`만 요청하고, 동시 배포가 발생하면 이전 실행을 취소한다.
 
 ## Verification
