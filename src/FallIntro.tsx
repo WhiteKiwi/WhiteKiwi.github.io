@@ -54,13 +54,43 @@ function GlassGround() {
   )
 }
 
+function WalkingIntroduction({ isActive }: { isActive: boolean }) {
+  return (
+    <section className="walking-intro" aria-label="장지훈 개발자 소개" aria-hidden={!isActive}>
+      <div className="intro-paper-sky" aria-hidden="true">
+        <span className="intro-sun" />
+        <span className="intro-cloud intro-cloud-one" />
+        <span className="intro-cloud intro-cloud-two" />
+      </div>
+      <div className="intro-landscape" aria-hidden="true">
+        <span className="intro-hill intro-hill-back" />
+        <span className="intro-hill intro-hill-front" />
+        <span className="intro-ground-line" />
+      </div>
+
+      <div className="intro-copy">
+        <p className="intro-line intro-hello">안녕하세요.</p>
+        <p className="intro-line intro-role"><strong>Node.js</strong>{' '}Developer</p>
+        <p className="intro-line intro-name">장지훈입니다.</p>
+      </div>
+
+      <div className="kiwi-walk-path" aria-hidden="true">
+        <div className="kiwi-walk-shadow" />
+        <div className="kiwi-walk-sprite">
+          <img src="/assets/characters/kiwi-walk-cycle.png" alt="" />
+        </div>
+      </div>
+    </section>
+  )
+}
+
 const clouds = [
   ['cloud-a', 'cloud-near'], ['cloud-b', 'cloud-far'], ['cloud-c', 'cloud-mid'],
   ['cloud-d', 'cloud-near'], ['cloud-e', 'cloud-far'], ['cloud-f', 'cloud-mid'],
 ]
 
 export default function FallIntro() {
-  const [phase, setPhase] = useState<'idle' | 'descending' | 'landed'>('idle')
+  const [phase, setPhase] = useState<'idle' | 'descending' | 'landed' | 'introducing'>('idle')
 
   useEffect(() => {
     if (phase !== 'idle') return
@@ -93,8 +123,44 @@ export default function FallIntro() {
     }
   }, [phase])
 
+  useEffect(() => {
+    if (phase !== 'landed') return
+
+    let touchY = 0
+    let isReady = false
+    const readyTimer = window.setTimeout(() => { isReady = true }, 2350)
+    const beginIntroduction = () => {
+      if (isReady) setPhase('introducing')
+    }
+    const onWheel = (event: WheelEvent) => {
+      if (event.deltaY > 4) beginIntroduction()
+    }
+    const onTouchStart = (event: TouchEvent) => {
+      touchY = event.touches[0]?.clientY ?? 0
+    }
+    const onTouchMove = (event: TouchEvent) => {
+      const currentY = event.touches[0]?.clientY ?? touchY
+      if (touchY - currentY > 8) beginIntroduction()
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (['ArrowDown', 'PageDown', ' ', 'Enter'].includes(event.key)) beginIntroduction()
+    }
+
+    window.addEventListener('wheel', onWheel, { passive: true })
+    window.addEventListener('touchstart', onTouchStart, { passive: true })
+    window.addEventListener('touchmove', onTouchMove, { passive: true })
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      window.clearTimeout(readyTimer)
+      window.removeEventListener('wheel', onWheel)
+      window.removeEventListener('touchstart', onTouchStart)
+      window.removeEventListener('touchmove', onTouchMove)
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [phase])
+
   return (
-    <main className={`fall-intro-scroll ${phase !== 'idle' ? 'has-descended' : ''} ${phase === 'landed' ? 'is-landed' : ''}`}>
+    <main className={`fall-intro-scroll ${phase !== 'idle' ? 'has-descended' : ''} ${phase === 'landed' ? 'is-landed' : ''} ${phase === 'introducing' ? 'has-introduction' : ''}`}>
       <section className="fall-intro">
         <div className="sky-depth sky-depth-back" aria-hidden="true" />
         <div className="sky-depth sky-depth-front" aria-hidden="true" />
@@ -127,6 +193,7 @@ export default function FallIntro() {
         <FallingEgg onLanded={() => setPhase('landed')} />
         <div className="fall-vignette" aria-hidden="true" />
       </section>
+      <WalkingIntroduction isActive={phase === 'introducing'} />
     </main>
   )
 }
