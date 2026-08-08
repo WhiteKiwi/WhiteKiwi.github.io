@@ -111,6 +111,7 @@ export default function EducationJourney({ active }: { active: boolean }) {
 
     const clamp = (value: number) => Math.min(Math.max(value, 0), 1)
     const reveal = (progress: number, start: number, end: number) => clamp((progress - start) / (end - start))
+    const smoothstep = (value: number) => value * value * (3 - 2 * value)
     const visibility = (progress: number, enterStart: number, enterEnd: number, exitStart: number, exitEnd: number) => (
       Math.min(reveal(progress, enterStart, enterEnd), 1 - reveal(progress, exitStart, exitEnd))
     )
@@ -123,11 +124,11 @@ export default function EducationJourney({ active }: { active: boolean }) {
       const frame = Math.floor(progress * 48) % 4
       const step = Math.floor(progress * 48)
 
-      const schoolOpacity = visibility(progress, .025, .105, .265, .345)
-      const archiveOpacity = visibility(progress, .29, .36, .66, .735)
+      const schoolOpacity = visibility(progress, .155, .235, .335, .415)
+      const archiveOpacity = visibility(progress, .385, .455, .66, .735)
       const universityOpacity = reveal(progress, .71, .81)
       const gateOpacity = reveal(progress, .74, .88)
-      const transitionProgress = reveal(progress, .012, .115)
+      const transitionProgress = smoothstep(reveal(progress, .008, .205))
 
       track.style.setProperty('--education-progress', String(progress))
       track.style.setProperty('--education-transition-y', `${transitionProgress * -112}%`)
@@ -138,7 +139,7 @@ export default function EducationJourney({ active }: { active: boolean }) {
       track.style.setProperty('--education-gust-turn', `${transitionProgress * 390}deg`)
       track.style.setProperty('--education-campus-scale', String(1.075 - transitionProgress * .075))
       track.style.setProperty('--school-copy-opacity', String(schoolOpacity))
-      track.style.setProperty('--school-copy-y', `${(1 - schoolOpacity) * 34 - reveal(progress, .265, .345) * 24}px`)
+      track.style.setProperty('--school-copy-y', `${(1 - schoolOpacity) * 34 - reveal(progress, .335, .415) * 24}px`)
       track.style.setProperty('--archive-opacity', String(archiveOpacity))
       track.style.setProperty('--archive-y', `${(1 - archiveOpacity) * 30 - reveal(progress, .66, .735) * 20}px`)
       track.style.setProperty('--university-opacity', String(universityOpacity))
@@ -155,7 +156,7 @@ export default function EducationJourney({ active }: { active: boolean }) {
       track.style.setProperty('--branch-right-x', `${progress * 4}vw`)
 
       projectCards.forEach((card, index) => {
-        const start = .325 + index * .045
+        const start = .425 + index * .042
         const shown = reveal(progress, start, start + .06)
         const gone = reveal(progress, .655 + index * .008, .72 + index * .008)
         const cardOpacity = Math.min(shown, 1 - gone)
@@ -213,8 +214,8 @@ export default function EducationJourney({ active }: { active: boolean }) {
 
         <article className="education-project-archive">
           <div className="education-project-heading">
-            <span>PROJECT ARCHIVE · 2017—2019</span>
-            <h2>학교에서 만든<br /><strong>다섯 개의 시작</strong></h2>
+            <span>SELECTED PROJECTS · 2017—2019</span>
+            <h2>교정에서<br /><strong>코드로 만든 것들</strong></h2>
             <div className="education-school-notes">
               <span>학생회장</span>
               <span>2018 정보올림피아드 · 은상</span>

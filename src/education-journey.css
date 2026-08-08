@@ -529,7 +529,7 @@
   letter-spacing: -.055em;
 }
 
-.education-school-copy p > span { color: #49677a; }
+.education-school-copy p > span { margin-right: .18em; color: #49677a; }
 
 .education-school-copy p strong,
 .education-university-copy p strong {
