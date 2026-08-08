@@ -3,96 +3,93 @@
 .bird-lab-header > span { justify-self: center; color: #8a958e; }
 .bird-lab-header > a:last-child { justify-self: end; color: #64736b; }
 .bird-wordmark { font-size: 1rem; font-weight: 800; letter-spacing: -.08em; }
-.bird-lab-intro { display: grid; grid-template-columns: .55fr 1.3fr .7fr; gap: 4vw; align-items: end; padding: 9vw 2vw 7vw; }
+.bird-lab-intro { display: grid; grid-template-columns: .5fr 1.45fr .7fr; gap: 4vw; align-items: end; padding: 9vw 2vw 7vw; }
 .bird-lab-intro > p:first-child { align-self: start; margin: 7px 0 0; color: #829087; font: 500 .62rem 'DM Mono', monospace; letter-spacing: .12em; }
-.bird-lab-intro h1 { margin: 0; font: 700 clamp(4rem, 7.4vw, 8rem)/.91 Manrope, sans-serif; letter-spacing: -.09em; }
+.bird-lab-intro h1 { margin: 0; font: 700 clamp(3.7rem, 6.9vw, 7.7rem)/.91 Manrope, sans-serif; letter-spacing: -.09em; }
 .bird-intro-copy { max-width: 330px; margin: 0; color: #6c7871; font-size: .88rem; line-height: 1.8; letter-spacing: -.03em; }
 .bird-study-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 18px; }
 .bird-study-card { position: relative; grid-column: span 6; min-height: 660px; padding: 24px; display: flex; flex-direction: column; overflow: hidden; border-radius: 34px; isolation: isolate; }
 .bird-study-card:nth-child(n+3) { grid-column: span 4; min-height: 570px; }
-.bird-study-card:last-child { grid-column: 5 / span 4; }
 .bird-study-meta { position: relative; z-index: 4; display: flex; justify-content: space-between; font: 600 .58rem 'DM Mono', monospace; letter-spacing: .09em; }
 .bird-study-visual { position: relative; z-index: 2; min-height: 0; flex: 1; display: grid; place-items: center; }
 .bird-study-copy { position: relative; z-index: 4; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: end; }
-.bird-study-copy h2 { margin: 0; font: 700 clamp(2.1rem, 3.5vw, 4.2rem)/.93 Manrope, sans-serif; letter-spacing: -.075em; }
+.bird-study-copy h2 { margin: 0; font: 700 clamp(2.1rem, 3.4vw, 4rem)/.93 Manrope, sans-serif; letter-spacing: -.075em; }
 .bird-study-copy p { max-width: 280px; justify-self: end; margin: 0; font-size: .73rem; line-height: 1.65; letter-spacing: -.025em; }
-.bird-study-svg { width: min(72%, 380px); overflow: visible; transition: transform .7s cubic-bezier(.2,.8,.2,1); }
-.bird-study-card:hover .bird-study-svg { transform: translateY(-9px) rotate(-1deg); }
+.bird-study-svg { width: min(78%, 420px); overflow: visible; transition: transform .7s cubic-bezier(.2,.8,.2,1); }
+.bird-study-card:hover .bird-study-svg { transform: translateY(-8px); }
 
-.bird-card-pebble { background: #d7e2d4; color: #294236; }
-.bird-card-pebble::after { content: ''; position: absolute; left: 50%; top: 46%; z-index: -1; width: 390px; height: 390px; border-radius: 50%; background: #edf3e9; transform: translate(-50%,-50%); }
-.bird-ground { fill: #506454; opacity: .17; }
-.pebble-body { fill: url(#pebble-body); filter: drop-shadow(8px 13px 12px rgba(42,63,51,.18)); }
-.pebble-wing { fill: #849b74; opacity: .82; }
-.pebble-eye { fill: #fff; }.pebble-glint { fill: #263a31; }
-.pebble-beak { fill: url(#pebble-beak); }
-.pebble-leg, .pebble-foot { fill: none; stroke: #c87548; stroke-width: 6; stroke-linecap: round; }
-.soft-pebble-bird { animation: bird-breathe 3.6s ease-in-out infinite; }
+.bird-card-sketch { background: #eee8db; color: #433629; }
+.sketch-wash { fill: #cfe1e5; opacity: .85; }
+.sketch-body { fill: #a48a6e; stroke: #403224; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.sketch-beak, .sketch-feathers, .sketch-feet, .sketch-question { fill: none; stroke: #403224; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.sketch-eye { fill: #403224; }
+.sketch-fruit { fill: #a7cf50; stroke: #403224; stroke-width: 6; }.sketch-fruit-core { fill: #f1f0b6; stroke: #403224; stroke-width: 4; }
+.field-sketch { transform: rotate(-2deg); }
+.bird-card-sketch:hover .field-sketch { transform: translateY(-8px) rotate(1deg); }
 
-.bird-card-white { background: #b8e986; color: #21442e; }
-.bird-card-white::before { content: 'RECOMMENDED'; position: absolute; top: 56px; right: 24px; z-index: 5; padding: 7px 9px; border-radius: 100px; background: #234b32; color: #efffdd; font: 700 .52rem 'DM Mono', monospace; letter-spacing: .08em; }
-.white-bird-ground { fill: #345a3f; opacity: .14; }
-.white-bird-body { fill: url(#white-body); filter: drop-shadow(8px 15px 10px rgba(39,72,47,.16)); }
-.white-bird-wing { fill: #8fc65b; }
-.white-bird-tuft { fill: #f5f7f4; }
-.white-bird-eye { fill: #263a31; }.white-bird-eye-glint { fill: #fff; }
-.white-bird-beak { fill: #ef9764; }
-.white-bird-cheek { fill: #f0aa9a; opacity: .75; }
-.white-bird-leg, .white-bird-foot { fill: none; stroke: #de8456; stroke-width: 6; stroke-linecap: round; }
-.white-kiwi-bird { animation: bird-breathe 3.3s .3s ease-in-out infinite; }
+.bird-card-long { background: #f2b8a4; color: #4b2d27; }
+.bird-card-long::before { content: 'RECOMMENDED'; position: absolute; top: 56px; right: 24px; z-index: 5; padding: 7px 9px; border-radius: 100px; background: #4b2d27; color: #ffeadd; font: 700 .52rem 'DM Mono', monospace; letter-spacing: .08em; }
+.long-shadow { fill: #6e4338; opacity: .13; }
+.long-body { fill: #a96853; stroke: #422c28; stroke-width: 6; stroke-linejoin: round; filter: drop-shadow(8px 12px 0 rgba(75,45,39,.1)); }
+.long-belly { fill: #c9876f; opacity: .65; }
+.long-eye { fill: #fff7e9; stroke: #422c28; stroke-width: 5; }.long-eye-back { fill: #f7e9db; }.long-pupil { fill: #2d2624; }
+.long-beak-top { fill: #eaa07a; stroke: #422c28; stroke-width: 5; stroke-linejoin: round; }.long-beak-bottom { fill: #c9705c; stroke: #422c28; stroke-width: 4; }
+.long-feet { fill: none; stroke: #744a3f; stroke-width: 6; stroke-linecap: round; }
+.long-bean { animation: long-sniff 3s ease-in-out infinite; }
 
-.bird-card-tiny { background: #f4be76; color: #543621; }
-.tiny-ground { fill: #563b28; opacity: .13; }
-.tiny-body { fill: #536d52; filter: drop-shadow(9px 13px 0 rgba(84,54,33,.1)); }
-.tiny-belly { fill: #78946a; }
-.tiny-eye { fill: #fff9df; }.tiny-eye-glint { fill: #283d31; }
-.tiny-beak { fill: #ef7651; }
-.tiny-leg, .tiny-foot { fill: none; stroke: #b85b3f; stroke-width: 7; stroke-linecap: round; }
-.tiny-tuft { fill: #536d52; }
-.bird-card-tiny:hover .tiny-bird { transform: translateY(-12px) rotate(3deg) scale(1.04); }
+.bird-card-bean { background: #b9daed; color: #243e4e; }
+.bean path:first-child { fill: #9f795f; stroke: #2d2927; stroke-width: 8; }.bean circle { fill: #2d2927; }
+.bean .bean-beak, .bean .bean-leg { fill: none; stroke: #2d2927; stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; }
+.bean-two { transform-origin: 275px 180px; animation: bean-look 3.6s ease-in-out infinite; }
 
-.bird-card-paper { background: #f2d6c8; color: #563b36; }
-.paper-ground { fill: #734a3d; opacity: .11; }
-.paper-body-back { fill: #c97763; filter: drop-shadow(10px 13px 0 rgba(90,53,45,.12)); }
-.paper-body-front { fill: #fff1df; }
-.paper-wing { fill: #ddb29a; }
-.paper-scarf, .paper-scarf-tail { fill: #e4604d; }
-.paper-eye { fill: #553830; }
-.paper-beak { fill: #e9a05d; }
-.paper-bag { fill: #91a968; }.paper-bag-strap { fill: none; stroke: #647c4e; stroke-width: 6; stroke-linecap: round; }
-.paper-leg { fill: none; stroke: #b4694d; stroke-width: 6; stroke-linecap: round; }
-.paper-bird { filter: drop-shadow(0 12px 12px rgba(90,53,45,.12)); }
+.bird-card-sprout { background: #b8e986; color: #24442e; }
+.sprout-shadow { fill: #2f593d; opacity: .14; }
+.sprout-body { fill: url(#sprout-white); filter: drop-shadow(9px 14px 10px rgba(47,89,61,.15)); }
+.sprout-leaf, .sprout-wing { fill: #79b84c; }.sprout-wing { opacity: .9; }
+.sprout-eye { fill: #23362c; }.sprout-beak { fill: #ec9161; }
+.sprout-leg { fill: none; stroke: #d77750; stroke-width: 6; stroke-linecap: round; }
+.white-sprout { animation: sprout-grow 3.8s ease-in-out infinite; }
 
-.bird-card-line { background: #17241f; color: #e9fff2; }
-.line-bird { width: min(75%, 390px); }
-.line-body, .line-wing, .line-beak, .line-leg, .line-motion { fill: none; stroke: #d9f9e5; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
-.line-eye { fill: #e2ff74; stroke: none; }
-.line-motion { stroke: #79c49b; opacity: .55; stroke-dasharray: 7 12; animation: line-dash 3s linear infinite; }
-.motion-two { animation-delay: -.8s; }
-.line-star { fill: #e2ff74; animation: line-star 2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.bird-card-runner { background: #1d322a; color: #ebfff4; }
+.runner-speed { fill: none; stroke: #75c99c; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 9 14; animation: speed-line 2.4s linear infinite; }.speed-two { animation-delay: -.7s; }
+.runner-body, .runner-neck { fill: #f2f0e6; }.runner-eye { fill: #1d322a; }.runner-beak { fill: #ee8659; }
+.runner-scarf, .runner-scarf-tail { fill: #b7f45f; }.runner-pack { fill: #d2a05b; }
+.runner-leg { fill: none; stroke: #ed8a60; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.road-runner { width: min(88%, 470px); animation: runner-bob .7s ease-in-out infinite; }
 
-.bird-card-wild { background: #d2b99e; color: #422f27; }
-.wild-ground { fill: #4a332b; opacity: .14; }
-.wild-body-shape { fill: url(#wild-body); filter: drop-shadow(8px 14px 9px rgba(59,41,35,.2)); }
-.wild-feather-layer { fill: url(#wild-feathers); }
-.wild-wing { fill: #604537; opacity: .72; }
-.wild-eye { fill: #171412; }.wild-eye-glint { fill: #fff8e8; }
-.wild-beak { fill: #b99772; }
-.wild-leg, .wild-foot { fill: none; stroke: #795f4b; stroke-width: 5; stroke-linecap: round; }
+.bird-card-fruit { background: #e7b958; color: #41311d; }
+.fruit-shadow { fill: #503c22; opacity: .13; }.fruit-rind { fill: #8a5a37; stroke: #573a29; stroke-width: 6; }.fruit-flesh { fill: url(#fruit-flesh); }.fruit-core { fill: #fff1b0; }.fruit-seeds circle { fill: #28251e; }
+.fruit-head { fill: #fff8e9; }.fruit-eye { fill: #2b352b; }.fruit-beak { fill: #ee8458; }.fruit-leg { fill: none; stroke: #c86945; stroke-width: 6; stroke-linecap: round; }
+.fruit-suit { animation: fruit-roll 4.2s ease-in-out infinite; }
+
+.bird-card-puppet { background: #e4c7dc; color: #4d3449; }
+.puppet-shadow { fill: #50374c; opacity: .12; }.puppet-tail { fill: #8466b1; }.puppet-body { fill: #fff0dc; }.puppet-head { fill: #e99c80; }.puppet-wing { fill: #9dc962; }.puppet-eye { fill: #46353f; }.puppet-beak { fill: #efc35f; }
+.puppet-pin { fill: #b65f5c; stroke: #fff1df; stroke-width: 3; }.puppet-leg { fill: none; stroke: #694c5f; stroke-width: 7; stroke-linecap: round; }
+.paper-puppet { filter: drop-shadow(10px 13px 0 rgba(77,52,73,.09)); }
+.bird-card-puppet:hover .puppet-wing { transform: rotate(-18deg); transform-box: fill-box; transform-origin: right center; transition: transform .6s; }
+
+.bird-card-pixel { background: #131d2a; color: #dfffea; }
+.pixel-shadow { fill: #050a10; opacity: .45; }.pixel-body { fill: #edf5ed; }.pixel-wing { fill: #8bd35b; }.pixel-eye { fill: #18231d; }.pixel-beak { fill: #ee8b5e; }.pixel-leg { fill: #d2734f; }
+.pixel-cursor { fill: #b7ff5c; animation: cursor-click 1.7s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.pixel-bird { image-rendering: pixelated; filter: drop-shadow(12px 14px 0 rgba(93,255,148,.09)); }
 
 .bird-lab-footer { display: grid; grid-template-columns: .4fr 1fr; gap: 4vw; margin-top: 18px; padding: 7vw 2vw; border-radius: 34px; background: #1d2722; color: #f4f7f2; }
 .bird-lab-footer span { color: #7e9186; font: 600 .62rem 'DM Mono', monospace; letter-spacing: .1em; }
-.bird-lab-footer p { max-width: 900px; margin: 0; font-size: clamp(2rem, 4.4vw, 5.2rem); font-weight: 700; line-height: 1.02; letter-spacing: -.075em; }
+.bird-lab-footer p { max-width: 920px; margin: 0; font-size: clamp(2rem, 4.2vw, 5rem); font-weight: 700; line-height: 1.02; letter-spacing: -.075em; }
 
-@keyframes bird-breathe { 50% { transform: translateY(-8px) rotate(1deg); } }
-@keyframes line-dash { to { stroke-dashoffset: -38; } }
-@keyframes line-star { 50% { opacity: .45; transform: rotate(25deg) scale(.75); } }
+@keyframes long-sniff { 50% { transform: translate(5px, 3px) rotate(.5deg); } }
+@keyframes bean-look { 50% { transform: rotate(4deg); } }
+@keyframes sprout-grow { 50% { transform: translateY(-8px) scaleY(1.02); } }
+@keyframes speed-line { to { stroke-dashoffset: -46; } }
+@keyframes runner-bob { 50% { transform: translateY(-4px) rotate(-1deg); } }
+@keyframes fruit-roll { 50% { transform: translateY(-7px) rotate(2deg); } }
+@keyframes cursor-click { 50% { transform: translate(7px,7px) scale(.82); } }
 
 @media (max-width: 900px) {
   .bird-lab-intro { grid-template-columns: 1fr; padding: 14vw 2vw 10vw; }
   .bird-lab-intro > p:first-child { margin-bottom: 5vw; }
   .bird-intro-copy { margin-top: 3vw; }
-  .bird-study-card, .bird-study-card:nth-child(n+3), .bird-study-card:last-child { grid-column: span 12; min-height: 620px; }
+  .bird-study-card, .bird-study-card:nth-child(n+3) { grid-column: span 12; min-height: 620px; }
 }
 
 @media (max-width: 600px) {
@@ -100,11 +97,11 @@
   .bird-lab-header { grid-template-columns: 1fr 1fr; }
   .bird-lab-header > span { display: none; }
   .bird-lab-intro { padding: 80px 10px 56px; }
-  .bird-lab-intro h1 { font-size: 3.45rem; }
-  .bird-study-card, .bird-study-card:nth-child(n+3), .bird-study-card:last-child { min-height: 520px; padding: 20px; border-radius: 27px; }
+  .bird-lab-intro h1 { font-size: 3.25rem; }
+  .bird-study-card, .bird-study-card:nth-child(n+3) { min-height: 520px; padding: 20px; border-radius: 27px; }
   .bird-study-copy { grid-template-columns: 1fr; gap: 12px; }
   .bird-study-copy p { justify-self: start; }
-  .bird-study-svg { width: 88%; }
+  .bird-study-svg { width: 92%; }
   .bird-lab-footer { grid-template-columns: 1fr; padding: 48px 24px; }
   .bird-lab-footer p { margin-top: 70px; }
 }
