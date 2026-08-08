@@ -24,7 +24,10 @@ pnpm build
 - `src/fall-intro.css` — 유리 낙하 장면, 01 배경, 캐릭터 보행, 키네틱 타이포, Contact Dock
 - `src/EducationJourney.tsx` — 02 학력 페이지의 교정 구성과 스크롤 진행률 계산
 - `src/education-journey.css` — CNSA 컬러, 학교 건물, 벚꽃, 학력 타이포와 반응형 표현
+- `src/CareerJourney.tsx` — 03 화이트블록부터 06 당근까지 네 경력 트랙의 공통 진행률과 회사별 장면 구조
+- `src/career-journey.css` — 배달 도로, 명품 쇼윈도, 성장하는 농장, 동네 지도와 회사별 반응형 모션
 - `public/assets/characters/kiwi-walk-cycle.png` — 3-C를 기준으로 만든 4프레임 보행 스프라이트
+- `public/assets/characters/kiwi-*.png` — 배달부·패션 큐레이터·농부·동네 탐험가로 변주한 투명 배경 캐릭터
 - `src/EggLab.tsx`, `src/GlassLab.tsx`, `src/BirdLab.tsx` — 시안 비교를 위해 남긴 실험 페이지
 - `src/App.tsx` — 메인과 `?view=eggs|glass|birds|journey` 실험 뷰 진입점
 

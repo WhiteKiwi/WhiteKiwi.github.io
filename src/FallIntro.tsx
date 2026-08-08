@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
 import EducationJourney from './EducationJourney'
+import CareerJourney from './CareerJourney'
 import './fall-intro.css'
 
 function FallingEgg({ onLanded }: { onLanded: () => void }) {
@@ -284,6 +285,7 @@ export default function FallIntro() {
       </section>
       <WalkingIntroduction trackRef={introTrackRef} />
       <EducationJourney active={phase === 'ready'} />
+      <CareerJourney active={phase === 'ready'} />
     </main>
   )
 }
