@@ -88,7 +88,7 @@ pnpm build
 - 07→Contact 하향 입력이 Toss 후반 임계 progress를 넘으려 하면 입력을 소비하고 Contact 시작점까지 약 650ms 동안 자동 스크롤한다. Contact 초입의 상향 입력은 같은 방식으로 07의 대표 progress로 돌아가며, 이동 중 추가 wheel·touch·스크롤 키를 잠근다.
 - 포인터 입력이 가능한 환경에서는 자동 조립과 별개로 배경의 앰버 글로우만 느리게 따라오게 한다.
 - 헤드라인 위의 프롬프트 줄은 문구 없이 `>`와 깜빡이는 커서만 둔다. 파비콘·Guidelines의 프롬프트 마크와 같은 기호다. 의미는 헤드라인이 가지므로 접근성 트리에서는 제외한다.
-- 터미널은 제어된 text input과 submit form으로 구현한다. 공개 명령은 `help`, `whoami`, `open github`, `open blog`, `open linkedin`, `open instagram`, `open email`, `clear`이며 `open instargram`은 사용자 입력 호환 alias로 처리한다.
+- 터미널은 제어된 text input과 submit form으로 구현한다. 공개 명령은 `help`, `whoami`, `open resume`, `open github`, `open blog`, `open linkedin`, `open instagram`, `open email`, `clear`이며 `open instargram`은 사용자 입력 호환 alias로 처리한다.
 - 숨은 `iloveyou` 분기는 `I love you too` 한 줄을 반환하지만 공개 명령 배열에는 넣지 않아 help 출력과 shortcut 렌더에서 제외한다.
 - `cd`로 시작하는 입력은 `permission denied`, 그 밖의 미지원 입력은 `command not found` 결과를 추가한다. 명령과 출력은 시간순 entry로 렌더하고 `sessionStorage`에 저장하며 위·아래 화살표로 입력 명령 history를 탐색한다.
 - `clear`는 entry state, 입력 탐색 위치와 `sessionStorage`를 한 번에 초기화하고, 명령 자체도 비워진 로그에 남기지 않는다.
@@ -117,7 +117,8 @@ pnpm build
 - `src/Resume.tsx`와 `src/resume.css`, 내용은 `src/resume-data.ts`에 한국어·영문을 같은 구조로 나란히 둔다. 컴포넌트는 언어 키만 바꿔 같은 레이아웃을 렌더한다.
 - 언어 상태는 `localStorage`에 저장하고 `<html lang>`을 함께 바꾼다. 초기 언어는 저장값이 없으면 한국어다.
 - 진입 연출은 `IntersectionObserver`로 섹션이 보일 때 한 번만 실행하고, 이후 상태를 되돌리지 않는다. 스크롤 progress로 계속 보간하지 않으므로 읽는 도중 문장이 다시 사라지지 않는다.
-- 포인터 반응은 본문 위에 무엇도 얹지 않는 스포트라이트 방식이다. `--px`, `--py` 커스텀 속성만 갱신하고 배경 그리드의 `mask-image`가 커서 주변만 드러낸다. `pointerType === 'touch'`는 무시하고 초기 좌표를 유지한다.
+- 포인터 반응은 본문 위에 무엇도 얹지 않는 스포트라이트 방식이다. `--px`, `--py` 커스텀 속성만 갱신하고 배경 그리드의 `mask-image`가 커서 주변만 드러낸다.
+- 커서가 없는 기기에서는 스포트라이트와 트레일을 모두 끈다. `pointerType === 'touch'`를 무시하므로 좌표가 초기값에 굳어 격자 얼룩만 남고, 트레일 토글은 눌러도 아무 일이 없다. 그리드는 `(pointer: coarse)`에서 숨기고, 트레일 토글은 `(pointer: fine)`일 때만 버튼으로 렌더한다.
 - 좌측 상단 워드마크는 숨은 토글이다. 누르면 커서 트레일이 켜진다. 앞 점은 커서를, 뒤 점은 바로 앞 점을 쫓아 지연이 누적된다. 메인 여정으로 가는 링크는 문서 하단에 따로 있으므로 워드마크는 이동에 쓰지 않는다.
 - 좌측 타임라인 레일은 현재 보이는 회사에 표시를 옮긴다. 레일 자체는 인쇄에서 제거한다.
 - 경력 길이와 회사별 재직 기간은 조회 시점에 계산한다. 총 경력은 회사 구간을 월 단위로 합집합해 세므로 공백기는 빠지고 겹치는 달은 한 번만 센다. 한 달이 지나면 한 달이 늘어나는 값이라 자동 계산이 맞다.

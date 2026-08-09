@@ -26,8 +26,9 @@ const blogUrl = 'https://blog.whitekiwi.link'
 const linkedinUrl = 'https://www.linkedin.com/in/whitekiwi/'
 const instagramUrl = 'https://www.instagram.com/whitekiwi_'
 const emailUrl = 'mailto:jh145478@gmail.com'
+const resumeUrl = '/resume/'
 
-const availableCommands = ['help', 'whoami', 'open github', 'open blog', 'open linkedin', 'open instagram', 'open email', 'clear']
+const availableCommands = ['help', 'whoami', 'open resume', 'open github', 'open blog', 'open linkedin', 'open instagram', 'open email', 'clear']
 
 /**
  * `whoami`는 neofetch처럼 아스키 키위를 왼쪽에, 정보를 오른쪽에 둔다.
@@ -52,7 +53,7 @@ const kiwiFacts = [
   'stack    Node.js · TypeScript · NestJS',
   'infra    AWS · Docker · MySQL · Redis',
   'where    Seoul, Korea (KST)',
-  'resume   /resume/',
+  'resume   /resume/  (open resume)',
 ]
 
 const kiwiFetch = kiwiArt.map((art, index) => ({
@@ -458,12 +459,17 @@ export default function ContactFinale({ active }: { active: boolean }) {
       lines = [
         { text: 'usage: open <channel>', tone: 'accent' },
         { text: 'available channels:', tone: 'muted' },
+        { text: '  resume', tone: 'default' },
         { text: '  github', tone: 'default' },
         { text: '  blog', tone: 'default' },
         { text: '  linkedin', tone: 'default' },
         { text: '  instagram', tone: 'default' },
         { text: '  email', tone: 'default' },
       ]
+    } else if (command === 'open resume') {
+      const opened = window.open(resumeUrl, '_blank')
+      if (opened) opened.opener = null
+      lines = [{ text: opened ? 'Opening the resume in a new tab…' : `Popup blocked. Open manually: ${resumeUrl}`, tone: opened ? 'success' : 'error' }]
     } else if (command === 'open github') {
       const opened = window.open(githubUrl, '_blank')
       if (opened) opened.opener = null

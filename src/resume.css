@@ -30,6 +30,11 @@
   pointer-events: none;
 }
 
+/* 커서가 없으면 마스크가 초기 좌표에 굳어 격자 얼룩만 남는다. */
+@media (hover: none), (pointer: coarse) {
+  .resume-grid { display: none; }
+}
+
 /* 워드마크로 켜는 숨은 트레일. */
 .resume-trail { position: fixed; z-index: 6; inset: 0; pointer-events: none; }
 
@@ -82,6 +87,7 @@
 
 .resume-rail-home {
   display: flex;
+  margin: 0;
   padding: 0;
   align-items: center;
   gap: 8px;

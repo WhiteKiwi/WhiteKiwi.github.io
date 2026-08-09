@@ -106,6 +106,8 @@ const NAV = [
 function Resume() {
   const [lang, setLang] = useState<Lang>('ko')
   const [trail, setTrail] = useState(false)
+  // 커서가 없는 기기에서는 트레일이 화면 밖에 머물러 토글이 아무 일도 하지 않는다.
+  const [hasPointer, setHasPointer] = useState(false)
   const scope = useReveal()
   const active = useActiveSection(NAV.map((item) => item.id))
   const stage = useRef<HTMLDivElement>(null)
@@ -113,6 +115,7 @@ function Resume() {
   const pointer = useRef({ x: -9999, y: -9999 })
 
   useEffect(() => setLang(readLang()), [])
+  useEffect(() => setHasPointer(window.matchMedia('(pointer: fine)').matches), [])
 
   useEffect(() => {
     document.documentElement.lang = lang
@@ -174,7 +177,7 @@ function Resume() {
       style={{ '--px': '68vw', '--py': '32vh' } as PointerStyle}
     >
       <div className="resume-grid" aria-hidden="true" />
-      {trail && (
+      {trail && hasPointer && (
         <div className="resume-trail" ref={trailRef} aria-hidden="true">
           {Array.from({ length: TRAIL_LENGTH }, (_, i) => (
             <i key={i} style={{ '--i': i, '--total': TRAIL_LENGTH } as CSSProperties} />
@@ -184,15 +187,22 @@ function Resume() {
 
       <aside className="resume-rail">
         {/* 숨은 토글이라 라벨로 설명하지 않는다. 메인 여정으로 가는 길은 하단에 따로 있다. */}
-        <button
-          type="button"
-          className={`resume-rail-home${trail ? ' is-on' : ''}`}
-          onClick={() => setTrail((current) => !current)}
-          aria-pressed={trail}
-        >
-          <PromptMark />
-          <span>whitekiwi</span>
-        </button>
+        {hasPointer ? (
+          <button
+            type="button"
+            className={`resume-rail-home${trail ? ' is-on' : ''}`}
+            onClick={() => setTrail((current) => !current)}
+            aria-pressed={trail}
+          >
+            <PromptMark />
+            <span>whitekiwi</span>
+          </button>
+        ) : (
+          <p className="resume-rail-home">
+            <PromptMark />
+            <span>whitekiwi</span>
+          </p>
+        )}
 
         <nav aria-label={t(ui.resume)}>
           {NAV.map((item) => (
