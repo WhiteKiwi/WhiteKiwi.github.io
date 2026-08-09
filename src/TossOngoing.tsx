@@ -8,7 +8,6 @@ type TossOngoingStyle = CSSProperties & {
   '--toss-card-opacity': number
   '--toss-card-y': string
   '--toss-exit': number
-  '--toss-entry-y': string
 }
 
 const clamp = (value: number) => Math.min(Math.max(value, 0), 1)
@@ -54,10 +53,9 @@ export default function TossOngoing({ active }: { active: boolean }) {
 
       const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
       const progress = clamp(-rect.top / distance)
-      const copyIn = smoothstep(reveal(contentProgress, .04, .58))
-      const cardIn = smoothstep(reveal(contentProgress, .3, 1))
+      const copyIn = smoothstep(reveal(contentProgress, .04, .55))
+      const cardIn = smoothstep(reveal(contentProgress, .38, 1))
       const exit = smoothstep(reveal(progress, .76, .94))
-      const entry = smoothstep(reveal(progress, .015, .14))
 
       track.style.setProperty('--toss-progress', String(progress))
       track.style.setProperty('--toss-copy-opacity', String(Math.min(copyIn, 1 - exit)))
@@ -65,7 +63,6 @@ export default function TossOngoing({ active }: { active: boolean }) {
       track.style.setProperty('--toss-card-opacity', String(Math.min(cardIn, 1 - exit * .72)))
       track.style.setProperty('--toss-card-y', `${(1 - cardIn) * 54 - exit * 18}px`)
       track.style.setProperty('--toss-exit', String(exit))
-      track.style.setProperty('--toss-entry-y', `${entry * -118}%`)
       if (!contentStarted && !transitionLocked && !transitionOwnedElsewhere() && rect.top <= 1 && rect.bottom >= window.innerHeight) {
         startContentReveal()
       }
@@ -94,10 +91,10 @@ export default function TossOngoing({ active }: { active: boolean }) {
         return
       }
       const startedAt = performance.now()
-      const duration = 1250
+      const duration = 1700
       const animate = (now: number) => {
         const progress = clamp((now - startedAt) / duration)
-        contentProgress = 1 - Math.pow(1 - progress, 3)
+        contentProgress = progress
         requestUpdate()
         if (progress < 1) contentFrame = window.requestAnimationFrame(animate)
         else contentFrame = 0
@@ -367,11 +364,9 @@ export default function TossOngoing({ active }: { active: boolean }) {
         '--toss-card-opacity': 0,
         '--toss-card-y': '54px',
         '--toss-exit': 0,
-        '--toss-entry-y': '0%',
       } as TossOngoingStyle}
     >
       <div className="toss-ongoing-stage">
-        <div className="toss-entry-curtain" aria-hidden="true"><i /><span /></div>
         <div className="toss-ambient" aria-hidden="true">
           <i className="toss-orbit toss-orbit-one" />
           <i className="toss-orbit toss-orbit-two" />

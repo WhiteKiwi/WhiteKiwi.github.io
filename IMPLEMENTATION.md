@@ -54,13 +54,13 @@ pnpm build
 
 - 06 뒤, Contact 앞에 별도 sticky track으로 배치해 이후 상세 경력 장면으로 확장해도 기존 03—06 상태 계산과 Contact 터미널을 건드리지 않게 한다.
 - 진행률은 컴포넌트 내부에서 현재 보이는 트랙만 갱신하고, 큰 헤드라인·상태 카드·Contact 출구의 조립에만 사용한다.
-- 본문과 상태 카드의 진입 progress는 스크롤 progress에서 분리한다. sticky stage가 충분히 보이면 한 번의 requestAnimationFrame 시퀀스로 본문 뒤 상태 카드가 순차 등장하고, stage가 viewport를 완전히 벗어나면 다음 진입을 위해 초기화한다. 스크롤 progress는 배경 `ONGOING` 이동·궤도·후반 퇴장과 Contact 경계에만 남긴다.
+- 본문과 상태 카드의 진입 progress는 스크롤 progress에서 분리한다. sticky stage가 충분히 보이면 한 번의 requestAnimationFrame 시퀀스로 본문이 먼저 등장하고, 상태 카드는 약 0.65초 뒤부터 더 느리게 올라온다. stage가 viewport를 완전히 벗어나면 다음 진입을 위해 초기화한다. 스크롤 progress는 배경 `ONGOING` 이동·궤도·후반 퇴장과 Contact 경계에만 남긴다.
 - 공식 색상인 Toss Blue `#0064FF`, Toss Gray `#202632`와 흰색, 큰 타이포와 제품 상태 UI를 중심으로 정체성을 만들고 공식 로고는 우측 상단에만 절제해 노출한다.
 - 06↔07 fixed 전환막은 장식용 외곽 원과 안쪽 원이 공유하는 중심을 CSS 변수로 계산하고 모든 `clip-path: circle()` 상태가 같은 좌표를 사용한다.
 - 07 메타의 원형 챕터 배지는 기존처럼 `07`을 표시한다. 장면 내부 우측 상단의 `toss-blue-object`는 워드마크가 없는 공식 심벌 PNG `img`를 기존 포인트 오브젝트와 비슷한 크기로 표시하며 별도 색상·필터·그림자·회전은 적용하지 않는다.
 - 로딩 바와 live dot은 반복 ambient motion으로 현재진행형을 표현한다. 모션 감소 환경에서는 반복을 멈추고 정적인 진행 상태로 대체한다.
-- 06 후반의 텍스트형 `next-journey`는 제거한다. 하향 wheel·touch·스크롤 키가 장면의 정보가 해체되기 전 임계 progress를 넘으려 하면 입력을 소비하고, fixed Toss Blue 원형 cover를 시간 기반으로 끝까지 재생한다. 완전히 가린 프레임에서 07의 curtain이 사라진 대표 progress로 즉시 이동한 뒤 fixed layer를 위로 퇴장시킨다. 상향 입력도 07 초입 임계점에서 소비하고 같은 fixed layer를 위에서 복귀시킨 뒤 06의 문구·카드·캐릭터가 함께 남아 있는 완성 progress로 위치를 교체하고 원형을 축소한다. 두 방향 모두 시퀀스가 끝날 때까지 추가 입력을 잠근다.
-- Contact↔07 snap과 06↔07 전환은 document root의 같은 전환 소유권을 사용한다. Contact의 requestAnimationFrame 스크롤이 `contact` 소유권을 가진 동안 Toss의 wheel·touch·스크롤 fallback은 역전환을 시작하지 않는다. 06↔07 reveal이 끝난 뒤에는 마지막 wheel·touch·스크롤 키 입력부터 짧은 무입력 시간이 확보될 때까지 `toss` 소유권을 유지해 인접 전환기의 동시 실행도 막는다. 각 전환의 완료·중단 시 자신이 가진 소유권과 scroll behavior를 복구한다.
+- 06 후반의 텍스트형 `next-journey`는 제거한다. 하향 wheel·touch·스크롤 키가 장면의 정보가 해체되기 전 임계 progress를 넘으려 하면 입력을 소비하고, fixed Toss Blue 원형 cover를 시간 기반으로 끝까지 재생한다. 완전히 가린 프레임에서 07의 대표 progress로 즉시 이동한 뒤 같은 fixed layer를 위로 퇴장시킨다. 상향 입력도 07 초입 임계점에서 소비하고 같은 fixed layer를 위에서 복귀시킨 뒤 06의 문구·카드·캐릭터가 함께 남아 있는 완성 progress로 위치를 교체하고 원형을 축소한다. stage 내부의 스크롤형 entry curtain은 제거해 fixed layer와 같은 파란 화면이 중복 재생되지 않게 한다.
+- 05↔06, 06↔07, Contact↔07 전환은 document root의 같은 전환 소유권을 각각 `career`, `toss`, `contact`로 사용한다. 어느 전환이든 소유권이 존재하는 동안 다른 컴포넌트의 wheel·touch·스크롤 fallback은 다음 전환을 시작하지 않는다. reveal이 끝난 뒤에도 마지막 입력부터 짧은 무입력 시간이 확보될 때까지 소유권을 유지하고, 완료·중단 시 자신이 가진 소유권과 scroll behavior를 복구한다.
 - `#07`, `#07-toss`, `#07-ongoing`은 현재진행형 장면의 대표 상태로 이동한다.
 
 ### Contact finale

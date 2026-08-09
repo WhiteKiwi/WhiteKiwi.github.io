@@ -221,12 +221,26 @@ export default function CareerJourney({ active }: { active: boolean }) {
     let scrollingDown = false
     let lastPageY = window.scrollY
     let chapterTransitionLocked = false
+    let chapterTransitionSettling = false
     let chapterTransitionTimer = 0
+    let chapterSettleTimer = 0
     let chapterTransitionFrame = 0
+    let touchStartY: number | null = null
     const portalGateProgress = .74
     let triggerForwardTransition = () => {}
     let triggerReverseTransition = () => {}
-    const tossTransitionActive = () => documentRoot.dataset.portfolioTransition === 'toss'
+    const transitionOwnedElsewhere = () => {
+      const owner = documentRoot.dataset.portfolioTransition
+      return Boolean(owner && owner !== 'career')
+    }
+    const claimTransition = () => {
+      if (transitionOwnedElsewhere()) return false
+      documentRoot.dataset.portfolioTransition = 'career'
+      return true
+    }
+    const releaseTransition = () => {
+      if (documentRoot.dataset.portfolioTransition === 'career') delete documentRoot.dataset.portfolioTransition
+    }
 
     const updateTrack = (track: HTMLElement, index: number) => {
       const rect = track.getBoundingClientRect()
@@ -274,7 +288,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
         track.style.setProperty('--farmer-opacity', String(visibility(progress, .11, .22, .78, .88)))
         track.style.setProperty('--farm-sun-y', `${progress * 8}vh`)
         track.style.setProperty('--carrot-guide-opacity', String(visibility(progress, .68, .74, .96, .995)))
-        if (scrollingDown && progress >= portalGateProgress && rect.top <= 1 && rect.bottom > 0 && !chapterTransitionLocked && !tossTransitionActive()) {
+        if (scrollingDown && progress >= portalGateProgress && rect.top <= 1 && rect.bottom > 0 && !chapterTransitionLocked && !transitionOwnedElsewhere()) {
           triggerForwardTransition()
         }
       } else {
@@ -286,7 +300,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
         track.style.setProperty('--route-progress', String(reveal(progress, .2, .76)))
         track.style.setProperty('--chat-opacity', String(visibility(progress, .46, .56, .73, .82)))
         track.style.setProperty('--toss-handoff', String(smoothstep(reveal(progress, .82, .96))))
-        if (scrollingUp && progress < .075 && rect.top <= 1 && rect.bottom > 0 && !chapterTransitionLocked && !tossTransitionActive()) {
+        if (scrollingUp && progress < .075 && rect.top <= 1 && rect.bottom > 0 && !chapterTransitionLocked && !transitionOwnedElsewhere()) {
           triggerReverseTransition()
         }
       }
@@ -448,19 +462,43 @@ export default function CareerJourney({ active }: { active: boolean }) {
       aimpactTrack?.classList.remove('is-carrot-departing')
       setCurtainState()
     }
+    const releaseChapterAfterQuiet = () => {
+      if (!chapterTransitionSettling) return
+      if (chapterSettleTimer) window.clearTimeout(chapterSettleTimer)
+      chapterSettleTimer = window.setTimeout(() => {
+        chapterTransitionLocked = false
+        chapterTransitionSettling = false
+        touchStartY = null
+        lastPageY = window.scrollY
+        releaseTransition()
+        chapterSettleTimer = 0
+      }, 280)
+    }
     const finishChapterTransition = () => {
       resetChapterTransitionClasses()
-      chapterTransitionLocked = false
       lastPageY = window.scrollY
+      touchStartY = null
+      if (reducedMotion) {
+        chapterTransitionLocked = false
+        chapterTransitionSettling = false
+        releaseTransition()
+        return
+      }
+      chapterTransitionSettling = true
+      releaseChapterAfterQuiet()
     }
     const startForwardTransition = () => {
-      if (chapterTransitionLocked || tossTransitionActive() || !aimpactTrack || !daangnTrack) return
+      if (chapterTransitionLocked || transitionOwnedElsewhere() || !aimpactTrack || !daangnTrack || !claimTransition()) return
       const progress = Number.parseFloat(aimpactTrack.style.getPropertyValue('--chapter-progress'))
-      if (!Number.isFinite(progress)) return
+      if (!Number.isFinite(progress)) {
+        releaseTransition()
+        return
+      }
 
       resetChapterTransitionClasses()
       updatePortalOrigin()
       chapterTransitionLocked = true
+      chapterTransitionSettling = false
       carrotButton?.blur()
       setCurtainState('is-ready')
       aimpactTrack.classList.add('is-carrot-departing')
@@ -481,9 +519,10 @@ export default function CareerJourney({ active }: { active: boolean }) {
     }
     triggerForwardTransition = startForwardTransition
     triggerReverseTransition = () => {
-      if (chapterTransitionLocked || tossTransitionActive() || !aimpactTrack || !daangnTrack) return
+      if (chapterTransitionLocked || transitionOwnedElsewhere() || !aimpactTrack || !daangnTrack || !claimTransition()) return
       resetChapterTransitionClasses()
       chapterTransitionLocked = true
+      chapterTransitionSettling = false
       setCurtainState('is-reverse-ready')
       onNextPaint(() => {
         setCurtainState('is-reverse-covering')
@@ -519,7 +558,8 @@ export default function CareerJourney({ active }: { active: boolean }) {
       return Number.isFinite(progress) && projectedProgress < .075 && rect.top <= 1 && rect.bottom > 0
     }
     const onTransitionWheel = (event: WheelEvent) => {
-      if (chapterTransitionLocked || tossTransitionActive()) {
+      if (chapterTransitionLocked || transitionOwnedElsewhere()) {
+        if (chapterTransitionLocked && chapterTransitionSettling) releaseChapterAfterQuiet()
         event.preventDefault()
         return
       }
@@ -533,13 +573,13 @@ export default function CareerJourney({ active }: { active: boolean }) {
         triggerReverseTransition()
       }
     }
-    let touchStartY: number | null = null
     const onTransitionTouchStart = (event: TouchEvent) => {
       touchStartY = event.touches[0]?.clientY ?? null
     }
     const onTransitionTouchMove = (event: TouchEvent) => {
       const currentY = event.touches[0]?.clientY
-      if (chapterTransitionLocked || tossTransitionActive()) {
+      if (chapterTransitionLocked || transitionOwnedElsewhere()) {
+        if (chapterTransitionLocked && chapterTransitionSettling) releaseChapterAfterQuiet()
         touchStartY = currentY ?? null
         event.preventDefault()
         return
@@ -559,7 +599,8 @@ export default function CareerJourney({ active }: { active: boolean }) {
     const onTransitionKeyDown = (event: KeyboardEvent) => {
       if (!scrollKeys.has(event.key)) return
       if (event.key === ' ' && event.target === carrotButton) return
-      if (chapterTransitionLocked || tossTransitionActive()) {
+      if (chapterTransitionLocked || transitionOwnedElsewhere()) {
+        if (chapterTransitionLocked && chapterTransitionSettling) releaseChapterAfterQuiet()
         event.preventDefault()
         return
       }
@@ -605,7 +646,9 @@ export default function CareerJourney({ active }: { active: boolean }) {
       if (breezeResetTimer) window.clearTimeout(breezeResetTimer)
       if (chapterTransitionFrame) window.cancelAnimationFrame(chapterTransitionFrame)
       if (chapterTransitionTimer) window.clearTimeout(chapterTransitionTimer)
+      if (chapterSettleTimer) window.clearTimeout(chapterSettleTimer)
       resetChapterTransitionClasses()
+      releaseTransition()
       window.removeEventListener('scroll', requestUpdate)
       window.removeEventListener('resize', requestUpdate)
       window.removeEventListener('wheel', onTransitionWheel)
