@@ -236,7 +236,8 @@ export default function CareerJourney({ active }: { active: boolean }) {
       track.style.setProperty('--chapter-progress', String(progress))
       track.style.setProperty('--chapter-copy-opacity', String(copyOpacity))
       track.style.setProperty('--chapter-copy-y', `${(1 - copyOpacity) * 40 - reveal(progress, .68, .78) * 22}px`)
-      track.style.setProperty('--chapter-progress-scale', String(progress))
+      const displayedProgress = index === 2 ? clamp(progress / portalGateProgress) : progress
+      track.style.setProperty('--chapter-progress-scale', String(displayedProgress))
 
       const notes = Array.from(track.querySelectorAll<HTMLElement>('.career-note'))
       notes.forEach((note, noteIndex) => {
