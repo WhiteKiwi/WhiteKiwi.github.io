@@ -17,7 +17,7 @@ const smoothstep = (value: number) => value * value * (3 - 2 * value)
 
 export default function TossOngoing({ active }: { active: boolean }) {
   const trackRef = useRef<HTMLElement>(null)
-  const forwardOverlayRef = useRef<HTMLDivElement>(null)
+  const transitionOverlayRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!active) return
@@ -27,15 +27,18 @@ export default function TossOngoing({ active }: { active: boolean }) {
     let transitionLocked = false
     let lastPageY = window.scrollY
     let triggerForwardTransition = () => {}
+    let triggerReverseTransition = () => {}
     const daangnTrack = document.querySelector<HTMLElement>('.career-daangn')
-    const forwardOverlay = forwardOverlayRef.current
+    const transitionOverlay = transitionOverlayRef.current
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const forwardGateProgress = .82
+    const reverseGateProgress = .14
 
     const update = () => {
       animationFrame = 0
       const nextPageY = window.scrollY
       const scrollingDown = nextPageY > lastPageY + 1
+      const scrollingUp = nextPageY < lastPageY - 1
       lastPageY = nextPageY
       const track = trackRef.current
       if (!track) return
@@ -64,16 +67,27 @@ export default function TossOngoing({ active }: { active: boolean }) {
           triggerForwardTransition()
         }
       }
+      if (scrollingUp && progress <= reverseGateProgress && rect.top <= 1 && rect.bottom > 0 && !transitionLocked) {
+        triggerReverseTransition()
+      }
     }
 
     const requestUpdate = () => {
       if (!animationFrame) animationFrame = window.requestAnimationFrame(update)
     }
 
-    const overlayStates = ['is-ready', 'is-covering', 'is-covered', 'is-revealing']
+    const overlayStates = [
+      'is-ready',
+      'is-covering',
+      'is-covered',
+      'is-revealing',
+      'is-reverse-ready',
+      'is-reverse-covering',
+      'is-reverse-revealing',
+    ]
     const setOverlayState = (state?: string) => {
-      forwardOverlay?.classList.remove(...overlayStates)
-      if (state) forwardOverlay?.classList.add(state)
+      transitionOverlay?.classList.remove(...overlayStates)
+      if (state) transitionOverlay?.classList.add(state)
     }
     const onNextPaint = (callback: () => void) => {
       transitionFrame = window.requestAnimationFrame(() => {
@@ -93,7 +107,18 @@ export default function TossOngoing({ active }: { active: boolean }) {
       lastPageY = window.scrollY
       update()
     }
-    const finishForwardTransition = () => {
+    const scrollToDaangn = () => {
+      if (!daangnTrack) return
+      const trackTop = window.scrollY + daangnTrack.getBoundingClientRect().top
+      const distance = Math.max(daangnTrack.offsetHeight - window.innerHeight, 1)
+      const documentRoot = document.documentElement
+      const previousScrollBehavior = documentRoot.style.scrollBehavior
+      documentRoot.style.scrollBehavior = 'auto'
+      window.scrollTo(0, trackTop + distance * .8)
+      documentRoot.style.scrollBehavior = previousScrollBehavior
+      lastPageY = window.scrollY
+    }
+    const finishTransition = () => {
       setOverlayState()
       transitionLocked = false
       lastPageY = window.scrollY
@@ -102,7 +127,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
     const holdDuration = reducedMotion ? 0 : 55
     const revealDuration = reducedMotion ? 20 : 560
     triggerForwardTransition = () => {
-      if (transitionLocked || !daangnTrack || !forwardOverlay || !trackRef.current) return
+      if (transitionLocked || !daangnTrack || !transitionOverlay || !trackRef.current) return
       transitionLocked = true
       setOverlayState('is-ready')
       onNextPaint(() => {
@@ -113,10 +138,28 @@ export default function TossOngoing({ active }: { active: boolean }) {
           transitionTimer = window.setTimeout(() => {
             onNextPaint(() => {
               setOverlayState('is-revealing')
-              transitionTimer = window.setTimeout(finishForwardTransition, revealDuration)
+              transitionTimer = window.setTimeout(finishTransition, revealDuration)
             })
           }, holdDuration)
         }, coverDuration)
+      })
+    }
+    triggerReverseTransition = () => {
+      if (transitionLocked || !daangnTrack || !transitionOverlay || !trackRef.current) return
+      transitionLocked = true
+      setOverlayState('is-reverse-ready')
+      onNextPaint(() => {
+        setOverlayState('is-reverse-covering')
+        transitionTimer = window.setTimeout(() => {
+          setOverlayState('is-covered')
+          scrollToDaangn()
+          transitionTimer = window.setTimeout(() => {
+            onNextPaint(() => {
+              setOverlayState('is-reverse-revealing')
+              transitionTimer = window.setTimeout(finishTransition, coverDuration)
+            })
+          }, holdDuration)
+        }, revealDuration)
       })
     }
 
@@ -128,6 +171,15 @@ export default function TossOngoing({ active }: { active: boolean }) {
       const projectedProgress = progress + Math.max(downwardDelta, 0) / distance
       return Number.isFinite(progress) && projectedProgress >= forwardGateProgress && rect.top <= 1 && rect.bottom > 0
     }
+    const tossWouldCrossReverseGate = (upwardDelta: number) => {
+      const track = trackRef.current
+      if (!track) return false
+      const progress = Number.parseFloat(track.style.getPropertyValue('--toss-progress'))
+      const rect = track.getBoundingClientRect()
+      const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
+      const projectedProgress = progress - Math.max(upwardDelta, 0) / distance
+      return Number.isFinite(progress) && projectedProgress <= reverseGateProgress && rect.top <= 1 && rect.bottom > 0
+    }
     const onTransitionWheel = (event: WheelEvent) => {
       if (transitionLocked) {
         event.preventDefault()
@@ -136,6 +188,11 @@ export default function TossOngoing({ active }: { active: boolean }) {
       if (event.deltaY > 0 && daangnWouldCrossForwardGate(event.deltaY)) {
         event.preventDefault()
         triggerForwardTransition()
+        return
+      }
+      if (event.deltaY < 0 && tossWouldCrossReverseGate(-event.deltaY)) {
+        event.preventDefault()
+        triggerReverseTransition()
       }
     }
     let touchStartY: number | null = null
@@ -152,9 +209,15 @@ export default function TossOngoing({ active }: { active: boolean }) {
       if (downwardDelta > 8 && daangnWouldCrossForwardGate(downwardDelta)) {
         event.preventDefault()
         triggerForwardTransition()
+        return
+      }
+      const upwardDelta = touchStartY !== null && currentY !== undefined ? currentY - touchStartY : 0
+      if (upwardDelta > 8 && tossWouldCrossReverseGate(upwardDelta)) {
+        event.preventDefault()
+        triggerReverseTransition()
       }
     }
-    const scrollKeys = new Set(['ArrowDown', 'PageDown', 'End', ' '])
+    const scrollKeys = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '])
     const onTransitionKeyDown = (event: KeyboardEvent) => {
       if (!scrollKeys.has(event.key)) return
       const target = event.target as HTMLElement | null
@@ -167,10 +230,24 @@ export default function TossOngoing({ active }: { active: boolean }) {
         ? Number.POSITIVE_INFINITY
         : event.key === 'PageDown' || event.key === ' '
           ? window.innerHeight
-          : 120
-      if (daangnWouldCrossForwardGate(downwardDelta)) {
+          : event.key === 'ArrowDown'
+            ? 120
+            : 0
+      if (downwardDelta > 0 && daangnWouldCrossForwardGate(downwardDelta)) {
         event.preventDefault()
         triggerForwardTransition()
+        return
+      }
+      const upwardDelta = event.key === 'Home'
+        ? Number.POSITIVE_INFINITY
+        : event.key === 'PageUp'
+          ? window.innerHeight
+          : event.key === 'ArrowUp'
+            ? 120
+            : 0
+      if (upwardDelta > 0 && tossWouldCrossReverseGate(upwardDelta)) {
+        event.preventDefault()
+        triggerReverseTransition()
       }
     }
 
@@ -252,7 +329,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
           <small>SCROLL TO CONTACT</small>
         </div>
       </div>
-      <div className="toss-forward-overlay" ref={forwardOverlayRef} aria-hidden="true"><i /><span /></div>
+      <div className="toss-transition-overlay" ref={transitionOverlayRef} aria-hidden="true"><i /><span /></div>
     </section>
   )
 }
