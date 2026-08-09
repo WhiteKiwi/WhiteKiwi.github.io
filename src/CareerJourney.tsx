@@ -167,9 +167,6 @@ function DaangnChapter({ trackRef }: { trackRef: RefObject<HTMLElement | null> }
       <div className="career-stage daangn-stage">
         <ChapterMeta number="06" company="DAANGN" period="2021.05—2021.08" />
         <div className="carrot-portal crop crop-1" style={{ '--index': 4 } as IndexedStyle} aria-hidden="true"><i /><b /><em /></div>
-        <div className="carrot-transition-roads" aria-hidden="true">
-          <i className="map-road road-a" /><i className="map-road road-b" /><i className="map-road road-c" />
-        </div>
         <div className="neighborhood-map" aria-hidden="true">
           <i className="map-road road-a" /><i className="map-road road-b" /><i className="map-road road-c" />
           {Array.from({ length: 8 }, (_, index) => <span className={`map-house house-${index + 1}`} key={index}><i /></span>)}
@@ -396,9 +393,8 @@ export default function CareerJourney({ active }: { active: boolean }) {
       settleFarmBreeze()
     }
 
-    const pluckDuration = reducedMotion ? 0 : 90
-    const transitionDuration = reducedMotion ? 20 : 430
-    const revealDuration = reducedMotion ? 20 : 410
+    const transitionDuration = reducedMotion ? 20 : 520
+    const revealDuration = reducedMotion ? 20 : 480
     const scrollToTrackProgress = (track: HTMLElement, progress: number) => {
       const trackTop = window.scrollY + track.getBoundingClientRect().top
       const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
@@ -416,7 +412,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
       const rootCenterY = window.innerHeight * (compact ? .86 : .85)
       const horizontalScale = Math.max(rootCenterX, window.innerWidth - rootCenterX) * 2 / rootWidth
       const verticalScale = Math.max(rootCenterY, window.innerHeight - rootCenterY) * 2 / rootHeight
-      const coverScale = Math.ceil(Math.max(horizontalScale, verticalScale) * 1.12)
+      const coverScale = Math.ceil(Math.max(horizontalScale, verticalScale) * 1.6)
       aimpactTrack.style.setProperty('--carrot-cover-scale', String(coverScale))
       daangnTrack.style.setProperty('--carrot-cover-scale', String(coverScale))
     }
@@ -439,20 +435,17 @@ export default function CareerJourney({ active }: { active: boolean }) {
       carrotButton?.blur()
       aimpactTrack.classList.add('is-carrot-departing')
       chapterTransitionTimer = window.setTimeout(() => {
-        aimpactTrack.classList.add('is-carrot-root-expanding')
-        chapterTransitionTimer = window.setTimeout(() => {
-          daangnTrack.classList.add('is-carrot-forward-cover')
-          scrollToTrackProgress(daangnTrack, .035)
-          aimpactTrack.classList.remove('is-carrot-departing', 'is-carrot-root-expanding')
-          onNextPaint(() => {
-            daangnTrack.classList.add('is-carrot-forward-reveal')
-            chapterTransitionTimer = window.setTimeout(() => {
-              daangnTrack.classList.remove('is-carrot-forward-cover', 'is-carrot-forward-reveal')
-              finishChapterTransition()
-            }, revealDuration)
-          })
-        }, transitionDuration)
-      }, pluckDuration)
+        daangnTrack.classList.add('is-carrot-forward-cover')
+        scrollToTrackProgress(daangnTrack, .035)
+        aimpactTrack.classList.remove('is-carrot-departing')
+        onNextPaint(() => {
+          daangnTrack.classList.add('is-carrot-forward-reveal')
+          chapterTransitionTimer = window.setTimeout(() => {
+            daangnTrack.classList.remove('is-carrot-forward-cover', 'is-carrot-forward-reveal')
+            finishChapterTransition()
+          }, revealDuration)
+        })
+      }, transitionDuration)
     }
     triggerReverseTransition = () => {
       if (chapterTransitionLocked || !aimpactTrack || !daangnTrack) return
@@ -477,9 +470,57 @@ export default function CareerJourney({ active }: { active: boolean }) {
       })
     }
 
+    const scrollKeys = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '])
+    const daangnIsAtPortalThreshold = () => {
+      if (!daangnTrack) return false
+      const progress = Number.parseFloat(daangnTrack.style.getPropertyValue('--chapter-progress'))
+      const rect = daangnTrack.getBoundingClientRect()
+      return Number.isFinite(progress) && progress > .002 && progress < .09 && rect.top <= 1
+    }
+    const onTransitionWheel = (event: WheelEvent) => {
+      if (chapterTransitionLocked) {
+        event.preventDefault()
+        return
+      }
+      if (event.deltaY < 0 && daangnIsAtPortalThreshold()) {
+        event.preventDefault()
+        triggerReverseTransition()
+      }
+    }
+    let touchStartY: number | null = null
+    const onTransitionTouchStart = (event: TouchEvent) => {
+      touchStartY = event.touches[0]?.clientY ?? null
+    }
+    const onTransitionTouchMove = (event: TouchEvent) => {
+      if (chapterTransitionLocked) {
+        event.preventDefault()
+        return
+      }
+      const currentY = event.touches[0]?.clientY
+      if (touchStartY !== null && currentY !== undefined && currentY - touchStartY > 8 && daangnIsAtPortalThreshold()) {
+        event.preventDefault()
+        triggerReverseTransition()
+      }
+    }
+    const onTransitionKeyDown = (event: KeyboardEvent) => {
+      if (!scrollKeys.has(event.key)) return
+      if (chapterTransitionLocked) {
+        event.preventDefault()
+        return
+      }
+      if ((event.key === 'ArrowUp' || event.key === 'PageUp' || event.key === 'Home') && daangnIsAtPortalThreshold()) {
+        event.preventDefault()
+        triggerReverseTransition()
+      }
+    }
+
     updateProgress()
     window.addEventListener('scroll', requestUpdate, { passive: true })
     window.addEventListener('resize', requestUpdate)
+    window.addEventListener('wheel', onTransitionWheel, { passive: false })
+    window.addEventListener('touchstart', onTransitionTouchStart, { passive: true })
+    window.addEventListener('touchmove', onTransitionTouchMove, { passive: false })
+    window.addEventListener('keydown', onTransitionKeyDown)
     aimpactStage?.addEventListener('pointermove', onFarmPointerMove, { passive: true })
     aimpactStage?.addEventListener('pointerleave', onFarmPointerLeave)
     carrotButton?.addEventListener('click', startForwardTransition)
@@ -492,6 +533,10 @@ export default function CareerJourney({ active }: { active: boolean }) {
       if (chapterTransitionTimer) window.clearTimeout(chapterTransitionTimer)
       window.removeEventListener('scroll', requestUpdate)
       window.removeEventListener('resize', requestUpdate)
+      window.removeEventListener('wheel', onTransitionWheel)
+      window.removeEventListener('touchstart', onTransitionTouchStart)
+      window.removeEventListener('touchmove', onTransitionTouchMove)
+      window.removeEventListener('keydown', onTransitionKeyDown)
       aimpactStage?.removeEventListener('pointermove', onFarmPointerMove)
       aimpactStage?.removeEventListener('pointerleave', onFarmPointerLeave)
       carrotButton?.removeEventListener('click', startForwardTransition)

@@ -364,33 +364,19 @@
 .farm-field .crop:not(.crop-transition-source) { opacity: var(--carrot-siblings-opacity, 1); transition: opacity .24s ease; }
 button.crop { appearance: none; padding: 0; border: 0; color: inherit; font: inherit; background: transparent; }
 .crop-transition-source { z-index: 3; cursor: pointer; transform: scaleY(max(.03, calc(var(--crop-grow) - var(--index) * .035))) scale(1); transform-origin: 50% 116%; will-change: transform; }
-.crop-transition-source::after { transform-origin: 50% 72%; will-change: transform, background-color; }
+.crop-transition-source::after { transform-origin: 50% 72%; }
 .crop-transition-source:focus-visible { outline: 3px solid #fff; outline-offset: 8px; filter: drop-shadow(0 0 8px rgba(56,160,128,.72)); }
 .career-aimpact.is-carrot-departing,
-.career-aimpact.is-carrot-root-expanding,
 .career-aimpact.is-carrot-return-cover,
-.career-aimpact.is-carrot-returning { --farm-field-z: 72; --carrot-siblings-opacity: 0; --carrot-guide-opacity: 0; }
+.career-aimpact.is-carrot-returning { --carrot-guide-opacity: 0; }
 .career-aimpact.is-carrot-departing .carrot-action-guide,
-.career-aimpact.is-carrot-root-expanding .carrot-action-guide,
 .career-aimpact.is-carrot-return-cover .carrot-action-guide,
 .career-aimpact.is-carrot-returning .carrot-action-guide { opacity: 0; }
-.career-aimpact.is-carrot-departing .crop-transition-source,
-.career-aimpact.is-carrot-root-expanding .crop-transition-source { transform: translateY(-9px) scaleY(max(.03, calc(var(--crop-grow) - var(--index) * .035))) scale(.98); transition: transform .1s cubic-bezier(.16,1,.3,1); }
-.career-aimpact.is-carrot-departing .crop-transition-source::after { animation: none; transform: translateX(-50%) scale(1); }
-.career-aimpact.is-carrot-root-expanding .crop-transition-source::after { animation: none; background-color: #ff6f0f; box-shadow: 0 0 0 1px #ff6f0f; transform: translateX(-50%) scale(var(--carrot-cover-scale)); transition: transform .43s cubic-bezier(.76,0,.24,1), background-color .24s ease, box-shadow .24s ease; }
-.career-aimpact.is-carrot-root-expanding .crop-transition-source > i,
-.career-aimpact.is-carrot-root-expanding .crop-transition-source > b,
-.career-aimpact.is-carrot-root-expanding .crop-transition-source > em,
-.career-aimpact.is-carrot-return-cover .crop-transition-source > i,
-.career-aimpact.is-carrot-return-cover .crop-transition-source > b,
-.career-aimpact.is-carrot-return-cover .crop-transition-source > em { opacity: 0; transition: opacity .12s ease; }
-.career-aimpact.is-carrot-return-cover .crop-transition-source { transform: translateY(-9px) scaleY(max(.03, calc(var(--crop-grow) - var(--index) * .035))) scale(.98); transition: none; }
-.career-aimpact.is-carrot-return-cover .crop-transition-source::after { animation: none; background-color: #ff6f0f; box-shadow: 0 0 0 1px #ff6f0f; transform: translateX(-50%) scale(var(--carrot-cover-scale)); }
-.career-aimpact.is-carrot-returning .crop-transition-source { transform: translateY(-9px) scaleY(max(.03, calc(var(--crop-grow) - var(--index) * .035))) scale(.98); transition: transform .1s ease; }
-.career-aimpact.is-carrot-returning .crop-transition-source::after { animation: none; background-color: #d96e32; box-shadow: 0 0 0 0 transparent; transform: translateX(-50%) scale(1); transition: transform .41s cubic-bezier(.76,0,.24,1), background-color .24s ease .12s, box-shadow .24s ease .12s; }
-.career-aimpact.is-carrot-returning .crop-transition-source > i,
-.career-aimpact.is-carrot-returning .crop-transition-source > b,
-.career-aimpact.is-carrot-returning .crop-transition-source > em { opacity: 1; transition: opacity .14s ease .25s; }
+.aimpact-stage,
+.daangn-stage { transform-origin: var(--carrot-origin-x) var(--carrot-origin-y); will-change: transform; }
+.career-aimpact.is-carrot-departing .aimpact-stage { transform: scale(var(--carrot-cover-scale)); transition: transform .52s cubic-bezier(.76,0,.24,1); }
+.career-aimpact.is-carrot-return-cover .aimpact-stage { transform: scale(var(--carrot-cover-scale)); transition: none; }
+.career-aimpact.is-carrot-returning .aimpact-stage { transform: scale(1); transition: transform .48s cubic-bezier(.76,0,.24,1); }
 
 .carrot-action-guide { position: absolute; z-index: 24; bottom: 39%; left: 66.3%; display: grid; opacity: var(--carrot-guide-opacity); color: #246c5a; pointer-events: none; filter: drop-shadow(0 7px 15px rgba(23,74,60,.12)); transform: translateX(-50%); transition: opacity .24s ease, transform .35s cubic-bezier(.16,1,.3,1); }
 .carrot-action-guide span { font: 750 .62rem 'DM Mono', monospace; letter-spacing: .13em; }
@@ -410,7 +396,9 @@ button.crop { appearance: none; padding: 0; border: 0; color: inherit; font: inh
 
 /* 06 — DAANGN */
 
-.career-daangn { --carrot-cover-scale: 180; --portal-root-scale: 1; --portal-root-color: #d96e32; --portal-opacity: 0; --transition-roads-opacity: 0; --map-x: 0vw; --map-y: 0vh; --explorer-x: -12vw; --explorer-y: 56vh; --explorer-opacity: 0; --route-progress: 0; --chat-opacity: 0; --next-opacity: 0; --next-y: 30px; }
+.career-aimpact,
+.career-daangn { --carrot-cover-scale: 180; --carrot-origin-x: 66.3%; --carrot-origin-y: 85%; }
+.career-daangn { --portal-opacity: 0; --map-x: 0vw; --map-y: 0vh; --explorer-x: -12vw; --explorer-y: 56vh; --explorer-opacity: 0; --route-progress: 0; --chat-opacity: 0; --next-opacity: 0; --next-y: 30px; }
 .daangn-stage { color: #2d2926; background: #fff4e8; }
 .daangn-stage::before { content: ''; position: absolute; z-index: -5; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(255, 111, 15, .1), transparent 55%), #fff4e8; }
 .daangn-stage .career-meta { color: #ff6f0f; }
@@ -419,20 +407,14 @@ button.crop { appearance: none; padding: 0; border: 0; color: inherit; font: inh
 .daangn-stage .career-copy h2 strong { color: #ff6f0f; }
 .daangn-stage .career-progress i { background: #ff6f0f; }
 
-.carrot-portal { position: absolute; z-index: 70; right: auto; bottom: 15%; left: 66.3%; opacity: var(--portal-opacity); transform: translateX(-50%) scaleY(.86); transform-origin: 50% 116%; pointer-events: none; transition: opacity .16s ease; will-change: opacity; }
-.carrot-portal::after { animation: none; background-color: var(--portal-root-color); box-shadow: 0 0 0 1px var(--portal-root-color); transform: translateX(-50%) scale(var(--portal-root-scale)); transform-origin: 50% 72%; will-change: transform, background-color; }
-.career-daangn.is-carrot-forward-cover { --portal-root-scale: var(--carrot-cover-scale); --portal-root-color: #ff6f0f; --portal-opacity: 1; --transition-roads-opacity: 1; }
-.career-daangn.is-carrot-forward-cover.is-carrot-forward-reveal { --portal-root-scale: 1; --portal-root-color: #d96e32; --transition-roads-opacity: 0; }
-.career-daangn.is-carrot-forward-reveal .carrot-portal::after { transition: transform .4s cubic-bezier(.76,0,.24,1), background-color .24s ease .1s, box-shadow .24s ease .1s; }
-.career-daangn.is-carrot-reverse-ready { --portal-root-scale: 1; --portal-opacity: 1; --transition-roads-opacity: 0; }
-.career-daangn.is-carrot-reverse-cover { --portal-root-scale: var(--carrot-cover-scale); --portal-root-color: #ff6f0f; --portal-opacity: 1; --transition-roads-opacity: 1; }
-.career-daangn.is-carrot-reverse-cover .carrot-portal::after { transition: transform .43s cubic-bezier(.76,0,.24,1), background-color .24s ease, box-shadow .24s ease; }
-
-.carrot-transition-roads { position: absolute; z-index: 71; inset: -15%; overflow: hidden; opacity: var(--transition-roads-opacity); pointer-events: none; transition: opacity .25s ease; }
-.carrot-transition-roads::before { content: ''; position: absolute; inset: 0; opacity: .16; background-image: radial-gradient(rgba(102,37,0,.55) .65px, transparent .8px), linear-gradient(112deg, transparent 46%, rgba(255,255,255,.12) 48%, transparent 51%); background-size: 8px 8px, 100% 100%; mix-blend-mode: multiply; }
-.carrot-transition-roads .map-road { background: rgba(255,253,249,.94); border-color: rgba(234,223,206,.72); box-shadow: 0 0 0 8px rgba(255,255,255,.25); }
-.career-daangn.is-carrot-forward-reveal .carrot-transition-roads { transition-duration: .3s; }
-.career-daangn.is-carrot-reverse-cover .carrot-transition-roads { transition-delay: .1s; }
+.carrot-portal { position: absolute; z-index: 70; right: auto; bottom: 15%; left: 66.3%; opacity: var(--portal-opacity); transform: translateX(-50%) scaleY(.86); transform-origin: 50% 116%; pointer-events: none; transition: opacity .12s ease; }
+.carrot-portal::after { animation: none; }
+.career-daangn.is-carrot-forward-cover,
+.career-daangn.is-carrot-reverse-ready,
+.career-daangn.is-carrot-reverse-cover { --portal-opacity: 1; }
+.career-daangn.is-carrot-forward-cover .daangn-stage { transform: scale(var(--carrot-cover-scale)); transition: none; }
+.career-daangn.is-carrot-forward-cover.is-carrot-forward-reveal .daangn-stage { transform: scale(1); transition: transform .48s cubic-bezier(.76,0,.24,1); }
+.career-daangn.is-carrot-reverse-cover .daangn-stage { transform: scale(var(--carrot-cover-scale)); transition: transform .52s cubic-bezier(.76,0,.24,1); }
 
 .neighborhood-map { position: absolute; z-index: -1; inset: -15%; opacity: .82; background-image: linear-gradient(rgba(255,111,15,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,111,15,.06) 1px, transparent 1px); background-size: 50px 50px; transform: translate3d(var(--map-x), var(--map-y), 0) rotate(-4deg) scale(1.08); }
 .map-road { position: absolute; display: block; background: #fffdf9; border: 2px solid #eadfce; box-shadow: 0 0 0 8px rgba(255,255,255,.45); }
@@ -517,6 +499,8 @@ button.crop { appearance: none; padding: 0; border: 0; color: inherit; font: inh
   .carrot-action-guide { bottom: 37%; left: 73%; }
   .carrot-action-guide small { display: none; }
 
+  .career-aimpact,
+  .career-daangn { --carrot-origin-x: 73%; --carrot-origin-y: 86%; }
   .carrot-portal { bottom: 14%; left: 73%; }
   .daangn-copy { top: 13vh; }
   .neighborhood-map { inset: -23%; }
@@ -542,11 +526,8 @@ button.crop { appearance: none; padding: 0; border: 0; color: inherit; font: inh
   .carrot-action-guide i,
   .map-pin { animation: none; }
   .crop { transition: none; }
-  .career-aimpact.is-carrot-departing .crop-transition-source,
-  .career-aimpact.is-carrot-returning .crop-transition-source,
-  .career-aimpact.is-carrot-root-expanding .crop-transition-source::after,
-  .career-aimpact.is-carrot-returning .crop-transition-source::after,
-  .career-daangn.is-carrot-forward-reveal .carrot-portal::after,
-  .career-daangn.is-carrot-reverse-cover .carrot-portal::after,
-  .carrot-transition-roads { transition-duration: .01ms; }
+  .career-aimpact.is-carrot-departing .aimpact-stage,
+  .career-aimpact.is-carrot-returning .aimpact-stage,
+  .career-daangn.is-carrot-forward-reveal .daangn-stage,
+  .career-daangn.is-carrot-reverse-cover .daangn-stage { transition-duration: .01ms; }
 }
