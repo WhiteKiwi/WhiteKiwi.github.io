@@ -367,22 +367,16 @@ button.crop { appearance: none; padding: 0; border: 0; color: inherit; font: inh
 .crop-transition-source::after { transform-origin: 50% 72%; }
 .crop-transition-source:disabled { cursor: default; }
 .crop-transition-source:focus-visible { outline: 3px solid #fff; outline-offset: 8px; filter: drop-shadow(0 0 8px rgba(56,160,128,.72)); }
-.career-aimpact.is-carrot-departing,
-.career-aimpact.is-carrot-return-cover,
-.career-aimpact.is-carrot-returning { --carrot-guide-opacity: 0; }
-.career-aimpact.is-carrot-departing .carrot-action-guide,
-.career-aimpact.is-carrot-return-cover .carrot-action-guide,
-.career-aimpact.is-carrot-returning .carrot-action-guide { opacity: 0; }
+.career-aimpact.is-carrot-departing { --carrot-guide-opacity: 0; }
+.career-aimpact.is-carrot-departing .carrot-action-guide { opacity: 0; }
 .aimpact-stage { transform-origin: var(--carrot-origin-x) var(--carrot-origin-y); }
-.career-aimpact.is-carrot-departing .aimpact-stage { transform: scale(var(--carrot-cover-scale)); transition: transform .52s cubic-bezier(.76,0,.24,1); }
+.career-aimpact.is-carrot-departing .aimpact-stage { transform: scale(var(--carrot-cover-scale)); transition: transform .48s cubic-bezier(.76,0,.24,1); }
 
-.carrot-transition-curtain { position: absolute; z-index: 120; inset: -10vh -5vw; opacity: 0; background: #d96e32; border-radius: 0 0 48% 52% / 0 0 7% 8%; transform: translate3d(0,-112%,0); visibility: hidden; pointer-events: none; will-change: opacity, transform; }
-.career-daangn.is-carrot-forward-cover .carrot-transition-curtain,
-.career-aimpact.is-carrot-return-cover .carrot-transition-curtain { opacity: 1; transform: translate3d(0,0,0); visibility: visible; transition: none; }
-.career-daangn.is-carrot-forward-cover.is-carrot-forward-reveal .carrot-transition-curtain,
-.career-aimpact.is-carrot-returning .carrot-transition-curtain { opacity: 0; transform: translate3d(0,-112%,0); visibility: visible; transition: transform .64s cubic-bezier(.76,0,.24,1), opacity .3s .3s ease; }
-.career-daangn.is-carrot-reverse-ready .carrot-transition-curtain { opacity: 1; transform: translate3d(0,-112%,0); visibility: visible; transition: none; }
-.career-daangn.is-carrot-reverse-cover .carrot-transition-curtain { opacity: 1; transform: translate3d(0,0,0); visibility: visible; transition: transform .44s cubic-bezier(.76,0,.24,1); }
+.carrot-transition-overlay { position: fixed; z-index: 1000; inset: -10vh -5vw; opacity: 0; background: #d96e32; border-radius: 0 0 48% 52% / 0 0 7% 8%; transform: translate3d(0,-112%,0); visibility: hidden; pointer-events: none; }
+.carrot-transition-overlay.is-ready { opacity: 1; transform: translate3d(0,-112%,0); visibility: visible; transition: none; }
+.carrot-transition-overlay.is-covering { opacity: 1; transform: translate3d(0,0,0); visibility: visible; transition: transform .42s cubic-bezier(.76,0,.24,1); }
+.carrot-transition-overlay.is-covered { opacity: 1; transform: translate3d(0,0,0); visibility: visible; transition: none; }
+.carrot-transition-overlay.is-revealing { opacity: 0; transform: translate3d(0,-112%,0); visibility: visible; transition: transform .68s cubic-bezier(.76,0,.24,1), opacity .32s .32s ease; }
 
 .carrot-action-guide { position: absolute; z-index: 24; bottom: 39%; left: 66.3%; display: grid; opacity: var(--carrot-guide-opacity); color: #246c5a; pointer-events: none; filter: drop-shadow(0 7px 15px rgba(23,74,60,.12)); transform: translateX(-50%); transition: opacity .24s ease, transform .35s cubic-bezier(.16,1,.3,1); }
 .carrot-action-guide span { font: 750 .62rem 'DM Mono', monospace; letter-spacing: .13em; }
@@ -520,7 +514,6 @@ button.crop { appearance: none; padding: 0; border: 0; color: inherit; font: inh
   .map-pin { animation: none; }
   .crop { transition: none; }
   .career-aimpact.is-carrot-departing .aimpact-stage,
-  .career-daangn.is-carrot-forward-reveal .carrot-transition-curtain,
-  .career-daangn.is-carrot-reverse-cover .carrot-transition-curtain,
-  .career-aimpact.is-carrot-returning .carrot-transition-curtain { transition-duration: .01ms; }
+  .carrot-transition-overlay.is-covering,
+  .carrot-transition-overlay.is-revealing { transition-duration: .01ms; }
 }

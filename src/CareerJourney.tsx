@@ -156,7 +156,6 @@ function AimpactChapter({ trackRef }: { trackRef: RefObject<HTMLElement | null> 
         </div>
         <div className="farm-soil" aria-hidden="true"><i /><i /><i /></div>
         <div className="career-progress" aria-hidden="true"><i /></div>
-        <div className="carrot-transition-curtain" aria-hidden="true" />
       </div>
     </section>
   )
@@ -196,7 +195,6 @@ function DaangnChapter({ trackRef }: { trackRef: RefObject<HTMLElement | null> }
           <span>NEXT CHAPTER</span><strong>TOSS</strong><i>곧 이어집니다</i>
         </div>
         <div className="career-progress" aria-hidden="true"><i /></div>
-        <div className="carrot-transition-curtain" aria-hidden="true" />
       </div>
     </section>
   )
@@ -209,6 +207,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
     useRef<HTMLElement>(null),
     useRef<HTMLElement>(null),
   ]
+  const transitionOverlayRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!active) return
@@ -304,6 +303,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
     const farmCrops = aimpactStage ? Array.from(aimpactStage.querySelectorAll<HTMLElement>('.crop')) : []
     const aimpactTrack = trackRefs[2].current
     const daangnTrack = trackRefs[3].current
+    const transitionOverlay = transitionOverlayRef.current
     const carrotButton = aimpactTrack?.querySelector<HTMLButtonElement>('.crop-transition-source')
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let pointerFrame = 0
@@ -396,9 +396,10 @@ export default function CareerJourney({ active }: { active: boolean }) {
       settleFarmBreeze()
     }
 
-    const zoomDuration = reducedMotion ? 20 : 520
-    const curtainCoverDuration = reducedMotion ? 20 : 440
-    const curtainRevealDuration = reducedMotion ? 20 : 640
+    const zoomDuration = reducedMotion ? 20 : 480
+    const curtainCoverDuration = reducedMotion ? 20 : 420
+    const curtainHoldDuration = reducedMotion ? 0 : 90
+    const curtainRevealDuration = reducedMotion ? 20 : 680
     const scrollToTrackProgress = (track: HTMLElement, progress: number) => {
       const trackTop = window.scrollY + track.getBoundingClientRect().top
       const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
@@ -424,9 +425,14 @@ export default function CareerJourney({ active }: { active: boolean }) {
         chapterTransitionFrame = window.requestAnimationFrame(callback)
       })
     }
+    const curtainStates = ['is-ready', 'is-covering', 'is-covered', 'is-revealing']
+    const setCurtainState = (state?: string) => {
+      transitionOverlay?.classList.remove(...curtainStates)
+      if (state) transitionOverlay?.classList.add(state)
+    }
     const resetChapterTransitionClasses = () => {
-      aimpactTrack?.classList.remove('is-carrot-departing', 'is-carrot-return-cover', 'is-carrot-returning')
-      daangnTrack?.classList.remove('is-carrot-forward-cover', 'is-carrot-forward-reveal', 'is-carrot-reverse-ready', 'is-carrot-reverse-cover')
+      aimpactTrack?.classList.remove('is-carrot-departing')
+      setCurtainState()
     }
     const finishChapterTransition = () => {
       resetChapterTransitionClasses()
@@ -444,35 +450,33 @@ export default function CareerJourney({ active }: { active: boolean }) {
       carrotButton?.blur()
       aimpactTrack.classList.add('is-carrot-departing')
       chapterTransitionTimer = window.setTimeout(() => {
-        daangnTrack.classList.add('is-carrot-forward-cover')
+        setCurtainState('is-covered')
         scrollToTrackProgress(daangnTrack, .035)
         aimpactTrack.classList.remove('is-carrot-departing')
-        onNextPaint(() => {
-          daangnTrack.classList.add('is-carrot-forward-reveal')
-          chapterTransitionTimer = window.setTimeout(() => {
-            finishChapterTransition()
-          }, curtainRevealDuration)
-        })
+        chapterTransitionTimer = window.setTimeout(() => {
+          onNextPaint(() => {
+            setCurtainState('is-revealing')
+            chapterTransitionTimer = window.setTimeout(finishChapterTransition, curtainRevealDuration)
+          })
+        }, curtainHoldDuration)
       }, zoomDuration)
     }
     triggerReverseTransition = () => {
       if (chapterTransitionLocked || !aimpactTrack || !daangnTrack) return
       resetChapterTransitionClasses()
       chapterTransitionLocked = true
-      daangnTrack.classList.add('is-carrot-reverse-ready')
+      setCurtainState('is-ready')
       onNextPaint(() => {
-        daangnTrack.classList.add('is-carrot-reverse-cover')
+        setCurtainState('is-covering')
         chapterTransitionTimer = window.setTimeout(() => {
-          aimpactTrack.classList.add('is-carrot-return-cover')
-          scrollToTrackProgress(aimpactTrack, .76)
-          daangnTrack.classList.remove('is-carrot-reverse-ready', 'is-carrot-reverse-cover')
-          onNextPaint(() => {
-            aimpactTrack.classList.remove('is-carrot-return-cover')
-            aimpactTrack.classList.add('is-carrot-returning')
-            chapterTransitionTimer = window.setTimeout(() => {
-              finishChapterTransition()
-            }, curtainRevealDuration)
-          })
+          setCurtainState('is-covered')
+          scrollToTrackProgress(aimpactTrack, .74)
+          chapterTransitionTimer = window.setTimeout(() => {
+            onNextPaint(() => {
+              setCurtainState('is-revealing')
+              chapterTransitionTimer = window.setTimeout(finishChapterTransition, curtainRevealDuration)
+            })
+          }, curtainHoldDuration)
         }, curtainCoverDuration)
       })
     }
@@ -490,11 +494,13 @@ export default function CareerJourney({ active }: { active: boolean }) {
     const holdAtAimpactPortalGate = () => {
       if (aimpactTrack) scrollToTrackProgress(aimpactTrack, portalGateProgress)
     }
-    const daangnIsAtPortalThreshold = () => {
+    const daangnWouldCrossPortalGate = (upwardDelta: number) => {
       if (!daangnTrack) return false
       const progress = Number.parseFloat(daangnTrack.style.getPropertyValue('--chapter-progress'))
       const rect = daangnTrack.getBoundingClientRect()
-      return Number.isFinite(progress) && progress < .09 && rect.top <= 1 && rect.bottom > 0
+      const distance = Math.max(daangnTrack.offsetHeight - window.innerHeight, 1)
+      const projectedProgress = progress - Math.max(upwardDelta, 0) / distance
+      return Number.isFinite(progress) && projectedProgress < .075 && rect.top <= 1 && rect.bottom > 0
     }
     const onTransitionWheel = (event: WheelEvent) => {
       if (chapterTransitionLocked) {
@@ -506,7 +512,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
         holdAtAimpactPortalGate()
         return
       }
-      if (event.deltaY < 0 && daangnIsAtPortalThreshold()) {
+      if (event.deltaY < 0 && daangnWouldCrossPortalGate(-event.deltaY)) {
         event.preventDefault()
         triggerReverseTransition()
       }
@@ -527,7 +533,8 @@ export default function CareerJourney({ active }: { active: boolean }) {
         holdAtAimpactPortalGate()
         return
       }
-      if (touchStartY !== null && currentY !== undefined && currentY - touchStartY > 8 && daangnIsAtPortalThreshold()) {
+      const upwardDelta = touchStartY !== null && currentY !== undefined ? currentY - touchStartY : 0
+      if (upwardDelta > 8 && daangnWouldCrossPortalGate(upwardDelta)) {
         event.preventDefault()
         triggerReverseTransition()
       }
@@ -551,7 +558,14 @@ export default function CareerJourney({ active }: { active: boolean }) {
         holdAtAimpactPortalGate()
         return
       }
-      if ((event.key === 'ArrowUp' || event.key === 'PageUp' || event.key === 'Home') && daangnIsAtPortalThreshold()) {
+      const reverseKeyDelta = event.key === 'Home'
+        ? Number.POSITIVE_INFINITY
+        : event.key === 'PageUp'
+          ? window.innerHeight
+          : event.key === 'ArrowUp'
+            ? 120
+            : 0
+      if (reverseKeyDelta > 0 && daangnWouldCrossPortalGate(reverseKeyDelta)) {
         event.preventDefault()
         triggerReverseTransition()
       }
@@ -588,11 +602,14 @@ export default function CareerJourney({ active }: { active: boolean }) {
   }, [active])
 
   return (
-    <div className="career-journey">
-      <WhiteblockChapter trackRef={trackRefs[0]} />
-      <FetchingChapter trackRef={trackRefs[1]} />
-      <AimpactChapter trackRef={trackRefs[2]} />
-      <DaangnChapter trackRef={trackRefs[3]} />
-    </div>
+    <>
+      <div className="career-journey">
+        <WhiteblockChapter trackRef={trackRefs[0]} />
+        <FetchingChapter trackRef={trackRefs[1]} />
+        <AimpactChapter trackRef={trackRefs[2]} />
+        <DaangnChapter trackRef={trackRefs[3]} />
+      </div>
+      <div className="carrot-transition-overlay" ref={transitionOverlayRef} aria-hidden="true" />
+    </>
   )
 }
