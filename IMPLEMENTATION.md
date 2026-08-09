@@ -28,6 +28,7 @@ pnpm build
 - `src/career-journey.css` — 배달 도로, 명품 쇼윈도, 성장하는 농장, 동네 지도와 회사별 반응형 모션
 - `public/assets/characters/kiwi-walk-cycle.png` — 3-C를 기준으로 만든 4프레임 보행 스프라이트
 - `public/assets/characters/kiwi-*.png` — 배달부·패션 큐레이터·농부·동네 탐험가로 변주한 투명 배경 캐릭터
+- `public/favicon-*.png`, `public/favicon.ico`, `public/apple-touch-icon.png` — D 미니멀 키위 심볼에서 파생한 브라우저·홈 화면 아이콘 세트
 - `src/EggLab.tsx`, `src/GlassLab.tsx`, `src/BirdLab.tsx` — 시안 비교를 위해 남긴 실험 페이지
 - `src/App.tsx` — 메인과 `?view=eggs|glass|birds|journey` 실험 뷰 진입점
 
@@ -43,12 +44,13 @@ pnpm build
 
 스크롤바가 뒤늦게 생겨도 가로 레이아웃이 움직이지 않도록 풀 블리드 장면을 viewport 폭으로 유지하고 문서의 가로 초과분을 잘라낸다. 별도의 흰 scrollbar gutter를 미리 예약하지 않는다.
 `ready` 전에는 `html`과 `body`의 native overflow·overscroll을 잠그고 프롤로그 자체의 `touch-action`을 막는다. 첫 제스처는 상태 전환만 일으키며 실제 문서는 움직이지 않고, 착지가 끝난 뒤 원래 문서 스크롤 속성을 복원한다.
+`ready` 상태의 금 간 알은 버튼으로 전환한다. 포인터 클릭 또는 키보드 활성화 시 01 트랙의 시작점으로 smooth scroll하고, 모션 감소 설정에서는 즉시 이동한다.
 
 ### Opening title morph
 
 - `Hello, w`와 `rld`, 가운데 `o`를 분리한 SVG stroke로 그려 획이 진행되는 것처럼 나타낸다.
 - 글자의 소멸과 알의 등장은 별도 장면 전환이 아니라 `world`의 `o`가 같은 화면 좌표에서 Milk Glass 알로 형태를 바꾸는 매치컷으로 연결한다.
-- 자동 인트로가 너무 길어지지 않도록 첫 필기부터 낙하 대기 상태까지 짧은 단일 시퀀스로 구성하고, 재방문·모션 감소 설정의 건너뛰기 상태를 제공한다.
+- 글자 크기와 획의 존재감을 충분히 확보하고, 필기 과정을 읽을 수 있도록 기존보다 여유 있는 단일 시퀀스로 구성한다. 재방문·모션 감소 설정의 건너뛰기 상태를 제공한다.
 
 ### Introduction scroll track
 
@@ -83,6 +85,12 @@ pnpm build
 - 키위는 대학 진학 구간에 들어오면 보행 속도를 낮춰 화면 안에 머물고, 학사모와 진학 문구가 함께 읽힌 뒤 다음 챕터로 이동한다.
 
 ## Visual system
+
+### Browser identity
+
+- favicon은 1차 시안 D의 크림 배경, 물방울형 갈색 몸, 금색 부리, 짙은 눈으로 구성한 세 형태 심볼을 사용한다.
+- 작은 브라우저 탭은 16 px·32 px PNG와 multi-size ICO를 제공하고, 홈 화면은 180 px Apple touch icon을 사용한다.
+- 원본 시안은 `public/assets/favicon-concepts/d-three-shape.png`에 보존하고 실제 로딩 에셋은 필요한 크기로 축소해 초기 전송량을 제한한다.
 
 ### Prologue
 

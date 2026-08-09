@@ -4,7 +4,7 @@
 
 ## P0 — 다음 사용자 확인 범위
 
-- [ ] `Hello, world` 필기와 `o → Milk Glass 알` 매치컷의 속도·글자 스타일 사용자 확인
+- [ ] 느려지고 굵고 커진 `Hello, world` 필기와 `o → Milk Glass 알` 매치컷 사용자 확인
 - [ ] 01 소개 페이지의 키네틱 타이포와 Contact Dock 디자인 최종 확인
 - [ ] 02 학력 페이지의 CNSA 블루·벚꽃·교정 톤과 스크롤 모션 확인
 - [ ] 충남삼성고 IT 과정 프로젝트별 역할·기술·결과를 확인해 제목 이상의 설명을 추가
@@ -43,8 +43,6 @@
 - [ ] 이미지 크기와 포맷 최적화, preload 정책 결정
 - [ ] SEO metadata와 기본 구조화 데이터 추가
 - [ ] `whitekiwi` 정체성에 맞는 Open Graph 이미지 제작·설정
-- [ ] 알 또는 키위 심볼 기반 favicon 세트 제작·설정
-- [ ] GitHub Pages가 `portfolio.whitekiwi.link` 인증서를 발급하면 HTTPS 강제를 활성화하고 인증서 이름 검증
 
 ## Known intentional differences
 
