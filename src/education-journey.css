@@ -462,10 +462,29 @@
   pointer-events: none;
 }
 
+.education-petal-wind {
+  position: absolute;
+  top: 0;
+  left: var(--petal-left);
+  width: 0;
+  height: 0;
+  --petal-wind-x: 0px;
+  --petal-wind-y: 0px;
+  --petal-wind-turn: 0deg;
+  transform: translate3d(var(--petal-wind-x), var(--petal-wind-y), 0) rotate(var(--petal-wind-turn));
+  transition: transform 1.65s cubic-bezier(.16, 1.18, .32, 1);
+  will-change: transform;
+}
+
+.education-petal-wind.is-gusting {
+  transition-duration: .08s;
+  transition-timing-function: cubic-bezier(.16, 1, .3, 1);
+}
+
 .education-petal {
   position: absolute;
   top: -18vh;
-  left: var(--petal-left);
+  left: 0;
   display: block;
   width: clamp(8px, .85vw, 14px);
   height: clamp(12px, 1.25vw, 20px);
@@ -811,5 +830,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .education-petal { display: none; }
+  .education-petal-wind { display: none; }
 }

@@ -107,7 +107,15 @@ export default function EducationJourney({ active }: { active: boolean }) {
     if (!track) return
 
     const projectCards = Array.from(track.querySelectorAll<HTMLElement>('.education-project-card'))
+    const stage = track.querySelector<HTMLElement>('.education-stage')
+    const petalWinds = Array.from(track.querySelectorAll<HTMLElement>('.education-petal-wind'))
+    const pointerWindEnabled = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      && window.matchMedia('(pointer: fine)').matches
     let animationFrame = 0
+    let pointerAnimationFrame = 0
+    let petalSettleTimer = 0
+    let lastPointer: { x: number; y: number; time: number } | null = null
+    let pendingWind: { x: number; y: number; velocityX: number; velocityY: number } | null = null
 
     const clamp = (value: number) => Math.min(Math.max(value, 0), 1)
     const reveal = (progress: number, start: number, end: number) => clamp((progress - start) / (end - start))
@@ -172,13 +180,100 @@ export default function EducationJourney({ active }: { active: boolean }) {
       if (!animationFrame) animationFrame = window.requestAnimationFrame(updateProgress)
     }
 
+    const settlePetals = () => {
+      petalWinds.forEach((petal) => {
+        petal.classList.remove('is-gusting')
+        petal.style.setProperty('--petal-wind-x', '0px')
+        petal.style.setProperty('--petal-wind-y', '0px')
+        petal.style.setProperty('--petal-wind-turn', '0deg')
+      })
+    }
+
+    const updatePetalWind = () => {
+      pointerAnimationFrame = 0
+      const wind = pendingWind
+      if (!wind) return
+
+      const radius = Math.min(Math.max(window.innerWidth * .2, 210), 340)
+      const petalRects = petalWinds.map((petal) => ({
+        petal,
+        rect: petal.querySelector<HTMLElement>('.education-petal')?.getBoundingClientRect(),
+      }))
+
+      petalRects.forEach(({ petal, rect }) => {
+        if (!rect) return
+        const petalX = rect.left + rect.width / 2
+        const petalY = rect.top + rect.height / 2
+        const distance = Math.hypot(petalX - wind.x, petalY - wind.y)
+        const proximity = Math.max(0, 1 - distance / radius)
+        const influence = proximity * proximity
+
+        if (influence <= .002) {
+          petal.classList.remove('is-gusting')
+          petal.style.setProperty('--petal-wind-x', '0px')
+          petal.style.setProperty('--petal-wind-y', '0px')
+          petal.style.setProperty('--petal-wind-turn', '0deg')
+          return
+        }
+
+        const depth = Number(petal.dataset.petalDepth ?? 0)
+        const depthStrength = .74 + depth * .18
+        const windX = wind.velocityX * 4.2 * influence * depthStrength
+        const windY = wind.velocityY * 1.8 * influence * depthStrength
+        const windTurn = (wind.velocityX * 1.45 + wind.velocityY * .35) * influence * depthStrength
+
+        petal.classList.add('is-gusting')
+        petal.style.setProperty('--petal-wind-x', `${windX.toFixed(2)}px`)
+        petal.style.setProperty('--petal-wind-y', `${windY.toFixed(2)}px`)
+        petal.style.setProperty('--petal-wind-turn', `${windTurn.toFixed(2)}deg`)
+      })
+
+      if (petalSettleTimer) window.clearTimeout(petalSettleTimer)
+      petalSettleTimer = window.setTimeout(settlePetals, 110)
+    }
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (!pointerWindEnabled || (event.pointerType && event.pointerType !== 'mouse')) return
+      const now = performance.now()
+      if (!lastPointer) {
+        lastPointer = { x: event.clientX, y: event.clientY, time: now }
+        return
+      }
+
+      const elapsed = Math.max(now - lastPointer.time, 8)
+      const normalizeToFrame = 16.67 / elapsed
+      const clampVelocity = (value: number) => Math.min(Math.max(value, -22), 22)
+      pendingWind = {
+        x: event.clientX,
+        y: event.clientY,
+        velocityX: clampVelocity((event.clientX - lastPointer.x) * normalizeToFrame),
+        velocityY: clampVelocity((event.clientY - lastPointer.y) * normalizeToFrame),
+      }
+      lastPointer = { x: event.clientX, y: event.clientY, time: now }
+
+      if (!pointerAnimationFrame) pointerAnimationFrame = window.requestAnimationFrame(updatePetalWind)
+    }
+
+    const resetPetalWind = () => {
+      lastPointer = null
+      pendingWind = null
+      if (petalSettleTimer) window.clearTimeout(petalSettleTimer)
+      settlePetals()
+    }
+
     updateProgress()
     window.addEventListener('scroll', requestUpdate, { passive: true })
     window.addEventListener('resize', requestUpdate)
+    stage?.addEventListener('pointermove', onPointerMove, { passive: true })
+    stage?.addEventListener('pointerleave', resetPetalWind)
     return () => {
       if (animationFrame) window.cancelAnimationFrame(animationFrame)
+      if (pointerAnimationFrame) window.cancelAnimationFrame(pointerAnimationFrame)
+      if (petalSettleTimer) window.clearTimeout(petalSettleTimer)
       window.removeEventListener('scroll', requestUpdate)
       window.removeEventListener('resize', requestUpdate)
+      stage?.removeEventListener('pointermove', onPointerMove)
+      stage?.removeEventListener('pointerleave', resetPetalWind)
     }
   }, [active])
 
@@ -201,7 +296,14 @@ export default function EducationJourney({ active }: { active: boolean }) {
 
         <div className="education-petals" aria-hidden="true">
           {Array.from({ length: petalCount }, (_, index) => (
-            <i className={`education-petal education-petal-${index % 3}`} style={petalStyles[index]} key={index} />
+            <span
+              className="education-petal-wind"
+              data-petal-depth={index % 3}
+              style={petalStyles[index]}
+              key={index}
+            >
+              <i className={`education-petal education-petal-${index % 3}`} />
+            </span>
           ))}
         </div>
 
