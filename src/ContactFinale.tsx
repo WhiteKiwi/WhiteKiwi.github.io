@@ -87,7 +87,8 @@ export default function ContactFinale({ active }: { active: boolean }) {
   const [bootCommand, setBootCommand] = useState('')
   const [bootReady, setBootReady] = useState(false)
   const [isStrolling, setIsStrolling] = useState(false)
-  const [peekKey, setPeekKey] = useState(0)
+  // 0이면 DOM에 없다. 재생 중에만 마운트해 장면 전환 때 터미널 없이 노출되지 않게 한다.
+  const [peekRun, setPeekRun] = useState(0)
   const notFoundCountRef = useRef(0)
 
   const commandHistory = useMemo(() => entries.map((entry) => entry.command).filter(Boolean), [entries])
@@ -501,7 +502,7 @@ export default function ContactFinale({ active }: { active: boolean }) {
       // 첫 오답은 그냥 넘기고 두 번째부터 키위가 터미널 뒤에서 빼꼼 올라온다.
       // 한 번 만에 나오면 우연이 아니라 기능처럼 보여서 발견하는 재미가 줄어든다.
       notFoundCountRef.current += 1
-      if (notFoundCountRef.current >= 2) setPeekKey((current) => current + 1)
+      if (notFoundCountRef.current >= 2) setPeekRun((current) => current + 1)
     }
 
     nextEntryIdRef.current += 1
@@ -566,8 +567,13 @@ export default function ContactFinale({ active }: { active: boolean }) {
           <p>좋은 제품에 관한 흥미로운 이야기라면,<br />언제든 반갑습니다.</p>
         </div>
 
-        {peekKey > 0 && (
-          <div className="contact-kiwi-peek" key={peekKey} aria-hidden="true">
+        {peekRun > 0 && (
+          <div
+            className="contact-kiwi-peek"
+            key={peekRun}
+            aria-hidden="true"
+            onAnimationEnd={() => setPeekRun(0)}
+          >
             <img src="/assets/characters/kiwi-peek.png" alt="" />
           </div>
         )}
