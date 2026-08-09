@@ -109,11 +109,10 @@ const buildWhoami = (): TerminalLine[] => {
 
   if (narrow) {
     return [
+      ...bubble,
       ...art.map((line) => ({ text: line, tone: 'accent' as const })),
       { text: '', tone: 'default' as const },
       ...kiwiFacts.map((fact) => ({ text: fact, tone: 'default' as const })),
-      { text: '', tone: 'default' as const },
-      ...bubble,
     ]
   }
 
@@ -123,7 +122,7 @@ const buildWhoami = (): TerminalLine[] => {
     const fact = kiwiFacts[index - offset] ?? ''
     return { text: `${line.padEnd(artWidth)}   ${fact}`.trimEnd(), tone: 'default' as const }
   })
-  return [...fetch, { text: '', tone: 'default' as const }, ...bubble]
+  return [...bubble, ...fetch]
 }
 
 /** 실제 인용문 대신 이 포트폴리오의 목소리로 쓴 문장만 사용한다. */
@@ -170,17 +169,17 @@ const wrapCells = (text: string, max: number) => {
   return lines
 }
 
-/** 말풍선은 왼쪽 위의 키위가 말하는 것처럼 꼬리를 위로 올린다. */
+/** 말풍선이 먼저 오고 꼬리가 아래로 내려가 그 아래의 키위를 가리킨다. */
 const buildBubble = (max: number): TerminalLine[] => {
   const quote = fortunes[Math.floor(Math.random() * fortunes.length)]
   const rows = wrapCells(quote, max)
   const width = rows.reduce((longest, row) => Math.max(longest, cellWidth(row)), 0)
   return [
-    { text: '     /', tone: 'muted' },
-    { text: '    /', tone: 'muted' },
     { text: `.${'_'.repeat(width + 2)}.`, tone: 'default' },
     ...rows.map((row) => ({ text: `| ${padCells(row, width)} |`, tone: 'accent' as const })),
     { text: `'${'-'.repeat(width + 2)}'`, tone: 'default' },
+    { text: '   \\', tone: 'muted' },
+    { text: '    \\', tone: 'muted' },
   ]
 }
 
