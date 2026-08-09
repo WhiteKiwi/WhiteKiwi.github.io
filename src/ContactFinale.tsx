@@ -12,6 +12,8 @@ type OutputTone = 'default' | 'muted' | 'accent' | 'error' | 'success'
 type TerminalLine = {
   text: string
   tone?: OutputTone
+  /** 아스키 격자를 정확히 맞춰야 하는 줄. 한글까지 2:1인 고정폭 글꼴로 렌더한다. */
+  grid?: boolean
 }
 
 type TerminalEntry = {
@@ -103,26 +105,32 @@ const padCells = (text: string, width: number) => text + ' '.repeat(Math.max(0, 
 
 const buildWhoami = (): TerminalLine[] => {
   const narrow = window.innerWidth < 760
-  const art = narrow ? kiwiArtNarrow : kiwiArtWide
-  const artWidth = art.reduce((max, line) => Math.max(max, line.length), 0)
-  const bubble = buildBubble(narrow ? 30 : 64)
 
   if (narrow) {
+    // 두 열이 들어가지 않으므로 말풍선을 위에 쌓고 꼬리를 아래로 내린다.
     return [
-      ...bubble,
-      ...art.map((line) => ({ text: line, tone: 'accent' as const })),
+      ...buildBubble(30).map((line) => ({ text: line, tone: 'default' as const, grid: true })),
+      { text: '   \\', tone: 'muted' as const, grid: true },
+      { text: '    \\', tone: 'muted' as const, grid: true },
+      ...kiwiArtNarrow.map((line) => ({ text: line, tone: 'accent' as const, grid: true })),
       { text: '', tone: 'default' as const },
-      ...kiwiFacts.map((fact) => ({ text: fact, tone: 'default' as const })),
+      ...kiwiFacts.map((fact) => ({ text: fact, tone: 'default' as const, grid: true })),
     ]
   }
 
-  // 정보 블록을 아트 높이의 가운데에 맞춘다.
-  const offset = Math.max(0, Math.floor((art.length - kiwiFacts.length) / 2))
-  const fetch = art.map((line, index) => {
-    const fact = kiwiFacts[index - offset] ?? ''
-    return { text: `${line.padEnd(artWidth)}   ${fact}`.trimEnd(), tone: 'default' as const }
-  })
-  return [...bubble, ...fetch]
+  // 오른쪽 열은 말풍선이 위, 정보가 아래다. 클로즈업의 부리가 오른쪽을 향하고 있어
+  // 말풍선이 그 연장선에 놓이므로 따로 꼬리를 그리지 않는다.
+  const art = kiwiArtWide
+  const artWidth = art.reduce((max, line) => Math.max(max, line.length), 0)
+  const right = [...buildBubble(46), '', ...kiwiFacts]
+  const offset = 1
+  const rows = Math.max(art.length, right.length + offset)
+
+  return Array.from({ length: rows }, (_, index) => ({
+    text: `${(art[index] ?? '').padEnd(artWidth)}   ${right[index - offset] ?? ''}`.trimEnd(),
+    tone: 'default' as const,
+    grid: true,
+  }))
 }
 
 /** 실제 인용문 대신 이 포트폴리오의 목소리로 쓴 문장만 사용한다. */
@@ -169,17 +177,14 @@ const wrapCells = (text: string, max: number) => {
   return lines
 }
 
-/** 말풍선이 먼저 오고 꼬리가 아래로 내려가 그 아래의 키위를 가리킨다. */
-const buildBubble = (max: number): TerminalLine[] => {
+const buildBubble = (max: number) => {
   const quote = fortunes[Math.floor(Math.random() * fortunes.length)]
   const rows = wrapCells(quote, max)
   const width = rows.reduce((longest, row) => Math.max(longest, cellWidth(row)), 0)
   return [
-    { text: `.${'_'.repeat(width + 2)}.`, tone: 'default' },
-    ...rows.map((row) => ({ text: `| ${padCells(row, width)} |`, tone: 'accent' as const })),
-    { text: `'${'-'.repeat(width + 2)}'`, tone: 'default' },
-    { text: '   \\', tone: 'muted' },
-    { text: '    \\', tone: 'muted' },
+    `.${'_'.repeat(width + 2)}.`,
+    ...rows.map((row) => `| ${padCells(row, width)} |`),
+    `'${'-'.repeat(width + 2)}'`,
   ]
 }
 
@@ -742,7 +747,7 @@ export default function ContactFinale({ active }: { active: boolean }) {
               <div className="terminal-entry" key={entry.id}>
                 <p className="terminal-entry-command"><span>visitor@portfolio %</span> {entry.command}</p>
                 <div className="terminal-entry-output">
-                  {entry.lines.map((line, index) => <span className={`is-${line.tone ?? 'default'}`} style={{ '--line-delay': `${index * 45}ms` } as CSSProperties} key={`${line.text}-${index}`}>{line.text}</span>)}
+                  {entry.lines.map((line, index) => <span className={`is-${line.tone ?? 'default'}${line.grid ? ' is-grid' : ''}`} style={{ '--line-delay': `${index * 45}ms` } as CSSProperties} key={`${line.text}-${index}`}>{line.text}</span>)}
                 </div>
               </div>
             ))}

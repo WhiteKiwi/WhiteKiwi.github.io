@@ -219,6 +219,9 @@
 .terminal-entry-command span { color: #e8ad45; }
 .terminal-entry-output { display: grid; margin: 5px 0 0 17px; }
 .terminal-entry-output > span { color: #e7e9e3; white-space: pre-wrap; word-break: break-word; animation: terminal-line-in .32s cubic-bezier(.22, 1, .36, 1) both; animation-delay: var(--line-delay); }
+/* DM Mono에는 한글이 없어 한글만 다른 글꼴로 떨어지고, 그 폭이 라틴의 1.44배라 아스키 격자가 깨진다.
+   Nanum Gothic Coding은 한글이 라틴의 정확히 2배라 격자가 맞는다. */
+.terminal-entry-output .is-grid { font-family: 'Nanum Gothic Coding', monospace; }
 .terminal-entry-output .is-muted { color: rgba(231, 233, 227, .44); }
 .terminal-entry-output .is-accent { color: #e8ad45; }
 .terminal-entry-output .is-error { color: #ff766b; }
