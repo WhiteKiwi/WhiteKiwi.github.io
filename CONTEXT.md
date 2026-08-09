@@ -77,6 +77,7 @@
 - 정상 명령은 `help`, `whoami`, `open linkedin`, `open instagram`, `open email`로 제한한다. 사용자가 예시에서 쓴 `open instargram` 오타도 Instagram을 여는 호환 alias로 지원한다.
 - `open`만 입력했을 때는 `command not found` 대신 사용법과 허용 채널을 보여준다. open 문법 자체를 발견하는 도움말로 취급한다.
 - 2026-08-09 사용자는 Contact 피날레 하단에도 Introduction처럼 이메일과 외부 프로필 링크를 원한다. 터미널 명령 제한은 유지하되 직접 링크를 병행한다.
+- 2026-08-09 사용자는 Contact 화면을 완성하기까지 스크롤이 다소 길다고 느껴, 장면 구성은 유지하면서 필요한 실제 스크롤 거리를 소폭 줄이길 원한다.
 - Portfolio Guidelines는 링크 전용 상태를 끝내고 Contact 피날레의 `RUN AGAIN` 주변에 메인 여정의 첫 진입점을 둔다. 다른 장면에는 추가하지 않는다.
 - 2026-08-09 Contact 보조 문구는 `좋은 제품에 관한 흥미로운 이야기라면, 언제든 반갑습니다.`로 확정했다.
 - 터미널에 `clear` 명령을 추가한다. 현재 화면 출력만 숨기는 것이 아니라 같은 탭에 남긴 명령 히스토리도 함께 초기화한다.
@@ -97,6 +98,7 @@
 ## Visual references supplied by the user
 
 - Tossface: <https://toss.im/tossface>
+- 2026-08-09 사용자는 상세 내용을 채우기 전 Toss 페이지를 자연스러운 `loading / 현재진행형` 상태로 먼저 만들고, Toss 브랜드 리소스 센터 <https://brand.toss.im/>를 시각 레퍼런스로 제시했다. 공식 브랜드 컬러는 Toss Blue `#0064FF`, Toss Gray `#202632`이며 공식 로고는 변형하지 않는다.
 - Takeit 사업 제안서 PDF: 사용자가 다운로드 폴더에 저장했다고 알려줌. 저장소에는 포함하지 않음.
 - 이전 이력서 `장지훈.pdf`: 사용자가 다운로드 폴더에 있다고 알려줌. 저장소에는 포함하지 않음.
 - 충남삼성고등학교 UI: <https://www.cnsa.hs.kr/sub01/sub05.php>
@@ -169,7 +171,7 @@
 
 ## Open questions
 
-- Toss와 Toss Income 장면의 구체적인 프로젝트와 시각 테마
+- Toss와 Toss Income 현재진행형 장면에 채울 구체적인 프로젝트와 공개 가능한 서사
 - 회사별 공개 가능한 성과 수치와 기술적 설명
 - 최종 사이트의 한국어/영어 범위
 - 커스텀 도메인 재사용 여부

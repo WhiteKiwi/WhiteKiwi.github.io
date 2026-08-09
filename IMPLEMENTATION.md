@@ -26,6 +26,7 @@ pnpm build
 - `src/education-journey.css` — CNSA 컬러, 학교 건물, 벚꽃, 학력 타이포와 반응형 표현
 - `src/CareerJourney.tsx` — 03 화이트블록부터 06 당근까지 네 경력 트랙의 공통 진행률과 회사별 장면 구조
 - `src/career-journey.css` — 배달 도로, 명품 쇼윈도, 성장하는 농장, 동네 지도와 회사별 반응형 모션
+- `src/TossOngoing.tsx`, `src/toss-ongoing.css` — 07 Toss·Toss Income을 상세 콘텐츠 전까지 현재진행형 상태로 보여주는 독립 트랙
 - `src/ContactFinale.tsx`, `src/contact-finale.css` — 현재 여정 끝의 실제 터미널형 Contact 피날레와 스크롤·포인터 반응
 - `public/assets/characters/kiwi-walk-cycle.png` — 3-C를 기준으로 만든 4프레임 보행 스프라이트
 - `public/assets/characters/kiwi-graduate-walk-cycle.png` — 기본 보행 실루엣과 프레임 간격을 유지하면서 학사모를 일체화한 Education 전용 4프레임 스프라이트
@@ -40,7 +41,7 @@ pnpm build
 
 ### Chapter deep links
 
-- 메인 여정의 바로가기는 `#01`부터 `#06`까지 짧은 hash와 `#01-intro` 같은 설명형 alias를 지원한다.
+- 메인 여정의 바로가기는 `#01`부터 `#07`까지 짧은 hash와 `#01-intro` 같은 설명형 alias를 지원한다.
 - `#00`과 `#00-prologue`는 검토용 ready 상태로 이동하지 않는다. 해시를 제거하고 `/` 기본 진입과 같은 오프닝 상태로 시작한다.
 - 번호를 예약하지 않는 최종 화면용 `#contact` hash도 지원한다. 이후 07 이상 경력 챕터가 추가돼도 Contact 주소는 유지한다.
 - 유효한 hash로 처음 진입하면 오프닝·낙하 대기 상태를 건너뛰어 문서 스크롤 잠금을 즉시 해제한다.
@@ -48,10 +49,19 @@ pnpm build
 - 같은 문서에서 hash가 바뀌는 경우에도 새로고침 없이 목표 챕터로 이동하며 브라우저 history와 직접 공유 가능한 URL은 유지한다.
 - 알 수 없는 hash는 무시해 기존 기본 진입 경험에 영향을 주지 않는다.
 
+### Toss ongoing chapter
+
+- 06 뒤, Contact 앞에 별도 sticky track으로 배치해 이후 상세 경력 장면으로 확장해도 기존 03—06 상태 계산과 Contact 터미널을 건드리지 않게 한다.
+- 진행률은 컴포넌트 내부에서 현재 보이는 트랙만 갱신하고, 큰 헤드라인·상태 카드·Contact 출구의 조립에만 사용한다.
+- 공식 색상인 Toss Blue `#0064FF`, Toss Gray `#202632`와 흰색을 사용하고 로고 대신 타이포와 제품 상태 UI로 정체성을 만든다.
+- 로딩 바와 live dot은 반복 ambient motion으로 현재진행형을 표현한다. 모션 감소 환경에서는 반복을 멈추고 정적인 진행 상태로 대체한다.
+- `#07`, `#07-toss`, `#07-ongoing`은 현재진행형 장면의 대표 상태로 이동한다.
+
 ### Contact finale
 
-- Career Journey 뒤에 독립 컴포넌트로 붙여, 이후 Toss·Toss Income이 구현되면 코드 순서만 옮길 수 있게 한다.
+- Toss ongoing chapter 뒤에 독립 컴포넌트로 붙인다.
 - 긴 track 안의 sticky stage에서 스크롤 진행률을 계산해 프롬프트형 헤드라인과 터미널을 조립하고, 포인터 입력이 가능한 환경에서는 배경의 앰버 글로우만 느리게 따라오게 한다.
+- 터미널 조립 순서는 유지하되 트랙의 실제 진행 거리는 데스크톱과 모바일 모두 기존보다 약 20% 줄여 적은 스크롤로 최종 상태에 도달하게 한다.
 - 터미널은 제어된 text input과 submit form으로 구현한다. 공개 명령은 `help`, `whoami`, `open github`, `open blog`, `open linkedin`, `open instagram`, `open email`, `clear`이며 `open instargram`은 사용자 입력 호환 alias로 처리한다.
 - 숨은 `iloveyou` 분기는 `I love you too` 한 줄을 반환하지만 공개 명령 배열에는 넣지 않아 help 출력과 shortcut 렌더에서 제외한다.
 - `cd`로 시작하는 입력은 `permission denied`, 그 밖의 미지원 입력은 `command not found` 결과를 추가한다. 명령과 출력은 시간순 entry로 렌더하고 `sessionStorage`에 저장하며 위·아래 화살표로 입력 명령 history를 탐색한다.

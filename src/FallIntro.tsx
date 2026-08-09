@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
 import EducationJourney from './EducationJourney'
 import CareerJourney from './CareerJourney'
+import TossOngoing from './TossOngoing'
 import ContactFinale from './ContactFinale'
 import './fall-intro.css'
 
@@ -19,6 +20,9 @@ const chapterDeepLinks: Record<string, { selector: string; progress: number }> =
   '#05-aimpact': { selector: '.career-aimpact', progress: .18 },
   '#06': { selector: '.career-daangn', progress: .18 },
   '#06-daangn': { selector: '.career-daangn', progress: .18 },
+  '#07': { selector: '.toss-ongoing-track', progress: .24 },
+  '#07-toss': { selector: '.toss-ongoing-track', progress: .24 },
+  '#07-ongoing': { selector: '.toss-ongoing-track', progress: .24 },
   '#contact': { selector: '.contact-finale-track', progress: .22 },
 }
 
@@ -511,6 +515,7 @@ export default function FallIntro() {
       <WalkingIntroduction trackRef={introTrackRef} showScrollCue={showIntroScrollCue} />
       <EducationJourney active={phase === 'ready'} />
       <CareerJourney active={phase === 'ready'} />
+      <TossOngoing active={phase === 'ready'} />
       <ContactFinale active={phase === 'ready'} />
     </main>
   )
