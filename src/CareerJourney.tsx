@@ -128,14 +128,21 @@ function AimpactChapter({ trackRef }: { trackRef: RefObject<HTMLElement | null> 
         <article className="career-copy aimpact-copy">
           <span className="career-kicker">BACKEND DEVELOPER · REPLANT THE SYSTEM</span>
           <h2>서비스의 기반을,<br /><strong>다시 심었습니다</strong></h2>
-          <p>농부가 쓰는 주문 관리 서비스 <b>어레인지</b>의<br />오래된 기반을 걷어내고 다시 만들었습니다</p>
+          <p>직거래 주문처리 플랫폼 <b>어레인지</b>의<br />오래된 기반을 걷어내고 다시 만들었습니다</p>
         </article>
-        <div className="farm-field" aria-hidden="true">
-          {Array.from({ length: 10 }, (_, index) => (
-            <span className={`crop crop-${index % 3}`} style={{ '--index': index } as IndexedStyle} key={index}>
+        <div className="farm-field">
+          {Array.from({ length: 10 }, (_, index) => index === 4 ? (
+            <button className="crop crop-1 crop-transition-source" type="button" style={{ '--index': index } as IndexedStyle} aria-label="당근을 눌러 다음 경력으로 이동" aria-describedby="carrot-action-guide" key={index}>
+              <i /><b /><em />
+            </button>
+          ) : (
+            <span className={`crop crop-${index % 3}`} style={{ '--index': index } as IndexedStyle} aria-hidden="true" key={index}>
               <i /><b /><em />
             </span>
           ))}
+        </div>
+        <div className="carrot-action-guide" id="carrot-action-guide">
+          <span>CLICK THE CARROT</span><small>당근을 눌러 다음 장면으로</small><i aria-hidden="true" />
         </div>
         <ol className="aimpact-notes">
           {aimpactNotes.map(([number, title, body], index) => (
@@ -145,13 +152,9 @@ function AimpactChapter({ trackRef }: { trackRef: RefObject<HTMLElement | null> 
           ))}
         </ol>
         <div className="kiwi-farmer" aria-hidden="true">
-          <div className="water-stream">
-            {Array.from({ length: 7 }, (_, index) => <i style={{ '--index': index } as IndexedStyle} key={index} />)}
-          </div>
           <img src="/assets/characters/kiwi-farmer.png" alt="" />
         </div>
         <div className="farm-soil" aria-hidden="true"><i /><i /><i /></div>
-        <div className="aimpact-carrot-transition" aria-hidden="true"><i /><b /></div>
         <div className="career-progress" aria-hidden="true"><i /></div>
       </div>
     </section>
@@ -163,7 +166,7 @@ function DaangnChapter({ trackRef }: { trackRef: RefObject<HTMLElement | null> }
     <section className="career-track career-daangn" ref={trackRef} aria-label="당근 경력">
       <div className="career-stage daangn-stage">
         <ChapterMeta number="06" company="DAANGN" period="2021.05—2021.08" />
-        <div className="carrot-portal" aria-hidden="true"><i /></div>
+        <div className="carrot-portal crop crop-1" style={{ '--index': 4 } as IndexedStyle} aria-hidden="true"><i /><b /><em /></div>
         <div className="neighborhood-map" aria-hidden="true">
           <i className="map-road road-a" /><i className="map-road road-b" /><i className="map-road road-c" />
           {Array.from({ length: 8 }, (_, index) => <span className={`map-house house-${index + 1}`} key={index}><i /></span>)}
@@ -215,6 +218,12 @@ export default function CareerJourney({ active }: { active: boolean }) {
     const visibility = (progress: number, enterStart: number, enterEnd: number, exitStart: number, exitEnd: number) => (
       Math.min(reveal(progress, enterStart, enterEnd), 1 - reveal(progress, exitStart, exitEnd))
     )
+    let scrollingUp = false
+    let lastPageY = window.scrollY
+    let chapterTransitionLocked = false
+    let chapterTransitionTimer = 0
+    let chapterTransitionFrame = 0
+    let triggerReverseTransition = () => {}
 
     const updateTrack = (track: HTMLElement, index: number) => {
       const rect = track.getBoundingClientRect()
@@ -253,18 +262,13 @@ export default function CareerJourney({ active }: { active: boolean }) {
       } else if (index === 2) {
         const seed = 1 - smoothstep(reveal(progress, .01, .15))
         const grow = smoothstep(reveal(progress, .23, .68))
-        const carrotTransition = smoothstep(reveal(progress, .84, .995))
         track.style.setProperty('--seed-opacity', String(seed))
         track.style.setProperty('--seed-turn', `${reveal(progress, .01, .15) * -16}deg`)
         track.style.setProperty('--crop-grow', String(grow))
-        track.style.setProperty('--water-opacity', String(visibility(progress, .18, .28, .63, .72)))
         track.style.setProperty('--farmer-opacity', String(visibility(progress, .11, .22, .78, .88)))
         track.style.setProperty('--farm-sun-y', `${progress * 8}vh`)
-        track.style.setProperty('--carrot-transition-scale', String(carrotTransition))
-        track.style.setProperty('--carrot-transition-leaf-opacity', String(1 - reveal(progress, .89, .97)))
+        track.style.setProperty('--carrot-guide-opacity', String(visibility(progress, .68, .74, .96, .995)))
       } else {
-        const portal = smoothstep(reveal(progress, .01, .17))
-        track.style.setProperty('--portal-scale', String(portal))
         track.style.setProperty('--map-x', `${(progress - .5) * -10}vw`)
         track.style.setProperty('--map-y', `${(progress - .5) * 8}vh`)
         track.style.setProperty('--explorer-x', `${-12 + progress * 100}vw`)
@@ -274,11 +278,17 @@ export default function CareerJourney({ active }: { active: boolean }) {
         track.style.setProperty('--chat-opacity', String(visibility(progress, .46, .56, .73, .82)))
         track.style.setProperty('--next-opacity', String(reveal(progress, .82, .94)))
         track.style.setProperty('--next-y', `${(1 - reveal(progress, .82, .94)) * 30}px`)
+        if (scrollingUp && progress > .002 && progress < .075 && rect.top <= 1 && !chapterTransitionLocked) {
+          triggerReverseTransition()
+        }
       }
     }
 
     const updateProgress = () => {
       animationFrame = 0
+      const nextPageY = window.scrollY
+      scrollingUp = nextPageY < lastPageY - 1
+      lastPageY = nextPageY
       trackRefs.forEach((ref, index) => {
         if (ref.current) updateTrack(ref.current, index)
       })
@@ -287,13 +297,180 @@ export default function CareerJourney({ active }: { active: boolean }) {
       if (!animationFrame) animationFrame = window.requestAnimationFrame(updateProgress)
     }
 
+    const aimpactStage = trackRefs[2].current?.querySelector<HTMLElement>('.aimpact-stage')
+    const farmCrops = aimpactStage ? Array.from(aimpactStage.querySelectorAll<HTMLElement>('.crop')) : []
+    const aimpactTrack = trackRefs[2].current
+    const daangnTrack = trackRefs[3].current
+    const carrotButton = aimpactTrack?.querySelector<HTMLButtonElement>('.crop-transition-source')
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    let pointerFrame = 0
+    let breezeSettleFrame = 0
+    let breezeResetTimer = 0
+    let lastPointerX: number | null = null
+    let lastPointerTime = 0
+    let pendingPointerX = 0
+    let pendingBreeze = 0
+    const currentBreeze = farmCrops.map(() => 0)
+
+    const resetFarmBreeze = () => {
+      farmCrops.forEach((crop, index) => {
+        currentBreeze[index] = 0
+        crop.classList.remove('is-breezy', 'is-settling')
+        crop.style.setProperty('--crop-breeze', '0deg')
+      })
+    }
+    const settleFarmBreeze = () => {
+      if (breezeSettleFrame) window.cancelAnimationFrame(breezeSettleFrame)
+      const startedAt = performance.now()
+      const startingBreeze = [...currentBreeze]
+      farmCrops.forEach((crop) => {
+        crop.classList.remove('is-breezy')
+        crop.classList.add('is-settling')
+      })
+
+      const settle = (now: number) => {
+        const progress = clamp((now - startedAt) / 1550)
+        const envelope = Math.exp(-3.4 * progress) * (1 - progress)
+        const recoil = Math.cos(progress * Math.PI * 4.2)
+        farmCrops.forEach((crop, index) => {
+          currentBreeze[index] = startingBreeze[index] * envelope * recoil
+          crop.style.setProperty('--crop-breeze', `${currentBreeze[index]}deg`)
+        })
+
+        if (progress < 1) breezeSettleFrame = window.requestAnimationFrame(settle)
+        else {
+          breezeSettleFrame = 0
+          resetFarmBreeze()
+        }
+      }
+      breezeSettleFrame = window.requestAnimationFrame(settle)
+    }
+    const onFarmPointerMove = (event: PointerEvent) => {
+      if (reducedMotion || event.pointerType === 'touch') return
+      if (breezeSettleFrame) {
+        window.cancelAnimationFrame(breezeSettleFrame)
+        breezeSettleFrame = 0
+      }
+      farmCrops.forEach((crop) => crop.classList.remove('is-settling'))
+      const now = performance.now()
+      if (lastPointerX === null) {
+        lastPointerX = event.clientX
+        lastPointerTime = now
+        return
+      }
+
+      const elapsed = Math.max(now - lastPointerTime, 8)
+      const velocity = (event.clientX - lastPointerX) * 16 / elapsed
+      lastPointerX = event.clientX
+      lastPointerTime = now
+      pendingPointerX = event.clientX
+      pendingBreeze = clamp((velocity / 11 + 1) / 2) * 30 - 15
+
+      if (!pointerFrame) {
+        pointerFrame = window.requestAnimationFrame(() => {
+          pointerFrame = 0
+          const radius = Math.max(190, window.innerWidth * .17)
+          farmCrops.forEach((crop, index) => {
+            const rect = crop.getBoundingClientRect()
+            const proximity = clamp(1 - Math.abs(rect.left + rect.width / 2 - pendingPointerX) / radius)
+            currentBreeze[index] = pendingBreeze * proximity
+            crop.classList.add('is-breezy')
+            crop.style.setProperty('--crop-breeze', `${currentBreeze[index]}deg`)
+          })
+        })
+      }
+
+      if (breezeResetTimer) window.clearTimeout(breezeResetTimer)
+      breezeResetTimer = window.setTimeout(settleFarmBreeze, 180)
+    }
+    const onFarmPointerLeave = () => {
+      lastPointerX = null
+      if (pointerFrame) {
+        window.cancelAnimationFrame(pointerFrame)
+        pointerFrame = 0
+      }
+      if (breezeResetTimer) window.clearTimeout(breezeResetTimer)
+      settleFarmBreeze()
+    }
+
+    const transitionDuration = reducedMotion ? 20 : 460
+    const revealDuration = reducedMotion ? 20 : 410
+    const scrollToTrackProgress = (track: HTMLElement, progress: number) => {
+      const trackTop = window.scrollY + track.getBoundingClientRect().top
+      const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
+      window.scrollTo(0, trackTop + distance * progress)
+      lastPageY = window.scrollY
+    }
+    const onNextPaint = (callback: () => void) => {
+      chapterTransitionFrame = window.requestAnimationFrame(() => {
+        chapterTransitionFrame = window.requestAnimationFrame(callback)
+      })
+    }
+    const finishChapterTransition = () => {
+      chapterTransitionLocked = false
+      lastPageY = window.scrollY
+    }
+    const startForwardTransition = () => {
+      if (chapterTransitionLocked || !aimpactTrack || !daangnTrack) return
+      const progress = Number.parseFloat(aimpactTrack.style.getPropertyValue('--chapter-progress'))
+      if (!Number.isFinite(progress) || progress < .64) return
+
+      chapterTransitionLocked = true
+      carrotButton?.blur()
+      aimpactTrack.classList.add('is-carrot-departing')
+      chapterTransitionTimer = window.setTimeout(() => {
+        daangnTrack.classList.add('is-carrot-forward-cover')
+        scrollToTrackProgress(daangnTrack, .035)
+        aimpactTrack.classList.remove('is-carrot-departing')
+        onNextPaint(() => {
+          daangnTrack.classList.add('is-carrot-forward-reveal')
+          chapterTransitionTimer = window.setTimeout(() => {
+            daangnTrack.classList.remove('is-carrot-forward-cover', 'is-carrot-forward-reveal')
+            finishChapterTransition()
+          }, revealDuration)
+        })
+      }, transitionDuration)
+    }
+    triggerReverseTransition = () => {
+      if (chapterTransitionLocked || !aimpactTrack || !daangnTrack) return
+      chapterTransitionLocked = true
+      daangnTrack.classList.add('is-carrot-reverse-ready')
+      onNextPaint(() => {
+        daangnTrack.classList.add('is-carrot-reverse-cover')
+        chapterTransitionTimer = window.setTimeout(() => {
+          aimpactTrack.classList.add('is-carrot-return-cover')
+          scrollToTrackProgress(aimpactTrack, .76)
+          daangnTrack.classList.remove('is-carrot-reverse-ready', 'is-carrot-reverse-cover')
+          onNextPaint(() => {
+            aimpactTrack.classList.remove('is-carrot-return-cover')
+            aimpactTrack.classList.add('is-carrot-returning')
+            chapterTransitionTimer = window.setTimeout(() => {
+              aimpactTrack.classList.remove('is-carrot-returning')
+              finishChapterTransition()
+            }, revealDuration)
+          })
+        }, transitionDuration)
+      })
+    }
+
     updateProgress()
     window.addEventListener('scroll', requestUpdate, { passive: true })
     window.addEventListener('resize', requestUpdate)
+    aimpactStage?.addEventListener('pointermove', onFarmPointerMove, { passive: true })
+    aimpactStage?.addEventListener('pointerleave', onFarmPointerLeave)
+    carrotButton?.addEventListener('click', startForwardTransition)
     return () => {
       if (animationFrame) window.cancelAnimationFrame(animationFrame)
+      if (pointerFrame) window.cancelAnimationFrame(pointerFrame)
+      if (breezeSettleFrame) window.cancelAnimationFrame(breezeSettleFrame)
+      if (breezeResetTimer) window.clearTimeout(breezeResetTimer)
+      if (chapterTransitionFrame) window.cancelAnimationFrame(chapterTransitionFrame)
+      if (chapterTransitionTimer) window.clearTimeout(chapterTransitionTimer)
       window.removeEventListener('scroll', requestUpdate)
       window.removeEventListener('resize', requestUpdate)
+      aimpactStage?.removeEventListener('pointermove', onFarmPointerMove)
+      aimpactStage?.removeEventListener('pointerleave', onFarmPointerLeave)
+      carrotButton?.removeEventListener('click', startForwardTransition)
     }
   }, [active])
 
