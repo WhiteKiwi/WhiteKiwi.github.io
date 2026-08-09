@@ -31,6 +31,7 @@ const resumeUrl = '/resume/'
 const commandList = [
   ['help', 'Show this list'],
   ['whoami', 'Print who is behind this portfolio'],
+  ['fortune', 'Draw one line worth keeping'],
   ['open resume', 'Open the readable resume page'],
   ['open github', 'Open the GitHub profile'],
   ['open blog', 'Open the blog'],
@@ -44,45 +45,44 @@ const availableCommands = commandList.map(([command]) => command)
 
 /**
  * `whoami`는 neofetch처럼 아스키 키위를 왼쪽에, 정보를 오른쪽에 둔다.
- * 아트는 `kiwi-walk-cycle.png`의 첫 프레임을 알파와 밝기 기준으로 변환한 것이다.
+ * 아트는 저장소의 키위 일러스트를 알파와 밝기 기준으로 변환한 것이다.
  * 좁은 화면에서는 두 열이 들어가지 않아 아트를 위로 쌓는다.
  */
 const kiwiArtWide = [
-  '          .+*##*=.',
-  '         .####%###:',
-  '         +##########*=:',
-  '         #######*  :-=*#=',
-  '        :%######+      .=+',
-  '      .+########%',
-  '     -###########-',
-  '    :%###########+',
-  '    #############=',
-  '   .%############',
-  '   :%##########*',
-  '    %########+:',
-  '    -=*%==-.#.',
-  '     -+     .#',
-  '    +-       :*',
-  '  .*:         -+',
-  '::#.           =+  .:.',
-  ':**=:           ***##.',
-  ' -#++:         :=::::',
+  '      .=*####*=',
+  '     -%########%:',
+  '    .%#####%%##%#+=-.',
+  '    .%########%***#*#*=',
+  '     %#########    :=+##=',
+  '    +%########%.       -**',
+  '  .*############',
+  ' -%############%=',
+  ':%##############%',
+  '*###############%',
+  '%###############*',
+  '################.',
 ]
 
 const kiwiArtNarrow = [
-  '       =*##+.',
-  '      =#####*=-.',
-  '      *####+ .-=*:',
-  '     =#####+     :',
-  '   :########',
-  '   #########.',
-  '  -########+',
-  '  -#######-',
-  '   =**=-+',
-  '   --    +',
-  '  +.     .+',
-  '-*.       .+:--',
-  ' **=       =--:',
+  '    :+###*-',
+  '   -####%#%+:',
+  '   +#######**#+-',
+  '   +######:  .-+#:',
+  '  -#######*     .=',
+  ' +#########-',
+  '=##########*',
+  '###########*',
+  '###########.',
+]
+
+const kiwiArtTiny = [
+  '   -*##*:',
+  '  -###%##=-.',
+  '  -####%::-+*.',
+  ' .*#####-    -',
+  ':########',
+  '#########.',
+  '########*',
 ]
 
 const kiwiFacts = [
@@ -94,6 +94,23 @@ const kiwiFacts = [
   'where    Seoul, Korea (KST)',
   'resume   /resume/  (open resume)',
 ]
+
+/** 한글·CJK는 모노스페이스에서 두 칸을 차지한다. 말풍선 테두리를 맞추려면 칸 수로 세야 한다. */
+const cellWidth = (text: string) =>
+  [...text].reduce((total, char) => {
+    const code = char.codePointAt(0) ?? 0
+    const wide =
+      (code >= 0x1100 && code <= 0x115f) ||
+      (code >= 0x2e80 && code <= 0xa4cf) ||
+      (code >= 0xac00 && code <= 0xd7a3) ||
+      (code >= 0xf900 && code <= 0xfaff) ||
+      (code >= 0xfe30 && code <= 0xfe6f) ||
+      (code >= 0xff00 && code <= 0xff60) ||
+      (code >= 0xffe0 && code <= 0xffe6)
+    return total + (wide ? 2 : 1)
+  }, 0)
+
+const padCells = (text: string, width: number) => text + ' '.repeat(Math.max(0, width - cellWidth(text)))
 
 const buildWhoami = (): TerminalLine[] => {
   const narrow = window.innerWidth < 760
@@ -114,6 +131,49 @@ const buildWhoami = (): TerminalLine[] => {
     const fact = kiwiFacts[index - offset] ?? ''
     return { text: `${line.padEnd(artWidth)}   ${fact}`.trimEnd(), tone: 'default' as const }
   })
+}
+
+/** 실제 인용문 대신 이 포트폴리오의 목소리로 쓴 문장만 사용한다. */
+const fortunes = [
+  '완성은 상태가 아니라 잠깐 멈춘 지점이다.',
+  '읽기 어려운 코드는 대개 결정을 미룬 흔적이다.',
+  '고치기 쉬운 코드가 좋은 코드다. 나머지는 취향이다.',
+  '버그는 대부분 내가 확신했던 곳에 있다.',
+  '느린 쿼리는 언젠가 장애가 된다. 대개 새벽에.',
+  '이름을 잘 지으면 주석이 절반으로 준다.',
+  '지우는 커밋이 가장 기분 좋은 커밋이다.',
+  '재현되지 않는 버그는 아직 이해하지 못한 버그다.',
+  '문서는 미래의 나에게 보내는 사과문이다.',
+  '테스트가 없으면 리팩터링이 아니라 도박이다.',
+  '급한 수정일수록 되돌릴 방법을 먼저 정해둔다.',
+  '로그가 없으면 추측만 남는다.',
+  '설계는 무엇을 넣을지가 아니라 무엇을 안 넣을지의 문제다.',
+  '동작하는 코드와 이해되는 코드는 다르다. 둘 다 필요하다.',
+  '측정하지 않은 최적화는 취향의 표현이다.',
+  '작게 나눈 커밋은 미래의 나를 구한다.',
+  '경계에서 무너지는 코드가 가장 많다.',
+  '남의 코드를 욕하기 전에 커밋 로그를 먼저 본다.',
+  '재시도는 해결이 아니라 유예다.',
+  '가장 오래 남는 코드는 임시로 짠 코드다.',
+  'Simple is not the same as easy.',
+  'Every abstraction leaks. Pick the one that leaks where you can see it.',
+]
+
+const buildFortune = (): TerminalLine[] => {
+  const quote = fortunes[Math.floor(Math.random() * fortunes.length)]
+  const width = cellWidth(quote)
+  // 세 줄의 칸 수가 모두 width + 4로 같아야 테두리가 맞는다.
+  const bubble = [
+    `.${'_'.repeat(width + 2)}.`,
+    `| ${padCells(quote, width)} |`,
+    `'${'-'.repeat(width + 2)}'`,
+  ]
+  return [
+    ...bubble.map((line) => ({ text: line, tone: 'default' as const })),
+    { text: '      \\', tone: 'muted' as const },
+    { text: '       \\', tone: 'muted' as const },
+    ...kiwiArtTiny.map((line) => ({ text: `        ${line}`, tone: 'accent' as const })),
+  ]
 }
 
 /** 로컬에서는 짧게 잡아 확인하기 쉽게 한다. */
@@ -520,6 +580,8 @@ export default function ContactFinale({ active }: { active: boolean }) {
       ]
     } else if (command === 'whoami') {
       lines = buildWhoami()
+    } else if (command === 'fortune') {
+      lines = buildFortune()
     } else if (command === 'iloveyou') {
       lines = [{ text: 'I love you too', tone: 'accent' }]
     } else if (command === 'open') {
