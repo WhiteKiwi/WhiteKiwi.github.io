@@ -77,6 +77,11 @@
 - `open`만 입력했을 때는 `command not found` 대신 사용법과 허용 채널을 보여준다. open 문법 자체를 발견하는 도움말로 취급한다.
 - 2026-08-09 사용자는 Contact 피날레 하단에도 Introduction처럼 이메일과 외부 프로필 링크를 원한다. 터미널 명령 제한은 유지하되 직접 링크를 병행한다.
 - Portfolio Guidelines는 링크 전용 상태를 끝내고 Contact 피날레의 `RUN AGAIN` 주변에 메인 여정의 첫 진입점을 둔다. 다른 장면에는 추가하지 않는다.
+- 2026-08-09 Contact 보조 문구는 `좋은 제품에 관한 흥미로운 이야기라면, 언제든 반갑습니다.`로 확정했다.
+- 터미널에 `clear` 명령을 추가한다. 현재 화면 출력만 숨기는 것이 아니라 같은 탭에 남긴 명령 히스토리도 함께 초기화한다.
+- 하단 직접 링크와 기능을 맞추기 위해 `open github`, `open blog`도 정상 명령에 포함한다. `open` 도움말에는 GitHub, Blog, LinkedIn, Instagram, Email 다섯 채널을 표시한다.
+- 2026-08-09 사용자는 `#00` 진입이 오프닝을 건너뛰는 버그를 확인했다. `#00`은 별도 ready 딥링크가 아니라 `/`와 똑같이 해시 없는 기본 오프닝으로 처리하고, Contact의 `RUN AGAIN`도 `/`로 연결한다.
+- Contact 터미널의 숨은 이스터에그로 `iloveyou` → `I love you too`를 추가한다. 발견하는 재미를 위해 help와 화면 명령 목록에는 표시하지 않는다.
 
 ## Motion direction
 
