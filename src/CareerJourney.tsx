@@ -156,6 +156,7 @@ function AimpactChapter({ trackRef }: { trackRef: RefObject<HTMLElement | null> 
         </div>
         <div className="farm-soil" aria-hidden="true"><i /><i /><i /></div>
         <div className="career-progress" aria-hidden="true"><i /></div>
+        <div className="carrot-transition-curtain" aria-hidden="true" />
       </div>
     </section>
   )
@@ -166,7 +167,6 @@ function DaangnChapter({ trackRef }: { trackRef: RefObject<HTMLElement | null> }
     <section className="career-track career-daangn" ref={trackRef} aria-label="당근 경력">
       <div className="career-stage daangn-stage">
         <ChapterMeta number="06" company="DAANGN" period="2021.05—2021.08" />
-        <div className="carrot-portal crop crop-1" style={{ '--index': 4 } as IndexedStyle} aria-hidden="true"><i /><b /><em /></div>
         <div className="neighborhood-map" aria-hidden="true">
           <i className="map-road road-a" /><i className="map-road road-b" /><i className="map-road road-c" />
           {Array.from({ length: 8 }, (_, index) => <span className={`map-house house-${index + 1}`} key={index}><i /></span>)}
@@ -196,6 +196,7 @@ function DaangnChapter({ trackRef }: { trackRef: RefObject<HTMLElement | null> }
           <span>NEXT CHAPTER</span><strong>TOSS</strong><i>곧 이어집니다</i>
         </div>
         <div className="career-progress" aria-hidden="true"><i /></div>
+        <div className="carrot-transition-curtain" aria-hidden="true" />
       </div>
     </section>
   )
@@ -280,7 +281,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
         track.style.setProperty('--chat-opacity', String(visibility(progress, .46, .56, .73, .82)))
         track.style.setProperty('--next-opacity', String(reveal(progress, .82, .94)))
         track.style.setProperty('--next-y', `${(1 - reveal(progress, .82, .94)) * 30}px`)
-        if (scrollingUp && progress > .002 && progress < .075 && rect.top <= 1 && !chapterTransitionLocked) {
+        if (scrollingUp && progress < .075 && rect.top <= 1 && rect.bottom > 0 && !chapterTransitionLocked) {
           triggerReverseTransition()
         }
       }
@@ -395,8 +396,9 @@ export default function CareerJourney({ active }: { active: boolean }) {
       settleFarmBreeze()
     }
 
-    const transitionDuration = reducedMotion ? 20 : 520
-    const revealDuration = reducedMotion ? 20 : 480
+    const zoomDuration = reducedMotion ? 20 : 520
+    const curtainCoverDuration = reducedMotion ? 20 : 440
+    const curtainRevealDuration = reducedMotion ? 20 : 640
     const scrollToTrackProgress = (track: HTMLElement, progress: number) => {
       const trackTop = window.scrollY + track.getBoundingClientRect().top
       const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
@@ -404,7 +406,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
       lastPageY = window.scrollY
     }
     const updateCarrotCoverScale = () => {
-      if (!aimpactTrack || !daangnTrack) return
+      if (!aimpactTrack) return
       const compact = window.innerWidth <= 700
       const cropWidth = Math.min(66, Math.max(38, window.innerWidth * .04))
       const cropHeight = Math.min(180, Math.max(110, window.innerHeight * .17))
@@ -416,14 +418,18 @@ export default function CareerJourney({ active }: { active: boolean }) {
       const verticalScale = Math.max(rootCenterY, window.innerHeight - rootCenterY) * 2 / rootHeight
       const coverScale = Math.ceil(Math.max(horizontalScale, verticalScale) * 1.6)
       aimpactTrack.style.setProperty('--carrot-cover-scale', String(coverScale))
-      daangnTrack.style.setProperty('--carrot-cover-scale', String(coverScale))
     }
     const onNextPaint = (callback: () => void) => {
       chapterTransitionFrame = window.requestAnimationFrame(() => {
         chapterTransitionFrame = window.requestAnimationFrame(callback)
       })
     }
+    const resetChapterTransitionClasses = () => {
+      aimpactTrack?.classList.remove('is-carrot-departing', 'is-carrot-return-cover', 'is-carrot-returning')
+      daangnTrack?.classList.remove('is-carrot-forward-cover', 'is-carrot-forward-reveal', 'is-carrot-reverse-ready', 'is-carrot-reverse-cover')
+    }
     const finishChapterTransition = () => {
+      resetChapterTransitionClasses()
       chapterTransitionLocked = false
       lastPageY = window.scrollY
     }
@@ -433,6 +439,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
       if (!Number.isFinite(progress) || progress < .64) return
 
       updateCarrotCoverScale()
+      resetChapterTransitionClasses()
       chapterTransitionLocked = true
       carrotButton?.blur()
       aimpactTrack.classList.add('is-carrot-departing')
@@ -443,15 +450,14 @@ export default function CareerJourney({ active }: { active: boolean }) {
         onNextPaint(() => {
           daangnTrack.classList.add('is-carrot-forward-reveal')
           chapterTransitionTimer = window.setTimeout(() => {
-            daangnTrack.classList.remove('is-carrot-forward-cover', 'is-carrot-forward-reveal')
             finishChapterTransition()
-          }, revealDuration)
+          }, curtainRevealDuration)
         })
-      }, transitionDuration)
+      }, zoomDuration)
     }
     triggerReverseTransition = () => {
       if (chapterTransitionLocked || !aimpactTrack || !daangnTrack) return
-      updateCarrotCoverScale()
+      resetChapterTransitionClasses()
       chapterTransitionLocked = true
       daangnTrack.classList.add('is-carrot-reverse-ready')
       onNextPaint(() => {
@@ -464,24 +470,40 @@ export default function CareerJourney({ active }: { active: boolean }) {
             aimpactTrack.classList.remove('is-carrot-return-cover')
             aimpactTrack.classList.add('is-carrot-returning')
             chapterTransitionTimer = window.setTimeout(() => {
-              aimpactTrack.classList.remove('is-carrot-returning')
               finishChapterTransition()
-            }, revealDuration)
+            }, curtainRevealDuration)
           })
-        }, transitionDuration)
+        }, curtainCoverDuration)
       })
     }
 
     const scrollKeys = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '])
+    const portalGateProgress = .74
+    const aimpactWouldCrossPortalGate = (downwardDelta: number) => {
+      if (!aimpactTrack) return false
+      const progress = Number.parseFloat(aimpactTrack.style.getPropertyValue('--chapter-progress'))
+      const rect = aimpactTrack.getBoundingClientRect()
+      const distance = Math.max(aimpactTrack.offsetHeight - window.innerHeight, 1)
+      const projectedProgress = progress + Math.max(downwardDelta, 0) / distance
+      return Number.isFinite(progress) && projectedProgress >= portalGateProgress && rect.top <= 1 && rect.bottom > 0
+    }
+    const holdAtAimpactPortalGate = () => {
+      if (aimpactTrack) scrollToTrackProgress(aimpactTrack, portalGateProgress)
+    }
     const daangnIsAtPortalThreshold = () => {
       if (!daangnTrack) return false
       const progress = Number.parseFloat(daangnTrack.style.getPropertyValue('--chapter-progress'))
       const rect = daangnTrack.getBoundingClientRect()
-      return Number.isFinite(progress) && progress > .002 && progress < .09 && rect.top <= 1
+      return Number.isFinite(progress) && progress < .09 && rect.top <= 1 && rect.bottom > 0
     }
     const onTransitionWheel = (event: WheelEvent) => {
       if (chapterTransitionLocked) {
         event.preventDefault()
+        return
+      }
+      if (event.deltaY > 0 && aimpactWouldCrossPortalGate(event.deltaY)) {
+        event.preventDefault()
+        holdAtAimpactPortalGate()
         return
       }
       if (event.deltaY < 0 && daangnIsAtPortalThreshold()) {
@@ -499,6 +521,12 @@ export default function CareerJourney({ active }: { active: boolean }) {
         return
       }
       const currentY = event.touches[0]?.clientY
+      const downwardDelta = touchStartY !== null && currentY !== undefined ? touchStartY - currentY : 0
+      if (downwardDelta > 8 && aimpactWouldCrossPortalGate(downwardDelta)) {
+        event.preventDefault()
+        holdAtAimpactPortalGate()
+        return
+      }
       if (touchStartY !== null && currentY !== undefined && currentY - touchStartY > 8 && daangnIsAtPortalThreshold()) {
         event.preventDefault()
         triggerReverseTransition()
@@ -506,8 +534,21 @@ export default function CareerJourney({ active }: { active: boolean }) {
     }
     const onTransitionKeyDown = (event: KeyboardEvent) => {
       if (!scrollKeys.has(event.key)) return
+      if (event.key === ' ' && event.target === carrotButton) return
       if (chapterTransitionLocked) {
         event.preventDefault()
+        return
+      }
+      const forwardKeyDelta = event.key === 'End'
+        ? Number.POSITIVE_INFINITY
+        : event.key === 'PageDown' || event.key === ' '
+          ? window.innerHeight
+          : event.key === 'ArrowDown'
+            ? 120
+            : 0
+      if (forwardKeyDelta > 0 && aimpactWouldCrossPortalGate(forwardKeyDelta)) {
+        event.preventDefault()
+        holdAtAimpactPortalGate()
         return
       }
       if ((event.key === 'ArrowUp' || event.key === 'PageUp' || event.key === 'Home') && daangnIsAtPortalThreshold()) {
@@ -533,6 +574,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
       if (breezeResetTimer) window.clearTimeout(breezeResetTimer)
       if (chapterTransitionFrame) window.cancelAnimationFrame(chapterTransitionFrame)
       if (chapterTransitionTimer) window.clearTimeout(chapterTransitionTimer)
+      resetChapterTransitionClasses()
       window.removeEventListener('scroll', requestUpdate)
       window.removeEventListener('resize', requestUpdate)
       window.removeEventListener('wheel', onTransitionWheel)
