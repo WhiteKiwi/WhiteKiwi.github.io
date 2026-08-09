@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import './resume.css'
 import {
   awards,
@@ -6,6 +6,7 @@ import {
   contacts,
   education,
   formatDuration,
+  lastUpdated,
   monthsBetween,
   profile,
   skills,
@@ -162,13 +163,9 @@ function Resume() {
 
   const t = useCallback((entry: Record<Lang, string>) => entry[lang], [lang])
 
-  // 경력 길이와 갱신 시점은 조회 시점을 기준으로 계산한다.
+  // 경력 길이만 조회 시점으로 계산한다. 갱신 시점은 손으로 관리하는 상수다.
   const careerLength = formatDuration(totalCareerMonths(companies), lang)
-  const stamp = useMemo(() => {
-    const now = new Date()
-    const month = String(now.getMonth() + 1).padStart(2, '0')
-    return lang === 'ko' ? `${now.getFullYear()}.${month} 기준` : `Updated ${now.getFullYear()}.${month}`
-  }, [lang])
+  const stamp = lang === 'ko' ? `${lastUpdated} 기준` : `Updated ${lastUpdated}`
 
   return (
     <div

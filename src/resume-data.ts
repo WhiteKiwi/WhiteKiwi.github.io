@@ -62,6 +62,13 @@ export const formatDuration = (months: number, lang: Lang) => {
   return `${rest}개월`
 }
 
+/**
+ * 내용을 실제로 손볼 때 함께 갱신한다.
+ * 오늘 날짜로 계산하면 방치해도 저절로 최신인 척하게 되므로 상수로 둔다.
+ * 재직 개월 수는 반대로 계속 늘어나야 하므로 `totalCareerMonths`가 조회 시점으로 계산한다.
+ */
+export const lastUpdated = '2026.08'
+
 export const profile = {
   name: { ko: '장지훈', en: 'Jihoon Jang' } as L,
   handle: 'whitekiwi',
