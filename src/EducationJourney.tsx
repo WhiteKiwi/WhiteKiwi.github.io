@@ -111,11 +111,26 @@ export default function EducationJourney({ active }: { active: boolean }) {
     const petalWinds = Array.from(track.querySelectorAll<HTMLElement>('.education-petal-wind'))
     const pointerWindEnabled = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
       && window.matchMedia('(pointer: fine)').matches
+    const petalMotions = petalWinds.map((element, index) => ({
+      element,
+      petal: element.querySelector<HTMLElement>('.education-petal'),
+      depthStrength: .74 + Number(element.dataset.petalDepth ?? 0) * .18,
+      spring: .026 + (index % 5) * .002,
+      drag: .86 - (index % 3) * .012,
+      x: 0,
+      y: 0,
+      velocityX: 0,
+      velocityY: 0,
+      turn: 0,
+      turnVelocity: 0,
+    }))
     let animationFrame = 0
     let pointerAnimationFrame = 0
-    let petalSettleTimer = 0
+    let windFrameTime = 0
+    let pointerActiveUntil = 0
     let lastPointer: { x: number; y: number; time: number } | null = null
-    let pendingWind: { x: number; y: number; velocityX: number; velocityY: number } | null = null
+    const pointerPosition = { x: 0, y: 0 }
+    const pointerVelocity = { x: 0, y: 0 }
 
     const clamp = (value: number) => Math.min(Math.max(value, 0), 1)
     const reveal = (progress: number, start: number, end: number) => clamp((progress - start) / (end - start))
@@ -180,56 +195,79 @@ export default function EducationJourney({ active }: { active: boolean }) {
       if (!animationFrame) animationFrame = window.requestAnimationFrame(updateProgress)
     }
 
-    const settlePetals = () => {
-      petalWinds.forEach((petal) => {
-        petal.classList.remove('is-gusting')
-        petal.style.setProperty('--petal-wind-x', '0px')
-        petal.style.setProperty('--petal-wind-y', '0px')
-        petal.style.setProperty('--petal-wind-turn', '0deg')
+    const resetPetalTransforms = () => {
+      petalMotions.forEach((motion) => {
+        motion.x = 0
+        motion.y = 0
+        motion.velocityX = 0
+        motion.velocityY = 0
+        motion.turn = 0
+        motion.turnVelocity = 0
+        motion.element.style.setProperty('--petal-wind-x', '0px')
+        motion.element.style.setProperty('--petal-wind-y', '0px')
+        motion.element.style.setProperty('--petal-wind-turn', '0deg')
       })
     }
 
-    const updatePetalWind = () => {
+    const updatePetalWind = (timestamp: number) => {
       pointerAnimationFrame = 0
-      const wind = pendingWind
-      if (!wind) return
+      const step = windFrameTime ? Math.min(Math.max((timestamp - windFrameTime) / 16.67, .25), 2) : 1
+      windFrameTime = timestamp
+      const pointerIsActive = timestamp < pointerActiveUntil
+      const pointerSpeed = Math.hypot(pointerVelocity.x, pointerVelocity.y)
+      const radius = Math.min(Math.max(window.innerWidth * .135, 170), 245)
+      let totalEnergy = 0
 
-      const radius = Math.min(Math.max(window.innerWidth * .2, 210), 340)
-      const petalRects = petalWinds.map((petal) => ({
-        petal,
-        rect: petal.querySelector<HTMLElement>('.education-petal')?.getBoundingClientRect(),
-      }))
+      petalMotions.forEach((motion) => {
+        if (pointerIsActive && pointerSpeed > .04 && motion.petal) {
+          const rect = motion.petal.getBoundingClientRect()
+          const deltaX = rect.left + rect.width / 2 - pointerPosition.x
+          const deltaY = rect.top + rect.height / 2 - pointerPosition.y
+          const distance = Math.hypot(deltaX, deltaY)
+          const proximity = clamp(1 - distance / radius)
+          const influence = smoothstep(proximity) * motion.depthStrength
 
-      petalRects.forEach(({ petal, rect }) => {
-        if (!rect) return
-        const petalX = rect.left + rect.width / 2
-        const petalY = rect.top + rect.height / 2
-        const distance = Math.hypot(petalX - wind.x, petalY - wind.y)
-        const proximity = Math.max(0, 1 - distance / radius)
-        const influence = proximity * proximity
-
-        if (influence <= .002) {
-          petal.classList.remove('is-gusting')
-          petal.style.setProperty('--petal-wind-x', '0px')
-          petal.style.setProperty('--petal-wind-y', '0px')
-          petal.style.setProperty('--petal-wind-turn', '0deg')
-          return
+          if (influence > .001) {
+            const cross = pointerVelocity.x * deltaY - pointerVelocity.y * deltaX
+            const side = Math.sign(cross)
+            const curlX = -pointerVelocity.y * side * .018
+            const curlY = pointerVelocity.x * side * .018
+            motion.velocityX += (pointerVelocity.x * .105 + curlX) * influence * step
+            motion.velocityY += (pointerVelocity.y * .072 + curlY) * influence * step
+            motion.turnVelocity += (side * pointerSpeed * .055 + pointerVelocity.x * .018) * influence * step
+          }
         }
 
-        const depth = Number(petal.dataset.petalDepth ?? 0)
-        const depthStrength = .74 + depth * .18
-        const windX = wind.velocityX * 4.2 * influence * depthStrength
-        const windY = wind.velocityY * 1.8 * influence * depthStrength
-        const windTurn = (wind.velocityX * 1.45 + wind.velocityY * .35) * influence * depthStrength
+        motion.velocityX += -motion.x * motion.spring * step
+        motion.velocityY += -motion.y * (motion.spring * 1.08) * step
+        motion.turnVelocity += -motion.turn * (motion.spring * 1.18) * step
 
-        petal.classList.add('is-gusting')
-        petal.style.setProperty('--petal-wind-x', `${windX.toFixed(2)}px`)
-        petal.style.setProperty('--petal-wind-y', `${windY.toFixed(2)}px`)
-        petal.style.setProperty('--petal-wind-turn', `${windTurn.toFixed(2)}deg`)
+        const drag = Math.pow(motion.drag, step)
+        motion.velocityX *= drag
+        motion.velocityY *= drag
+        motion.turnVelocity *= Math.pow(motion.drag - .02, step)
+        motion.x = Math.min(Math.max(motion.x + motion.velocityX * step, -58), 58)
+        motion.y = Math.min(Math.max(motion.y + motion.velocityY * step, -34), 34)
+        motion.turn = Math.min(Math.max(motion.turn + motion.turnVelocity * step, -28), 28)
+
+        motion.element.style.setProperty('--petal-wind-x', `${motion.x.toFixed(2)}px`)
+        motion.element.style.setProperty('--petal-wind-y', `${motion.y.toFixed(2)}px`)
+        motion.element.style.setProperty('--petal-wind-turn', `${motion.turn.toFixed(2)}deg`)
+        totalEnergy += Math.abs(motion.x) + Math.abs(motion.y) + Math.abs(motion.turn)
+          + Math.abs(motion.velocityX) * 4 + Math.abs(motion.velocityY) * 4
+          + Math.abs(motion.turnVelocity) * 4
       })
 
-      if (petalSettleTimer) window.clearTimeout(petalSettleTimer)
-      petalSettleTimer = window.setTimeout(settlePetals, 110)
+      const pointerDecay = Math.pow(pointerIsActive ? .94 : .72, step)
+      pointerVelocity.x *= pointerDecay
+      pointerVelocity.y *= pointerDecay
+
+      if (pointerIsActive || totalEnergy > .06 || Math.hypot(pointerVelocity.x, pointerVelocity.y) > .03) {
+        pointerAnimationFrame = window.requestAnimationFrame(updatePetalWind)
+      } else {
+        windFrameTime = 0
+        resetPetalTransforms()
+      }
     }
 
     const onPointerMove = (event: PointerEvent) => {
@@ -237,18 +275,22 @@ export default function EducationJourney({ active }: { active: boolean }) {
       const now = performance.now()
       if (!lastPointer) {
         lastPointer = { x: event.clientX, y: event.clientY, time: now }
+        pointerPosition.x = event.clientX
+        pointerPosition.y = event.clientY
         return
       }
 
       const elapsed = Math.max(now - lastPointer.time, 8)
       const normalizeToFrame = 16.67 / elapsed
-      const clampVelocity = (value: number) => Math.min(Math.max(value, -22), 22)
-      pendingWind = {
-        x: event.clientX,
-        y: event.clientY,
-        velocityX: clampVelocity((event.clientX - lastPointer.x) * normalizeToFrame),
-        velocityY: clampVelocity((event.clientY - lastPointer.y) * normalizeToFrame),
-      }
+      const clampVelocity = (value: number) => Math.min(Math.max(value, -18), 18)
+      const rawVelocityX = clampVelocity((event.clientX - lastPointer.x) * normalizeToFrame)
+      const rawVelocityY = clampVelocity((event.clientY - lastPointer.y) * normalizeToFrame)
+      const smoothing = 1 - Math.exp(-elapsed / 42)
+      pointerVelocity.x += (rawVelocityX - pointerVelocity.x) * smoothing
+      pointerVelocity.y += (rawVelocityY - pointerVelocity.y) * smoothing
+      pointerPosition.x = event.clientX
+      pointerPosition.y = event.clientY
+      pointerActiveUntil = now + 105
       lastPointer = { x: event.clientX, y: event.clientY, time: now }
 
       if (!pointerAnimationFrame) pointerAnimationFrame = window.requestAnimationFrame(updatePetalWind)
@@ -256,9 +298,8 @@ export default function EducationJourney({ active }: { active: boolean }) {
 
     const resetPetalWind = () => {
       lastPointer = null
-      pendingWind = null
-      if (petalSettleTimer) window.clearTimeout(petalSettleTimer)
-      settlePetals()
+      pointerActiveUntil = 0
+      if (!pointerAnimationFrame) pointerAnimationFrame = window.requestAnimationFrame(updatePetalWind)
     }
 
     updateProgress()
@@ -269,7 +310,7 @@ export default function EducationJourney({ active }: { active: boolean }) {
     return () => {
       if (animationFrame) window.cancelAnimationFrame(animationFrame)
       if (pointerAnimationFrame) window.cancelAnimationFrame(pointerAnimationFrame)
-      if (petalSettleTimer) window.clearTimeout(petalSettleTimer)
+      resetPetalTransforms()
       window.removeEventListener('scroll', requestUpdate)
       window.removeEventListener('resize', requestUpdate)
       stage?.removeEventListener('pointermove', onPointerMove)
