@@ -46,6 +46,7 @@ export default function ContactFinale({ active }: { active: boolean }) {
   const terminalLogRef = useRef<HTMLDivElement>(null)
   const nextEntryIdRef = useRef(Date.now())
   const hasBootedRef = useRef(false)
+  const hasAnimatedRef = useRef(false)
   const [entries, setEntries] = useState<TerminalEntry[]>(loadTerminalEntries)
   const [input, setInput] = useState('')
   const [historyIndex, setHistoryIndex] = useState(-1)
@@ -72,16 +73,162 @@ export default function ContactFinale({ active }: { active: boolean }) {
     const track = trackRef.current
     if (!track) return
 
-    let animationFrame = 0
+    const tossTrack = document.querySelector<HTMLElement>('.toss-ongoing-track')
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    let revealFrame = 0
+    let snapFrame = 0
+    let snapLocked = false
+    let lastPageY = window.scrollY
+    let touchStartY: number | null = null
     const clamp = (value: number) => Math.min(Math.max(value, 0), 1)
-    const update = () => {
-      animationFrame = 0
-      const rect = track.getBoundingClientRect()
-      const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
-      track.style.setProperty('--contact-progress', String(clamp(-rect.top / distance)))
+    const easeInOut = (value: number) => value < .5
+      ? 4 * value * value * value
+      : 1 - Math.pow(-2 * value + 2, 3) / 2
+
+    const startReveal = () => {
+      if (hasAnimatedRef.current) return
+      hasAnimatedRef.current = true
+      if (reducedMotion) {
+        track.style.setProperty('--contact-progress', '1')
+        return
+      }
+      const startedAt = performance.now()
+      const duration = 1900
+      const animate = (now: number) => {
+        const progress = clamp((now - startedAt) / duration)
+        const eased = 1 - Math.pow(1 - progress, 3)
+        track.style.setProperty('--contact-progress', String(eased))
+        if (progress < 1) revealFrame = window.requestAnimationFrame(animate)
+        else revealFrame = 0
+      }
+      revealFrame = window.requestAnimationFrame(animate)
     }
-    const requestUpdate = () => {
-      if (!animationFrame) animationFrame = window.requestAnimationFrame(update)
+    const resetReveal = () => {
+      if (revealFrame) window.cancelAnimationFrame(revealFrame)
+      revealFrame = 0
+      hasAnimatedRef.current = false
+      track.style.setProperty('--contact-progress', '0')
+    }
+    const getTrackTarget = (target: HTMLElement, progress: number) => {
+      const top = window.scrollY + target.getBoundingClientRect().top
+      const distance = Math.max(target.offsetHeight - window.innerHeight, 0)
+      return top + distance * progress
+    }
+    const animateScrollTo = (targetY: number, onComplete?: () => void) => {
+      if (snapLocked) return
+      snapLocked = true
+      const startY = window.scrollY
+      const distance = targetY - startY
+      const duration = reducedMotion ? 20 : 650
+      const startedAt = performance.now()
+      const documentRoot = document.documentElement
+      const previousScrollBehavior = documentRoot.style.scrollBehavior
+      documentRoot.style.scrollBehavior = 'auto'
+      const animate = (now: number) => {
+        const progress = clamp((now - startedAt) / duration)
+        window.scrollTo(0, startY + distance * easeInOut(progress))
+        lastPageY = window.scrollY
+        if (progress < 1) snapFrame = window.requestAnimationFrame(animate)
+        else {
+          snapFrame = 0
+          documentRoot.style.scrollBehavior = previousScrollBehavior
+          snapLocked = false
+          onComplete?.()
+        }
+      }
+      snapFrame = window.requestAnimationFrame(animate)
+    }
+    const snapToContact = () => animateScrollTo(getTrackTarget(track, 0), startReveal)
+    const snapToToss = () => {
+      if (!tossTrack) return
+      resetReveal()
+      animateScrollTo(getTrackTarget(tossTrack, .72))
+    }
+    const tossWouldCrossContactGate = (downwardDelta: number) => {
+      if (!tossTrack) return false
+      const progress = Number.parseFloat(tossTrack.style.getPropertyValue('--toss-progress'))
+      const rect = tossTrack.getBoundingClientRect()
+      const distance = Math.max(tossTrack.offsetHeight - window.innerHeight, 1)
+      const projectedProgress = progress + Math.max(downwardDelta, 0) / distance
+      return Number.isFinite(progress) && projectedProgress >= .86 && rect.top <= 1 && rect.bottom > 0
+    }
+    const contactIsActive = () => {
+      const rect = track.getBoundingClientRect()
+      return rect.top <= 1 && rect.top > -window.innerHeight * .16 && rect.bottom > 0
+    }
+    const onScroll = () => {
+      const nextPageY = window.scrollY
+      const scrollingDown = nextPageY > lastPageY + 1
+      const scrollingUp = nextPageY < lastPageY - 1
+      lastPageY = nextPageY
+      if (snapLocked) return
+      if (scrollingDown && tossWouldCrossContactGate(0)) snapToContact()
+      else if (scrollingUp && contactIsActive()) snapToToss()
+    }
+    const onWheel = (event: WheelEvent) => {
+      if (snapLocked) {
+        event.preventDefault()
+        return
+      }
+      if (event.deltaY > 0 && tossWouldCrossContactGate(event.deltaY)) {
+        event.preventDefault()
+        snapToContact()
+        return
+      }
+      const terminalLog = (event.target as Element | null)?.closest('.contact-terminal-log') as HTMLElement | null
+      if (event.deltaY < 0 && terminalLog && terminalLog.scrollTop > 0) return
+      if (event.deltaY < 0 && contactIsActive()) {
+        event.preventDefault()
+        snapToToss()
+      }
+    }
+    const onTouchStart = (event: TouchEvent) => {
+      touchStartY = event.touches[0]?.clientY ?? null
+    }
+    const onTouchMove = (event: TouchEvent) => {
+      if (snapLocked) {
+        event.preventDefault()
+        return
+      }
+      const currentY = event.touches[0]?.clientY
+      const downwardDelta = touchStartY !== null && currentY !== undefined ? touchStartY - currentY : 0
+      if (downwardDelta > 8 && tossWouldCrossContactGate(downwardDelta)) {
+        event.preventDefault()
+        snapToContact()
+        return
+      }
+      const upwardDelta = touchStartY !== null && currentY !== undefined ? currentY - touchStartY : 0
+      if (upwardDelta > 8 && contactIsActive()) {
+        event.preventDefault()
+        snapToToss()
+      }
+    }
+    const scrollKeys = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '])
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (!scrollKeys.has(event.key)) return
+      const target = event.target as HTMLElement | null
+      if (target?.matches('input, textarea, select, [contenteditable="true"]')) return
+      if (snapLocked) {
+        event.preventDefault()
+        return
+      }
+      const downwardDelta = event.key === 'End'
+        ? Number.POSITIVE_INFINITY
+        : event.key === 'PageDown' || event.key === ' '
+          ? window.innerHeight
+          : event.key === 'ArrowDown'
+            ? 120
+            : 0
+      if (downwardDelta > 0 && tossWouldCrossContactGate(downwardDelta)) {
+        event.preventDefault()
+        snapToContact()
+        return
+      }
+      const upward = event.key === 'Home' || event.key === 'PageUp' || event.key === 'ArrowUp'
+      if (upward && contactIsActive()) {
+        event.preventDefault()
+        snapToToss()
+      }
     }
     const onPointerMove = (event: PointerEvent) => {
       if (event.pointerType === 'touch') return
@@ -90,14 +237,26 @@ export default function ContactFinale({ active }: { active: boolean }) {
       track.style.setProperty('--glow-y', `${event.clientY - rect.top}px`)
     }
 
-    update()
-    window.addEventListener('scroll', requestUpdate, { passive: true })
-    window.addEventListener('resize', requestUpdate)
+    const observer = new IntersectionObserver((observations) => {
+      const visible = observations.some((observation) => observation.isIntersecting && observation.intersectionRatio >= .6)
+      if (visible) startReveal()
+    }, { threshold: [.6] })
+    observer.observe(track)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('wheel', onWheel, { passive: false })
+    window.addEventListener('touchstart', onTouchStart, { passive: true })
+    window.addEventListener('touchmove', onTouchMove, { passive: false })
+    window.addEventListener('keydown', onKeyDown)
     track.addEventListener('pointermove', onPointerMove, { passive: true })
     return () => {
-      if (animationFrame) window.cancelAnimationFrame(animationFrame)
-      window.removeEventListener('scroll', requestUpdate)
-      window.removeEventListener('resize', requestUpdate)
+      observer.disconnect()
+      if (revealFrame) window.cancelAnimationFrame(revealFrame)
+      if (snapFrame) window.cancelAnimationFrame(snapFrame)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('wheel', onWheel)
+      window.removeEventListener('touchstart', onTouchStart)
+      window.removeEventListener('touchmove', onTouchMove)
+      window.removeEventListener('keydown', onKeyDown)
       track.removeEventListener('pointermove', onPointerMove)
     }
   }, [active])
@@ -134,7 +293,7 @@ export default function ContactFinale({ active }: { active: boolean }) {
         startBoot()
         observer.disconnect()
       }
-    }, { threshold: .08 })
+    }, { threshold: .55 })
     observer.observe(trackRef.current)
 
     return () => {

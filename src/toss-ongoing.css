@@ -254,7 +254,7 @@
 .toss-orbit { position: absolute; display: block; border: 1px solid rgba(0, 100, 255, .11); border-radius: 50%; }
 .toss-orbit-one { top: -32vw; right: -23vw; width: 68vw; aspect-ratio: 1; transform: rotate(calc(var(--toss-progress) * 18deg)); }
 .toss-orbit-two { right: 7vw; bottom: -23vw; width: 46vw; aspect-ratio: 1; transform: rotate(calc(var(--toss-progress) * -24deg)); }
-.toss-blue-object { position: absolute; top: 12%; right: 10%; display: block; width: clamp(140px, 15vw, 240px); height: auto; transform: translate3d(0, calc(sin(var(--toss-progress) * 3.14159) * -12px), 0); }
+.toss-blue-object { position: absolute; top: 12%; right: 10%; display: block; width: clamp(90px, 11vw, 175px); height: auto; transform: translate3d(0, calc(sin(var(--toss-progress) * 3.14159) * -12px), 0); }
 
 .toss-ongoing-exit {
   position: absolute;
@@ -297,7 +297,7 @@
   .toss-ongoing-copy h2 { font-size: clamp(3rem, 13.5vw, 4.8rem); line-height: .88; }
   .toss-ongoing-copy h2 strong { white-space: normal; }
   .toss-ongoing-copy p { margin-top: 20px; font-size: clamp(.9rem, 4vw, 1.05rem); }
-  .toss-blue-object { top: 9%; right: 1%; width: 42vw; }
+  .toss-blue-object { top: 9%; right: 1%; width: 34vw; }
   .toss-status-card { right: 6vw; bottom: 12vh; width: auto; padding: 20px; border-radius: 22px; }
   .toss-status-card dl { margin: 18px 0; }
   .toss-status-card dl div { padding: 9px 0; }

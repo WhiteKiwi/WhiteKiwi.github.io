@@ -27,7 +27,7 @@ pnpm build
 - `src/CareerJourney.tsx` — 03 화이트블록부터 06 당근까지 네 경력 트랙의 공통 진행률과 회사별 장면 구조
 - `src/career-journey.css` — 배달 도로, 명품 쇼윈도, 성장하는 농장, 동네 지도와 회사별 반응형 모션
 - `src/TossOngoing.tsx`, `src/toss-ongoing.css` — 07 Toss·Toss Income을 상세 콘텐츠 전까지 현재진행형 상태로 보여주는 독립 트랙
-- `public/assets/brands/toss-logo-primary.png` — 공식 브랜드 리소스의 Toss 시그니처 로고를 화면 표시 크기에 맞게 축소한 무변형 래스터 자산
+- `public/assets/brands/toss-symbol-primary.png` — 공식 브랜드 리소스의 Toss 심벌을 화면 표시 크기에 맞게 축소한 무변형 래스터 자산
 - `src/ContactFinale.tsx`, `src/contact-finale.css` — 현재 여정 끝의 실제 터미널형 Contact 피날레와 스크롤·포인터 반응
 - `public/assets/characters/kiwi-walk-cycle.png` — 3-C를 기준으로 만든 4프레임 보행 스프라이트
 - `public/assets/characters/kiwi-graduate-walk-cycle.png` — 기본 보행 실루엣과 프레임 간격을 유지하면서 학사모를 일체화한 Education 전용 4프레임 스프라이트
@@ -55,23 +55,25 @@ pnpm build
 - 06 뒤, Contact 앞에 별도 sticky track으로 배치해 이후 상세 경력 장면으로 확장해도 기존 03—06 상태 계산과 Contact 터미널을 건드리지 않게 한다.
 - 진행률은 컴포넌트 내부에서 현재 보이는 트랙만 갱신하고, 큰 헤드라인·상태 카드·Contact 출구의 조립에만 사용한다.
 - 공식 색상인 Toss Blue `#0064FF`, Toss Gray `#202632`와 흰색, 큰 타이포와 제품 상태 UI를 중심으로 정체성을 만들고 공식 로고는 우측 상단에만 절제해 노출한다.
-- 07 메타의 원형 챕터 배지는 기존처럼 `07`을 표시한다. 장면 내부 우측 상단의 `toss-blue-object`를 공식 시그니처 로고 PNG `img`로 교체하며 별도 색상·필터·그림자·회전은 적용하지 않는다.
+- 07 메타의 원형 챕터 배지는 기존처럼 `07`을 표시한다. 장면 내부 우측 상단의 `toss-blue-object`는 워드마크가 없는 공식 심벌 PNG `img`를 기존 포인트 오브젝트와 비슷한 크기로 표시하며 별도 색상·필터·그림자·회전은 적용하지 않는다.
 - 로딩 바와 live dot은 반복 ambient motion으로 현재진행형을 표현한다. 모션 감소 환경에서는 반복을 멈추고 정적인 진행 상태로 대체한다.
 - 06 후반의 텍스트형 `next-journey`는 제거한다. 하향 wheel·touch·스크롤 키가 장면의 정보가 해체되기 전 임계 progress를 넘으려 하면 입력을 소비하고, fixed Toss Blue 원형 cover를 시간 기반으로 끝까지 재생한다. 완전히 가린 프레임에서 07의 curtain이 사라진 대표 progress로 즉시 이동한 뒤 fixed layer를 위로 퇴장시킨다. 상향 입력도 07 초입 임계점에서 소비하고 같은 fixed layer를 위에서 복귀시킨 뒤 06의 문구·카드·캐릭터가 함께 남아 있는 완성 progress로 위치를 교체하고 원형을 축소한다. 두 방향 모두 시퀀스가 끝날 때까지 추가 입력을 잠근다.
+- 06↔07 전환은 document root에 전환 소유권을 표시해 같은 `window` 입력을 구독하는 05↔06 전환기가 동시에 시작되지 않게 한다. reveal이 끝난 뒤에도 짧은 안정화 시간 동안 공통 잠금을 유지해 트랙패드 관성 입력이 인접 경계를 즉시 다시 실행하지 않게 하고, 안정화가 끝날 때 스크롤 기준 위치와 touch 기준점을 함께 초기화한다.
 - `#07`, `#07-toss`, `#07-ongoing`은 현재진행형 장면의 대표 상태로 이동한다.
 
 ### Contact finale
 
 - Toss ongoing chapter 뒤에 독립 컴포넌트로 붙인다.
-- 긴 track 안의 sticky stage에서 스크롤 진행률을 계산해 프롬프트형 헤드라인과 터미널을 조립하고, 포인터 입력이 가능한 환경에서는 배경의 앰버 글로우만 느리게 따라오게 한다.
-- 터미널 조립 순서는 유지하되 트랙의 실제 진행 거리는 데스크톱과 모바일 모두 기존보다 약 20% 줄여 적은 스크롤로 최종 상태에 도달하게 한다.
+- Contact는 한 viewport 높이의 정적 stage로 바꾸고 스크롤 위치와 `--contact-progress` 계산을 분리한다. viewport에 충분히 진입하면 requestAnimationFrame 기반 ease-out 시퀀스로 약 1.9초 동안 progress를 0→1로 진행한다.
+- 07→Contact 하향 입력이 Toss 후반 임계 progress를 넘으려 하면 입력을 소비하고 Contact 시작점까지 약 650ms 동안 자동 스크롤한다. Contact 초입의 상향 입력은 같은 방식으로 07의 대표 progress로 돌아가며, 이동 중 추가 wheel·touch·스크롤 키를 잠근다.
+- 포인터 입력이 가능한 환경에서는 자동 조립과 별개로 배경의 앰버 글로우만 느리게 따라오게 한다.
 - 터미널은 제어된 text input과 submit form으로 구현한다. 공개 명령은 `help`, `whoami`, `open github`, `open blog`, `open linkedin`, `open instagram`, `open email`, `clear`이며 `open instargram`은 사용자 입력 호환 alias로 처리한다.
 - 숨은 `iloveyou` 분기는 `I love you too` 한 줄을 반환하지만 공개 명령 배열에는 넣지 않아 help 출력과 shortcut 렌더에서 제외한다.
 - `cd`로 시작하는 입력은 `permission denied`, 그 밖의 미지원 입력은 `command not found` 결과를 추가한다. 명령과 출력은 시간순 entry로 렌더하고 `sessionStorage`에 저장하며 위·아래 화살표로 입력 명령 history를 탐색한다.
 - `clear`는 entry state, 입력 탐색 위치와 `sessionStorage`를 한 번에 초기화하고, 명령 자체도 비워진 로그에 남기지 않는다.
 - `open`만 입력하면 오류 대신 `usage: open <channel>`과 허용 채널을 보여주며, 미지원 `open <channel>`은 일반 명령 오류와 구분한 `unknown channel` 안내를 반환한다.
 - GitHub, Blog, LinkedIn과 Instagram은 사용자 submit 이벤트 안에서 새 탭으로 열고 email은 `mailto:`로 연결한다. 화면의 명령 힌트 버튼도 같은 실행 경로를 직접 호출한다.
-- 터미널이 처음 viewport에 들어오면 부팅 행을 순차적으로 보여준다. 강제 포커스로 모바일 키보드를 열지는 않으며 stage나 input을 직접 선택하면 입력할 수 있다.
+- 터미널이 viewport의 절반 이상 들어오면 Contact 자동 조립과 함께 부팅 행을 순차적으로 보여준다. 강제 포커스로 모바일 키보드를 열지는 않으며 stage나 input을 직접 선택하면 입력할 수 있다.
 - 터미널 아래에는 Introduction과 같은 순서의 Email·GitHub·Blog·LinkedIn·Instagram 실제 앵커를 두고, 재시작은 `/`로 이동해 오프닝을 처음부터 실행한다.
 - 하단의 `Portfolio Guidelines` 링크는 `?view=guidelines`로 이동하며 이것이 메인 여정의 유일한 Guidelines 진입점이다.
 - 모바일에서는 헤드라인과 터미널을 세로로 재배치하고 히스토리 영역에 독립적인 세로 스크롤을 허용한다. 모션 감소 환경에서는 포인터 추적, 자동 타이핑 지연과 반복 커서 모션을 끈다.
@@ -130,7 +132,7 @@ pnpm build
 - 교정은 코드로 만든 2D 건물, 운동장 경계, 캠퍼스 길과 벚나무 실루엣으로 구성해 외부 이미지 로딩에 의존하지 않는다.
 - 학교 입학·IT 과정·5개 프로젝트·대학 진학 문구는 진행률 구간별로 등장, 정착, 퇴장한다.
 - 프로젝트는 교정 게시판을 닮은 작은 카드들이 벚꽃 사이에서 순차적으로 펼쳐지는 아카이브로 표현한다.
-- 벚꽃잎은 고정 seed에서 파생한 시작점·지연·속도·회전값으로 CSS 루프를 실행해 스크롤이 멈춰도 계속 흩날린다.
+- 벚꽃잎은 고정 seed에서 파생한 시작점·지연·속도·회전값으로 CSS 루프를 실행해 스크롤이 멈춰도 계속 흩날린다. 낙하 transform을 가진 안쪽 꽃잎과 포인터 바람 transform을 가진 바깥 wrapper를 분리하고, 데스크톱 fine pointer 이동 시 속도·방향·꽃잎까지의 거리를 조합해 가까운 wrapper만 국소적으로 민다. 입력이 멈추면 약한 overshoot easing으로 원점에 복귀하며, 모션 감소 환경과 터치 포인터에서는 이 반응을 실행하지 않는다.
 - 핵심 서사인 텍스트·프로젝트 카드·키위 보행은 기존처럼 스크롤 진행률에서 파생한다.
 - 4프레임 키위 보행 스프라이트를 재사용하되 학교 배경과의 대비를 위해 크기와 그림자를 장면별로 조정한다.
 - 모바일에서는 학교 건물을 단순화하고 큰 문구를 세로로 재배치하며, 꽃잎 수와 레이어 크기를 줄이지 않고 화면 밖 overflow만 잘라 밀도를 유지한다.

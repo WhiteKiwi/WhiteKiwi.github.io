@@ -209,6 +209,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
 
   useEffect(() => {
     if (!active) return
+    const documentRoot = document.documentElement
     let animationFrame = 0
     const clamp = (value: number) => Math.min(Math.max(value, 0), 1)
     const reveal = (progress: number, start: number, end: number) => clamp((progress - start) / (end - start))
@@ -225,6 +226,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
     const portalGateProgress = .74
     let triggerForwardTransition = () => {}
     let triggerReverseTransition = () => {}
+    const tossTransitionActive = () => documentRoot.dataset.portfolioTransition === 'toss'
 
     const updateTrack = (track: HTMLElement, index: number) => {
       const rect = track.getBoundingClientRect()
@@ -272,7 +274,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
         track.style.setProperty('--farmer-opacity', String(visibility(progress, .11, .22, .78, .88)))
         track.style.setProperty('--farm-sun-y', `${progress * 8}vh`)
         track.style.setProperty('--carrot-guide-opacity', String(visibility(progress, .68, .74, .96, .995)))
-        if (scrollingDown && progress >= portalGateProgress && rect.top <= 1 && rect.bottom > 0 && !chapterTransitionLocked) {
+        if (scrollingDown && progress >= portalGateProgress && rect.top <= 1 && rect.bottom > 0 && !chapterTransitionLocked && !tossTransitionActive()) {
           triggerForwardTransition()
         }
       } else {
@@ -284,7 +286,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
         track.style.setProperty('--route-progress', String(reveal(progress, .2, .76)))
         track.style.setProperty('--chat-opacity', String(visibility(progress, .46, .56, .73, .82)))
         track.style.setProperty('--toss-handoff', String(smoothstep(reveal(progress, .82, .96))))
-        if (scrollingUp && progress < .075 && rect.top <= 1 && rect.bottom > 0 && !chapterTransitionLocked) {
+        if (scrollingUp && progress < .075 && rect.top <= 1 && rect.bottom > 0 && !chapterTransitionLocked && !tossTransitionActive()) {
           triggerReverseTransition()
         }
       }
@@ -407,7 +409,6 @@ export default function CareerJourney({ active }: { active: boolean }) {
     const scrollToTrackProgress = (track: HTMLElement, progress: number) => {
       const trackTop = window.scrollY + track.getBoundingClientRect().top
       const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
-      const documentRoot = document.documentElement
       const previousScrollBehavior = documentRoot.style.scrollBehavior
       documentRoot.style.scrollBehavior = 'auto'
       window.scrollTo(0, trackTop + distance * progress)
@@ -453,7 +454,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
       lastPageY = window.scrollY
     }
     const startForwardTransition = () => {
-      if (chapterTransitionLocked || !aimpactTrack || !daangnTrack) return
+      if (chapterTransitionLocked || tossTransitionActive() || !aimpactTrack || !daangnTrack) return
       const progress = Number.parseFloat(aimpactTrack.style.getPropertyValue('--chapter-progress'))
       if (!Number.isFinite(progress)) return
 
@@ -480,7 +481,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
     }
     triggerForwardTransition = startForwardTransition
     triggerReverseTransition = () => {
-      if (chapterTransitionLocked || !aimpactTrack || !daangnTrack) return
+      if (chapterTransitionLocked || tossTransitionActive() || !aimpactTrack || !daangnTrack) return
       resetChapterTransitionClasses()
       chapterTransitionLocked = true
       setCurtainState('is-reverse-ready')
@@ -518,7 +519,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
       return Number.isFinite(progress) && projectedProgress < .075 && rect.top <= 1 && rect.bottom > 0
     }
     const onTransitionWheel = (event: WheelEvent) => {
-      if (chapterTransitionLocked) {
+      if (chapterTransitionLocked || tossTransitionActive()) {
         event.preventDefault()
         return
       }
@@ -537,11 +538,12 @@ export default function CareerJourney({ active }: { active: boolean }) {
       touchStartY = event.touches[0]?.clientY ?? null
     }
     const onTransitionTouchMove = (event: TouchEvent) => {
-      if (chapterTransitionLocked) {
+      const currentY = event.touches[0]?.clientY
+      if (chapterTransitionLocked || tossTransitionActive()) {
+        touchStartY = currentY ?? null
         event.preventDefault()
         return
       }
-      const currentY = event.touches[0]?.clientY
       const downwardDelta = touchStartY !== null && currentY !== undefined ? touchStartY - currentY : 0
       if (downwardDelta > 8 && aimpactWouldCrossPortalGate(downwardDelta)) {
         event.preventDefault()
@@ -557,7 +559,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
     const onTransitionKeyDown = (event: KeyboardEvent) => {
       if (!scrollKeys.has(event.key)) return
       if (event.key === ' ' && event.target === carrotButton) return
-      if (chapterTransitionLocked) {
+      if (chapterTransitionLocked || tossTransitionActive()) {
         event.preventDefault()
         return
       }

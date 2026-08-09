@@ -3,16 +3,15 @@
   --glow-x: 72vw;
   --glow-y: 34vh;
   position: relative;
-  height: 250svh;
+  height: max(100svh, 620px);
   color: #f6f0df;
   background: #171918;
 }
 
 .contact-finale-stage {
-  position: sticky;
-  top: 0;
+  position: relative;
   width: 100%;
-  height: 100svh;
+  height: 100%;
   min-height: 620px;
   overflow: hidden;
   isolation: isolate;
@@ -312,7 +311,7 @@
 @keyframes terminal-command-in { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
 
 @media (max-width: 700px) {
-  .contact-finale-track { height: 295svh; }
+  .contact-finale-track { height: max(100svh, 610px); }
   .contact-finale-stage { min-height: 610px; }
   .contact-finale-meta { top: 3.2vh; right: 5vw; left: 5vw; grid-template-columns: 1fr 34px; gap: 12px; }
   .contact-finale-meta > span:nth-child(2) { display: none; }

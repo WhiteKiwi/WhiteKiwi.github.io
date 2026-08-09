@@ -24,12 +24,15 @@ export default function TossOngoing({ active }: { active: boolean }) {
     let animationFrame = 0
     let transitionFrame = 0
     let transitionTimer = 0
+    let settleTimer = 0
     let transitionLocked = false
     let lastPageY = window.scrollY
+    let touchStartY: number | null = null
     let triggerForwardTransition = () => {}
     let triggerReverseTransition = () => {}
     const daangnTrack = document.querySelector<HTMLElement>('.career-daangn')
     const transitionOverlay = transitionOverlayRef.current
+    const documentRoot = document.documentElement
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const forwardGateProgress = .76
     const reverseGateProgress = .14
@@ -89,6 +92,16 @@ export default function TossOngoing({ active }: { active: boolean }) {
       transitionOverlay?.classList.remove(...overlayStates)
       if (state) transitionOverlay?.classList.add(state)
     }
+    const claimTransition = () => {
+      documentRoot.dataset.portfolioTransition = 'toss'
+    }
+    const releaseTransition = () => {
+      if (documentRoot.dataset.portfolioTransition === 'toss') delete documentRoot.dataset.portfolioTransition
+    }
+    const transitionOwnedElsewhere = () => {
+      const owner = documentRoot.dataset.portfolioTransition
+      return Boolean(owner && owner !== 'toss')
+    }
     const onNextPaint = (callback: () => void) => {
       transitionFrame = window.requestAnimationFrame(() => {
         transitionFrame = window.requestAnimationFrame(callback)
@@ -99,7 +112,6 @@ export default function TossOngoing({ active }: { active: boolean }) {
       if (!track) return
       const trackTop = window.scrollY + track.getBoundingClientRect().top
       const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
-      const documentRoot = document.documentElement
       const previousScrollBehavior = documentRoot.style.scrollBehavior
       documentRoot.style.scrollBehavior = 'auto'
       window.scrollTo(0, trackTop + distance * .18)
@@ -111,7 +123,6 @@ export default function TossOngoing({ active }: { active: boolean }) {
       if (!daangnTrack) return
       const trackTop = window.scrollY + daangnTrack.getBoundingClientRect().top
       const distance = Math.max(daangnTrack.offsetHeight - window.innerHeight, 1)
-      const documentRoot = document.documentElement
       const previousScrollBehavior = documentRoot.style.scrollBehavior
       documentRoot.style.scrollBehavior = 'auto'
       window.scrollTo(0, trackTop + distance * .7)
@@ -120,15 +131,28 @@ export default function TossOngoing({ active }: { active: boolean }) {
     }
     const finishTransition = () => {
       setOverlayState()
-      transitionLocked = false
       lastPageY = window.scrollY
+      touchStartY = null
+      if (reducedMotion) {
+        transitionLocked = false
+        releaseTransition()
+        return
+      }
+      settleTimer = window.setTimeout(() => {
+        lastPageY = window.scrollY
+        touchStartY = null
+        transitionLocked = false
+        releaseTransition()
+        settleTimer = 0
+      }, 280)
     }
     const coverDuration = reducedMotion ? 20 : 480
     const holdDuration = reducedMotion ? 0 : 55
     const revealDuration = reducedMotion ? 20 : 560
     triggerForwardTransition = () => {
-      if (transitionLocked || !daangnTrack || !transitionOverlay || !trackRef.current) return
+      if (transitionLocked || transitionOwnedElsewhere() || !daangnTrack || !transitionOverlay || !trackRef.current) return
       transitionLocked = true
+      claimTransition()
       setOverlayState('is-ready')
       onNextPaint(() => {
         setOverlayState('is-covering')
@@ -145,8 +169,9 @@ export default function TossOngoing({ active }: { active: boolean }) {
       })
     }
     triggerReverseTransition = () => {
-      if (transitionLocked || !daangnTrack || !transitionOverlay || !trackRef.current) return
+      if (transitionLocked || transitionOwnedElsewhere() || !daangnTrack || !transitionOverlay || !trackRef.current) return
       transitionLocked = true
+      claimTransition()
       setOverlayState('is-reverse-ready')
       onNextPaint(() => {
         setOverlayState('is-reverse-covering')
@@ -181,7 +206,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
       return Number.isFinite(progress) && projectedProgress <= reverseGateProgress && rect.top <= 1 && rect.bottom > 0
     }
     const onTransitionWheel = (event: WheelEvent) => {
-      if (transitionLocked) {
+      if (transitionLocked || transitionOwnedElsewhere()) {
         event.preventDefault()
         return
       }
@@ -195,12 +220,11 @@ export default function TossOngoing({ active }: { active: boolean }) {
         triggerReverseTransition()
       }
     }
-    let touchStartY: number | null = null
     const onTransitionTouchStart = (event: TouchEvent) => {
       touchStartY = event.touches[0]?.clientY ?? null
     }
     const onTransitionTouchMove = (event: TouchEvent) => {
-      if (transitionLocked) {
+      if (transitionLocked || transitionOwnedElsewhere()) {
         event.preventDefault()
         return
       }
@@ -222,7 +246,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
       if (!scrollKeys.has(event.key)) return
       const target = event.target as HTMLElement | null
       if (target?.matches('input, textarea, select, [contenteditable="true"]')) return
-      if (transitionLocked) {
+      if (transitionLocked || transitionOwnedElsewhere()) {
         event.preventDefault()
         return
       }
@@ -262,6 +286,8 @@ export default function TossOngoing({ active }: { active: boolean }) {
       if (animationFrame) window.cancelAnimationFrame(animationFrame)
       if (transitionFrame) window.cancelAnimationFrame(transitionFrame)
       if (transitionTimer) window.clearTimeout(transitionTimer)
+      if (settleTimer) window.clearTimeout(settleTimer)
+      releaseTransition()
       setOverlayState()
       window.removeEventListener('scroll', requestUpdate)
       window.removeEventListener('resize', requestUpdate)
@@ -292,7 +318,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
         <div className="toss-ambient" aria-hidden="true">
           <i className="toss-orbit toss-orbit-one" />
           <i className="toss-orbit toss-orbit-two" />
-          <img className="toss-blue-object" src="/assets/brands/toss-logo-primary.png" alt="" />
+          <img className="toss-blue-object" src="/assets/brands/toss-symbol-primary.png" alt="" />
         </div>
 
         <header className="toss-ongoing-meta">
