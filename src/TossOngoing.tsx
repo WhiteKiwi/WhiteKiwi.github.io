@@ -22,11 +22,14 @@ export default function TossOngoing({ active }: { active: boolean }) {
   useEffect(() => {
     if (!active) return
     let animationFrame = 0
+    let contentFrame = 0
     let transitionFrame = 0
     let transitionTimer = 0
     let settleTimer = 0
     let transitionLocked = false
     let transitionSettling = false
+    let contentProgress = 0
+    let contentStarted = false
     let lastPageY = window.scrollY
     let touchStartY: number | null = null
     let triggerForwardTransition = () => {}
@@ -51,8 +54,8 @@ export default function TossOngoing({ active }: { active: boolean }) {
 
       const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
       const progress = clamp(-rect.top / distance)
-      const copyIn = smoothstep(reveal(progress, .04, .18))
-      const cardIn = smoothstep(reveal(progress, .12, .3))
+      const copyIn = smoothstep(reveal(contentProgress, .04, .58))
+      const cardIn = smoothstep(reveal(contentProgress, .3, 1))
       const exit = smoothstep(reveal(progress, .76, .94))
       const entry = smoothstep(reveal(progress, .015, .14))
 
@@ -63,21 +66,50 @@ export default function TossOngoing({ active }: { active: boolean }) {
       track.style.setProperty('--toss-card-y', `${(1 - cardIn) * 54 - exit * 18}px`)
       track.style.setProperty('--toss-exit', String(exit))
       track.style.setProperty('--toss-entry-y', `${entry * -118}%`)
+      if (!contentStarted && !transitionLocked && !transitionOwnedElsewhere() && rect.top <= 1 && rect.bottom >= window.innerHeight) {
+        startContentReveal()
+      }
 
-      if (scrollingDown && daangnTrack && !transitionLocked) {
+      if (scrollingDown && daangnTrack && !transitionLocked && !transitionOwnedElsewhere()) {
         const daangnProgress = Number.parseFloat(daangnTrack.style.getPropertyValue('--chapter-progress'))
         const daangnRect = daangnTrack.getBoundingClientRect()
         if (Number.isFinite(daangnProgress) && daangnProgress >= forwardGateProgress && daangnRect.top <= 1 && daangnRect.bottom > 0) {
           triggerForwardTransition()
         }
       }
-      if (scrollingUp && progress <= reverseGateProgress && rect.top <= 1 && rect.bottom > 0 && !transitionLocked) {
+      if (scrollingUp && progress <= reverseGateProgress && rect.top <= 1 && rect.bottom > 0 && !transitionLocked && !transitionOwnedElsewhere()) {
         triggerReverseTransition()
       }
     }
 
     const requestUpdate = () => {
       if (!animationFrame) animationFrame = window.requestAnimationFrame(update)
+    }
+    const startContentReveal = () => {
+      if (contentStarted) return
+      contentStarted = true
+      if (reducedMotion) {
+        contentProgress = 1
+        requestUpdate()
+        return
+      }
+      const startedAt = performance.now()
+      const duration = 1250
+      const animate = (now: number) => {
+        const progress = clamp((now - startedAt) / duration)
+        contentProgress = 1 - Math.pow(1 - progress, 3)
+        requestUpdate()
+        if (progress < 1) contentFrame = window.requestAnimationFrame(animate)
+        else contentFrame = 0
+      }
+      contentFrame = window.requestAnimationFrame(animate)
+    }
+    const resetContentReveal = () => {
+      if (contentFrame) window.cancelAnimationFrame(contentFrame)
+      contentFrame = 0
+      contentProgress = 0
+      contentStarted = false
+      requestUpdate()
     }
 
     const overlayStates = [
@@ -172,6 +204,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
           transitionTimer = window.setTimeout(() => {
             onNextPaint(() => {
               setOverlayState('is-revealing')
+              startContentReveal()
               transitionTimer = window.setTimeout(finishTransition, revealDuration)
             })
           }, holdDuration)
@@ -290,6 +323,14 @@ export default function TossOngoing({ active }: { active: boolean }) {
     }
 
     update()
+    const stage = trackRef.current?.querySelector<HTMLElement>('.toss-ongoing-stage')
+    const contentObserver = new IntersectionObserver((entries) => {
+      const entry = entries[0]
+      if (!entry) return
+      if (entry.isIntersecting && entry.intersectionRatio >= .55 && !transitionLocked && !transitionOwnedElsewhere()) startContentReveal()
+      else if (!entry.isIntersecting) resetContentReveal()
+    }, { threshold: [0, .55] })
+    if (stage) contentObserver.observe(stage)
     window.addEventListener('scroll', requestUpdate, { passive: true })
     window.addEventListener('resize', requestUpdate)
     window.addEventListener('wheel', onTransitionWheel, { passive: false })
@@ -297,7 +338,9 @@ export default function TossOngoing({ active }: { active: boolean }) {
     window.addEventListener('touchmove', onTransitionTouchMove, { passive: false })
     window.addEventListener('keydown', onTransitionKeyDown)
     return () => {
+      contentObserver.disconnect()
       if (animationFrame) window.cancelAnimationFrame(animationFrame)
+      if (contentFrame) window.cancelAnimationFrame(contentFrame)
       if (transitionFrame) window.cancelAnimationFrame(transitionFrame)
       if (transitionTimer) window.clearTimeout(transitionTimer)
       if (settleTimer) window.clearTimeout(settleTimer)

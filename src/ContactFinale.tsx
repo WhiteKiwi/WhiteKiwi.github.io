@@ -74,16 +74,35 @@ export default function ContactFinale({ active }: { active: boolean }) {
     if (!track) return
 
     const tossTrack = document.querySelector<HTMLElement>('.toss-ongoing-track')
+    const documentRoot = document.documentElement
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let revealFrame = 0
     let snapFrame = 0
     let snapLocked = false
+    let previousScrollBehavior: string | null = null
     let lastPageY = window.scrollY
     let touchStartY: number | null = null
     const clamp = (value: number) => Math.min(Math.max(value, 0), 1)
     const easeInOut = (value: number) => value < .5
       ? 4 * value * value * value
       : 1 - Math.pow(-2 * value + 2, 3) / 2
+    const snapOwnedElsewhere = () => {
+      const owner = documentRoot.dataset.portfolioTransition
+      return Boolean(owner && owner !== 'contact')
+    }
+    const claimSnap = () => {
+      if (snapOwnedElsewhere()) return false
+      documentRoot.dataset.portfolioTransition = 'contact'
+      return true
+    }
+    const releaseSnap = () => {
+      if (documentRoot.dataset.portfolioTransition === 'contact') delete documentRoot.dataset.portfolioTransition
+    }
+    const restoreScrollBehavior = () => {
+      if (previousScrollBehavior === null) return
+      documentRoot.style.scrollBehavior = previousScrollBehavior
+      previousScrollBehavior = null
+    }
 
     const startReveal = () => {
       if (hasAnimatedRef.current) return
@@ -115,14 +134,13 @@ export default function ContactFinale({ active }: { active: boolean }) {
       return top + distance * progress
     }
     const animateScrollTo = (targetY: number, onComplete?: () => void) => {
-      if (snapLocked) return
+      if (snapLocked || !claimSnap()) return false
       snapLocked = true
       const startY = window.scrollY
       const distance = targetY - startY
       const duration = reducedMotion ? 20 : 650
       const startedAt = performance.now()
-      const documentRoot = document.documentElement
-      const previousScrollBehavior = documentRoot.style.scrollBehavior
+      previousScrollBehavior = documentRoot.style.scrollBehavior
       documentRoot.style.scrollBehavior = 'auto'
       const animate = (now: number) => {
         const progress = clamp((now - startedAt) / duration)
@@ -131,16 +149,18 @@ export default function ContactFinale({ active }: { active: boolean }) {
         if (progress < 1) snapFrame = window.requestAnimationFrame(animate)
         else {
           snapFrame = 0
-          documentRoot.style.scrollBehavior = previousScrollBehavior
+          restoreScrollBehavior()
           snapLocked = false
+          releaseSnap()
           onComplete?.()
         }
       }
       snapFrame = window.requestAnimationFrame(animate)
+      return true
     }
     const snapToContact = () => animateScrollTo(getTrackTarget(track, 0), startReveal)
     const snapToToss = () => {
-      if (!tossTrack) return
+      if (!tossTrack || snapLocked || snapOwnedElsewhere()) return
       resetReveal()
       animateScrollTo(getTrackTarget(tossTrack, .72))
     }
@@ -252,6 +272,8 @@ export default function ContactFinale({ active }: { active: boolean }) {
       observer.disconnect()
       if (revealFrame) window.cancelAnimationFrame(revealFrame)
       if (snapFrame) window.cancelAnimationFrame(snapFrame)
+      restoreScrollBehavior()
+      releaseSnap()
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('wheel', onWheel)
       window.removeEventListener('touchstart', onTouchStart)
