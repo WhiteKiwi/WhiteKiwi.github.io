@@ -48,22 +48,25 @@ function OpeningTitle() {
 }
 
 function FallingEgg({
-  interactive,
-  onActivate,
+  action,
+  onDescend,
+  onContinue,
   onLanded,
 }: {
-  interactive: boolean
-  onActivate: () => void
+  action: 'descend' | 'continue' | null
+  onDescend: () => void
+  onContinue: () => void
   onLanded: () => void
 }) {
+  const interactive = action !== null
   return (
     <button
       className="egg-scroll-rig"
       type="button"
       aria-hidden={!interactive}
-      aria-label={interactive ? '01 소개 장면으로 이동' : undefined}
+      aria-label={action === 'descend' ? '알을 착지시키기' : action === 'continue' ? '01 소개 장면으로 이동' : undefined}
       disabled={!interactive}
-      onClick={onActivate}
+      onClick={action === 'descend' ? onDescend : onContinue}
       onAnimationEnd={(event) => {
         if (event.animationName === 'egg-camera-arrival') onLanded()
       }}
@@ -75,15 +78,15 @@ function FallingEgg({
           <span className="falling-shell-glint" />
           <span className="falling-shell-rim" />
           <svg className="shell-cracks" viewBox="0 0 260 330" aria-hidden="true">
-            <path className="shell-crack shell-crack-main" d="m106 265 23-23-11-23 25-21-11-22 19-22" />
-            <path className="shell-crack shell-crack-left" d="m120 222-23-8-14-20M134 181l-24-10-7-20" />
-            <path className="shell-crack shell-crack-right" d="m136 204 24-11 12-23M146 160l21-14" />
+            <path className="shell-crack shell-crack-main" d="m130 8 10 18-13 17 15 22-12 18 14 23-10 20" />
+            <path className="shell-crack shell-crack-left" d="m128 42-20-8-14-14m37 62-23-7-12-15" />
+            <path className="shell-crack shell-crack-right" d="m139 27 17-8 8-11m-23 57 21-13 11-15m-30 69 17-10 10-16" />
           </svg>
         </div>
         <span className="air-ring air-ring-one" />
         <span className="air-ring air-ring-two" />
       </div>
-      {interactive && <span className="egg-continue-cue">CLICK TO CONTINUE</span>}
+      {action === 'continue' && <span className="egg-continue-cue">CLICK TO CONTINUE</span>}
     </button>
   )
 }
@@ -193,6 +196,10 @@ export default function FallIntro() {
   const introCueEligibleRef = useRef(false)
   const introCueVisibleRef = useRef(false)
   const introCueConsumedRef = useRef(false)
+  const beginDescent = () => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    setPhase((current) => current === 'idle' ? (reducedMotion ? 'landed' : 'descending') : current)
+  }
 
   useEffect(() => {
     if (phase !== 'opening') return
@@ -268,9 +275,7 @@ export default function FallIntro() {
   useEffect(() => {
     if (phase !== 'idle') return
 
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let touchY = 0
-    const beginDescent = () => setPhase((current) => current === 'idle' ? (reducedMotion ? 'landed' : 'descending') : current)
     const onWheel = (event: WheelEvent) => {
       if (event.deltaY > 4) beginDescent()
     }
@@ -464,7 +469,7 @@ export default function FallIntro() {
   }
 
   return (
-    <main className={`fall-intro-scroll ${phase === 'opening' ? 'is-opening' : ''} ${hasDescended ? 'has-descended' : ''} ${hasLanded ? 'is-landed' : ''} ${phase === 'ready' ? 'is-scroll-ready' : ''}`}>
+    <main className={`fall-intro-scroll ${phase === 'opening' ? 'is-opening' : ''} ${phase === 'idle' ? 'is-idle' : ''} ${hasDescended ? 'has-descended' : ''} ${hasLanded ? 'is-landed' : ''} ${phase === 'ready' ? 'is-scroll-ready' : ''}`}>
       <section className="fall-intro">
         {phase === 'opening' && <OpeningTitle />}
         <div className="sky-depth sky-depth-back" aria-hidden="true" />
@@ -496,8 +501,9 @@ export default function FallIntro() {
 
         <GlassGround />
         <FallingEgg
-          interactive={phase === 'ready'}
-          onActivate={goToIntroduction}
+          action={phase === 'idle' ? 'descend' : phase === 'ready' ? 'continue' : null}
+          onDescend={beginDescent}
+          onContinue={goToIntroduction}
           onLanded={() => setPhase('landed')}
         />
         <div className="fall-vignette" aria-hidden="true" />

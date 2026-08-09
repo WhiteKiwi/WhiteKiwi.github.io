@@ -89,11 +89,11 @@
 .is-landed .shell-crack-main { animation: shell-crack-draw .55s 1.42s cubic-bezier(.3,0,.3,1) forwards; }
 .is-landed .shell-crack-left { animation: shell-crack-draw .4s 1.72s cubic-bezier(.3,0,.3,1) forwards; }
 .is-landed .shell-crack-right { animation: shell-crack-draw .45s 1.86s cubic-bezier(.3,0,.3,1) forwards; }
-.is-scroll-ready .egg-scroll-rig { cursor: pointer; }
-.is-scroll-ready .falling-shell { transition: filter .25s ease, box-shadow .25s ease; }
-.is-scroll-ready .egg-scroll-rig:hover .falling-shell { filter: brightness(1.04); box-shadow: inset 18px 17px 24px rgba(255,255,255,.98), inset -19px -24px 34px rgba(92,112,124,.18), inset 0 -5px 8px rgba(255,255,255,.7), 0 0 0 10px rgba(255,255,255,.14); }
-.is-scroll-ready .egg-scroll-rig:focus-visible { outline: none; }
-.is-scroll-ready .egg-scroll-rig:focus-visible .falling-shell { filter: brightness(1.06); box-shadow: inset 18px 17px 24px rgba(255,255,255,.98), inset -19px -24px 34px rgba(92,112,124,.18), inset 0 -5px 8px rgba(255,255,255,.7), 0 0 0 12px rgba(255,255,255,.72); }
+.is-idle .egg-scroll-rig, .is-scroll-ready .egg-scroll-rig { cursor: pointer; }
+.is-idle .falling-shell, .is-scroll-ready .falling-shell { transition: filter .25s ease, box-shadow .25s ease; }
+.is-idle .egg-scroll-rig:hover .falling-shell, .is-scroll-ready .egg-scroll-rig:hover .falling-shell { filter: brightness(1.04); box-shadow: inset 18px 17px 24px rgba(255,255,255,.98), inset -19px -24px 34px rgba(92,112,124,.18), inset 0 -5px 8px rgba(255,255,255,.7), 0 0 0 10px rgba(255,255,255,.14); }
+.is-idle .egg-scroll-rig:focus-visible, .is-scroll-ready .egg-scroll-rig:focus-visible { outline: none; }
+.is-idle .egg-scroll-rig:focus-visible .falling-shell, .is-scroll-ready .egg-scroll-rig:focus-visible .falling-shell { filter: brightness(1.06); box-shadow: inset 18px 17px 24px rgba(255,255,255,.98), inset -19px -24px 34px rgba(92,112,124,.18), inset 0 -5px 8px rgba(255,255,255,.7), 0 0 0 12px rgba(255,255,255,.72); }
 .egg-continue-cue { position: absolute; top: calc(100% + 24px); left: 50%; color: rgba(42,90,117,.78); font: 700 1.25rem 'DM Mono', monospace; letter-spacing: .16em; white-space: nowrap; transform: translateX(-50%); animation: egg-cue-in .45s ease both; }
 .air-ring { position: absolute; left: 50%; top: 52%; z-index: -1; width: 132%; aspect-ratio: 1; border: 1px solid rgba(255,255,255,.32); border-radius: 50%; transform: translate(-50%,-50%) scaleY(.35); animation: air-pulse 2.2s ease-out infinite; }.air-ring-two { animation-delay: -1.1s; }
 .fall-vignette { position: absolute; inset: 0; z-index: 9; pointer-events: none; box-shadow: inset 0 0 110px rgba(53,113,149,.14); background: linear-gradient(90deg, rgba(72,132,169,.05), transparent 18% 82%, rgba(72,132,169,.05)); }
