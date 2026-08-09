@@ -23,6 +23,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
     let animationFrame = 0
     let contentFrame = 0
     let transitionFrame = 0
+    let daangnProgressFrame = 0
     let transitionTimer = 0
     let settleTimer = 0
     let transitionLocked = false
@@ -122,6 +123,18 @@ export default function TossOngoing({ active }: { active: boolean }) {
       transitionOverlay?.classList.remove(...overlayStates)
       if (state) transitionOverlay?.classList.add(state)
     }
+    const maskDaangnProgress = () => {
+      if (daangnProgressFrame) window.cancelAnimationFrame(daangnProgressFrame)
+      daangnProgressFrame = 0
+      daangnTrack?.classList.add('is-toss-returning')
+    }
+    const revealDaangnProgress = () => {
+      if (daangnProgressFrame) window.cancelAnimationFrame(daangnProgressFrame)
+      daangnProgressFrame = window.requestAnimationFrame(() => {
+        daangnTrack?.classList.remove('is-toss-returning')
+        daangnProgressFrame = 0
+      })
+    }
     const claimTransition = () => {
       documentRoot.dataset.portfolioTransition = 'toss'
     }
@@ -173,6 +186,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
     }
     const finishTransition = () => {
       setOverlayState()
+      revealDaangnProgress()
       lastPageY = window.scrollY
       touchStartY = null
       if (reducedMotion) {
@@ -189,6 +203,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
     const revealDuration = reducedMotion ? 20 : 560
     triggerForwardTransition = () => {
       if (transitionLocked || transitionOwnedElsewhere() || !daangnTrack || !transitionOverlay || !trackRef.current) return
+      daangnTrack.classList.remove('is-toss-returning')
       transitionLocked = true
       transitionSettling = false
       claimTransition()
@@ -210,6 +225,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
     }
     triggerReverseTransition = () => {
       if (transitionLocked || transitionOwnedElsewhere() || !daangnTrack || !transitionOverlay || !trackRef.current) return
+      maskDaangnProgress()
       transitionLocked = true
       transitionSettling = false
       claimTransition()
@@ -339,10 +355,12 @@ export default function TossOngoing({ active }: { active: boolean }) {
       if (animationFrame) window.cancelAnimationFrame(animationFrame)
       if (contentFrame) window.cancelAnimationFrame(contentFrame)
       if (transitionFrame) window.cancelAnimationFrame(transitionFrame)
+      if (daangnProgressFrame) window.cancelAnimationFrame(daangnProgressFrame)
       if (transitionTimer) window.clearTimeout(transitionTimer)
       if (settleTimer) window.clearTimeout(settleTimer)
       releaseTransition()
       setOverlayState()
+      daangnTrack?.classList.remove('is-toss-returning')
       window.removeEventListener('scroll', requestUpdate)
       window.removeEventListener('resize', requestUpdate)
       window.removeEventListener('wheel', onTransitionWheel)

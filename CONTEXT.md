@@ -121,6 +121,7 @@
 - 2026-08-09 사용자는 Contact 방문 여부와 무관하게 Toss→당근 역전환 중복을 재현했고, 순간적으로 주황색 줄을 보았다고 설명했다. 주황색은 05↔06 `carrot-transition-overlay`의 trailing edge와 일치한다. 기존 잠금은 Career가 Toss 소유권을 확인만 하고 자기 전환 소유권을 잡지 않는 비대칭 구조여서 빠른 연속 입력에 두 fixed overlay가 겹칠 수 있었다. 세 경계를 동일한 소유권 규칙으로 대칭화한다.
 - 2026-08-09 Toss `CURRENT STATUS`는 현재보다 조금 늦게 시작하고 천천히 올라오는 타이밍으로 조정한다.
 - 2026-08-09 잠금 대칭화 후에도 파란 화면이 두 번 보인다는 피드백으로 시각 레이어를 재검토했다. Toss에는 스크롤 progress로 되감기는 stage 내부 `toss-entry-curtain`과 시간 기반 fixed overlay가 동시에 존재해 역방향에서 한 번의 호출도 두 파란 막의 연속 동작으로 보였다. 이전 스크럽 방식의 잔재인 stage curtain을 제거하고 fixed overlay 하나만 전환을 담당한다.
+- 2026-08-09 사용자가 역전환 중 보인 주황색 줄의 정체를 당근 장면 하단 progress bar로 확인했다. Toss fixed overlay가 화면을 덮은 동안 당근 대표 progress로 위치를 먼저 바꾸면서 bar가 70% 상태로 계산되고, 이후 파란 원이 축소될 때 다른 당근 요소보다 먼저 눈에 띄었다. Toss→당근 역전환 동안 progress bar만 숨긴 뒤 overlay가 완전히 제거된 다음 복구한다.
 - Takeit 사업 제안서 PDF: 사용자가 다운로드 폴더에 저장했다고 알려줌. 저장소에는 포함하지 않음.
 - 이전 이력서 `장지훈.pdf`: 사용자가 다운로드 폴더에 있다고 알려줌. 저장소에는 포함하지 않음.
 - 충남삼성고등학교 UI: <https://www.cnsa.hs.kr/sub01/sub05.php>
