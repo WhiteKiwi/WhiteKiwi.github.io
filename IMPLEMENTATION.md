@@ -29,7 +29,8 @@ pnpm build
 - `public/assets/characters/kiwi-walk-cycle.png` — 3-C를 기준으로 만든 4프레임 보행 스프라이트
 - `public/assets/characters/kiwi-graduate-walk-cycle.png` — 기본 보행 실루엣과 프레임 간격을 유지하면서 학사모를 일체화한 Education 전용 4프레임 스프라이트
 - `public/assets/characters/kiwi-*.png` — 배달부·패션 큐레이터·농부·동네 탐험가로 변주한 투명 배경 캐릭터
-- `public/favicon-*.png`, `public/favicon.ico`, `public/apple-touch-icon.png` — Glass Lab의 기존 `Before I Hatch` DOM 시안을 캡처해 파생한 브라우저·홈 화면 아이콘 세트
+- `public/favicon-*.png`, `public/favicon.ico`, `public/apple-touch-icon.png` — Graphite 팔레트의 `>_` 프롬프트 마크에서 파생한 브라우저·홈 화면 아이콘 세트
+- `public/og-image.png` — `$ whoami`, `whitekiwi`, 이름과 역할을 크림색 미니멀 타이포로 구성한 1200×630 소셜 공유 이미지
 - `src/EggLab.tsx`, `src/GlassLab.tsx`, `src/BirdLab.tsx` — 시안 비교를 위해 남긴 실험 페이지
 - `src/App.tsx` — 메인과 `?view=eggs|glass|birds|journey` 실험 뷰 진입점
 
@@ -90,9 +91,9 @@ pnpm build
 
 ### Browser identity
 
-- favicon은 `?view=glass`의 기존 D `Before I Hatch` 시안을 그대로 사용한다. 보라색 배경 위 반투명 Glass Shell, 연두색 키위 실루엣, 흰 glint와 민트 rim을 코드 원본에서 정사각형으로 렌더한다.
+- favicon은 아이보리 `>`와 앰버 `_`를 Graphite 배경 위에 배치한 미니멀 프롬프트 마크를 사용한다. 브라우저 title `$ whoami`와 같은 터미널 정체성을 유지한다.
 - 작은 브라우저 탭은 16 px·32 px PNG와 multi-size ICO를 제공하고, 홈 화면은 180 px Apple touch icon을 사용한다.
-- DOM 렌더 스냅샷은 `public/assets/favicon-concepts/before-i-hatch.png`에 보존하고 실제 로딩 에셋은 필요한 크기로 축소해 초기 전송량을 제한한다.
+- 선택한 생성 시안은 필요한 크기의 정사각형 PNG와 ICO로 축소해 초기 전송량을 제한하며, 원본 생성 결과는 실제 로딩 경로에서 제외한다.
 
 ### Prologue
 
@@ -138,8 +139,8 @@ pnpm build
   - 상품 태그 → 씨앗 봉투
   - 밭에 박힌 당근 → 동네 지도를 덮은 거대한 당근 실루엣
 - 캐릭터 변형은 3-C의 키 큰 측면 실루엣, 갈색 몸, 긴 부리와 다리를 유지한 래스터 에셋으로 만들고 CSS transform·mask로 움직임을 보강한다.
-
 - 에이임팩트 농부는 최초의 `public/assets/characters/kiwi-farmer.png`를 유지해 일러스트에 포함된 정적인 물방울을 보여준다. 별도 DOM 물줄기와 반복 낙하 애니메이션만 사용하지 않는다.
+
 ## Accessibility and performance
 
 - 의미 있는 섹션에는 한국어 `aria-label`을 제공한다.
@@ -147,6 +148,13 @@ pnpm build
 - Contact Dock은 실제 앵커와 `mailto:`를 사용한다.
 - `prefers-reduced-motion`에서 긴 자동 루프를 줄이거나 정적인 대표 상태를 제공해야 한다.
 - 생성 이미지와 큰 실험용 번들은 실제 메인 경로에 필요한 범위만 로드한다.
+
+## Search and social metadata
+
+- 브라우저 title과 Open Graph·Twitter Card title은 OG 이미지의 명령어 모티프와 같은 `$ whoami`를 사용한다.
+- canonical URL과 `og:url`은 HTTPS custom domain인 `https://portfolio.whitekiwi.link/`를 기준으로 한다.
+- `og:image`와 `twitter:image`는 절대 URL의 `/og-image.png`를 가리키며, 1200×630 PNG 크기와 대체 텍스트를 함께 명시한다.
+- 일반 description과 Open Graph·Twitter Card description은 `Scroll through the work and journey of Jihoon Jang, a Node.js developer.`로 통일한다.
 
 ## Build and deployment
 

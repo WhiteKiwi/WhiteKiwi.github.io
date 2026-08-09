@@ -118,6 +118,17 @@
 - `Before I Hatch` 시안에서 16 px·32 px·48 px PNG, multi-size ICO, 180 px Apple touch icon을 파생해 사이트 `<head>`에 연결한다.
 - 1회성 `SCROLL TO BEGIN` 안내 디자인은 유지하되 큰 화면에서는 라벨·아이콘·한글 설명을 조금 더 키워 시인성을 높인다.
 - 파비콘 변경과 무관하게 브라우저 title은 설명형 문구 대신 심플한 `Kiwi's`를 유지한다. 역할과 검색용 설명은 이후 SEO·Open Graph 메타데이터에서 보완한다.
+- 2026-08-09 정정: 최종 OG 문구 결정과 함께 브라우저 title도 `$ whoami`로 변경한다. 이전 `Kiwi's` 유지 결정은 이 항목으로 대체한다.
+- 2026-08-09 정정: 사용자는 `$ whoami` title과 연결되는 `>_` 프롬프트 파비콘 변형 중 Glass Sky 팔레트 시안 `exec-47a5adf7-a2f5-44e9-af1a-c20499e3ff1c`을 시험 적용하기로 했다. 옅은 하늘색 배경, 짙은 블루그레이 `>`, 흰 `_` 구성을 사용하며 이전 `Before I Hatch` 적용은 이 결정으로 교체한다.
+- Glass Sky 시안을 실제 크기로 축소하면 32 px에서는 `>_`가 모두 읽히지만 16 px에서는 흰 `_`가 옅은 배경에 거의 묻힌다. 현재는 선택 시안을 그대로 적용하고 최종 유지 여부와 16 px 전용 대비 보정은 사용자 확인 후 결정한다.
+- 2026-08-09 정정: Glass Sky 시험 적용 대신 Graphite 배경, 아이보리 `>`, 앰버 `_`의 원본 Prompt Mark 시안 `exec-dd147eac-8649-4b54-8cb1-c4cc001ad04d`을 파비콘으로 적용한다. 이 결정이 직전 Glass Sky 적용을 대체한다.
+- Graphite Prompt Mark는 실제 축소 결과 16 px와 32 px 모두에서 `>`와 `_`가 분리되어 보여 Glass Sky보다 명암과 기호 인식성이 안정적이다.
+
+## Open Graph direction
+
+- 2026-08-09 사용자는 OG 비교 시안 중 크림색 배경에 `$ whoami`, 큰 `whitekiwi`, 작은 키위 기호와 `Jihoon Jang · Node.js Developer`를 배치한 미니멀 타이포 시안을 선택했다.
+- 선택 원본은 생성 결과 `exec-33acd6ac-88f1-4cc4-bf4f-1a10934b65af`이며, 실제 배포에는 1200×630 PNG로 맞춰 사용한다.
+- title은 `$ whoami`, description은 `Scroll through the work and journey of Jihoon Jang, a Node.js developer.`로 확정해 브라우저·Open Graph·Twitter Card에 일관되게 사용한다.
 
 ## Repository history
 
@@ -141,7 +152,6 @@
 
 - 모바일에서 알 낙하를 시작하려고 스크롤하면 프롤로그 장면 자체가 위로 끌리고 화면 아래 흰 영역이 드러난다. 프롤로그 잠금 중 native scroll과 iOS elastic overscroll을 막고 `svh/dvh`, body 배경, touch event 기본 동작을 함께 확인해야 한다.
 - 일반 휠 한 번과 모바일의 빠른 플릭에서 진행률이 너무 크게 변해 장면이 확 넘어간다는 피드백이 있었다. 자동 재생이나 강한 지연보다 모바일 트랙의 물리적 길이를 늘려 직접 반응성을 유지하면서 감도를 낮춘다.
-- 출시 전 Open Graph 메타데이터·대표 이미지와 favicon 세트를 추가해야 한다.
 - 프롤로그는 `Hello, world`를 약 4.8초 동안 그리고 가운데 `o`만 남겨 알로 응축한 뒤 낙하 대기 장면으로 연결한다. 모션 감소 설정에서는 약 0.2초 뒤 바로 알로 이동한다.
 - 프롤로그가 `ready`가 되기 전에는 브라우저 문서 스크롤을 잠근다. Chrome 에뮬레이션에서 하향 휠 트리거 직후 `scrollY = 0` 유지와 착지 후 overflow 복원을 확인했다.
 - 에이임팩트의 어레인지 농장 장면은 최초 농부 일러스트에 그려진 정적인 물방울은 유지하되, 별도로 추가했던 반복 물줄기 애니메이션만 제거한다. 당근을 포함한 작물 잎과 구름의 움직임으로 생동감을 유지하고, 마우스가 밭을 지나갈 때는 이동 방향과 가까운 작물부터 잎이 휘어 바람이 따라가는 듯한 반응과 작게 되튕기는 감쇠 여운을 더한다.
