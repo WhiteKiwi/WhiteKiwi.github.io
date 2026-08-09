@@ -3,6 +3,27 @@ import EducationJourney from './EducationJourney'
 import CareerJourney from './CareerJourney'
 import './fall-intro.css'
 
+type JourneyPhase = 'opening' | 'idle' | 'descending' | 'landed' | 'ready'
+
+const chapterDeepLinks: Record<string, { selector: string; progress: number }> = {
+  '#00': { selector: '.fall-intro', progress: 0 },
+  '#00-prologue': { selector: '.fall-intro', progress: 0 },
+  '#01': { selector: '.walking-intro-track', progress: .16 },
+  '#01-intro': { selector: '.walking-intro-track', progress: .16 },
+  '#02': { selector: '.education-track', progress: .22 },
+  '#02-education': { selector: '.education-track', progress: .22 },
+  '#03': { selector: '.career-whiteblock', progress: .18 },
+  '#03-whiteblock': { selector: '.career-whiteblock', progress: .18 },
+  '#04': { selector: '.career-fetching', progress: .18 },
+  '#04-fetching': { selector: '.career-fetching', progress: .18 },
+  '#05': { selector: '.career-aimpact', progress: .18 },
+  '#05-aimpact': { selector: '.career-aimpact', progress: .18 },
+  '#06': { selector: '.career-daangn', progress: .18 },
+  '#06-daangn': { selector: '.career-daangn', progress: .18 },
+}
+
+const getChapterDeepLink = () => chapterDeepLinks[window.location.hash.toLowerCase()]
+
 function OpeningTitle() {
   return (
     <div className="opening-title" aria-label="Hello, world. whitekiwi의 포트폴리오가 시작됩니다">
@@ -153,7 +174,7 @@ const clouds = [
 ]
 
 export default function FallIntro() {
-  const [phase, setPhase] = useState<'opening' | 'idle' | 'descending' | 'landed' | 'ready'>('opening')
+  const [phase, setPhase] = useState<JourneyPhase>(() => getChapterDeepLink() ? 'ready' : 'opening')
   const [showIntroScrollCue, setShowIntroScrollCue] = useState(false)
   const introTrackRef = useRef<HTMLElement>(null)
   const introCueTimerRef = useRef<number | null>(null)
@@ -193,6 +214,40 @@ export default function FallIntro() {
       body.style.background = previous.bodyBackground
     }
   }, [isScrollLocked])
+
+  useEffect(() => {
+    let firstFrame = 0
+    let secondFrame = 0
+
+    const moveToChapter = () => {
+      const deepLink = getChapterDeepLink()
+      if (!deepLink) return
+      if (phase !== 'ready') {
+        setPhase('ready')
+        return
+      }
+
+      if (firstFrame) window.cancelAnimationFrame(firstFrame)
+      if (secondFrame) window.cancelAnimationFrame(secondFrame)
+      firstFrame = window.requestAnimationFrame(() => {
+        secondFrame = window.requestAnimationFrame(() => {
+          const target = document.querySelector<HTMLElement>(deepLink.selector)
+          if (!target) return
+          const targetTop = window.scrollY + target.getBoundingClientRect().top
+          const distance = Math.max(target.offsetHeight - window.innerHeight, 0)
+          window.scrollTo({ top: targetTop + distance * deepLink.progress, behavior: 'auto' })
+        })
+      })
+    }
+
+    moveToChapter()
+    window.addEventListener('hashchange', moveToChapter)
+    return () => {
+      if (firstFrame) window.cancelAnimationFrame(firstFrame)
+      if (secondFrame) window.cancelAnimationFrame(secondFrame)
+      window.removeEventListener('hashchange', moveToChapter)
+    }
+  }, [phase])
 
   useEffect(() => {
     if (phase !== 'idle') return
