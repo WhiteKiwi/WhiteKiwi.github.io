@@ -166,6 +166,12 @@ pnpm build
 - `og:image`와 `twitter:image`는 절대 URL의 `/og-image.png`를 가리키며, 1200×630 PNG 크기와 대체 텍스트를 함께 명시한다.
 - 일반 description과 Open Graph·Twitter Card description은 `Scroll through the work and journey of Jihoon Jang, a Node.js developer.`로 통일한다.
 
+## Analytics
+
+- GA4 측정 ID `G-BD6TDB13LR`의 Google tag를 `index.html` `<head>`에서 비동기로 로드한다.
+- Vite의 모든 query view가 같은 HTML 진입점을 사용하므로 메인과 `?view=guidelines`를 포함한 보조 뷰에 기본 `page_view`가 적용된다.
+- 현재 별도 consent UI, 사용자 ID와 커스텀 이벤트는 구현하지 않는다. 추가 수집이 필요하면 이벤트 명세와 개인정보 안내 범위를 먼저 정한다.
+
 ## Build and deployment
 
 - 소스 브랜치: `develop`

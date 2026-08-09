@@ -138,6 +138,11 @@
 - 페이지의 핵심 인상은 `technical depth`, `playful precision`, `editorial clarity`, `motion with intent` 네 문장으로 정리한다.
 - 가이드라인은 완성 선언이 아니라 계속 갱신되는 `living document`로 다루며 현재 버전은 `01 / 2026.08`로 표시한다.
 
+## Analytics
+
+- 2026-08-09 사용자가 제공한 GA4 측정 ID는 `G-BD6TDB13LR`이다.
+- Google tag의 기본 `config` 호출로 page view만 적용하고, 커스텀 이벤트와 사용자 식별은 이후 별도 요청 전까지 추가하지 않는다.
+
 ## Repository history
 
 - 기존 Gatsby 소스의 보존 브랜치: `archive/20260808`

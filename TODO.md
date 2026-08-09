@@ -41,6 +41,7 @@
 
 ## Technical gaps
 
+- [ ] 배포 후 GA4 실시간 보고서에서 `portfolio.whitekiwi.link` page view 유입 확인
 - [ ] ESLint와 자동 테스트 스크립트 추가
 - [ ] 스크롤 계산을 재사용 가능한 chapter hook/component로 분리
 - [ ] 실험용 EggLab 번들의 500 kB 초과 경고 해소 또는 실험 뷰를 배포에서 제외
