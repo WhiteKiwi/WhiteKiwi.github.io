@@ -7,8 +7,6 @@ import './fall-intro.css'
 type JourneyPhase = 'opening' | 'idle' | 'descending' | 'landed' | 'ready'
 
 const chapterDeepLinks: Record<string, { selector: string; progress: number }> = {
-  '#00': { selector: '.fall-intro', progress: 0 },
-  '#00-prologue': { selector: '.fall-intro', progress: 0 },
   '#01': { selector: '.walking-intro-track', progress: .16 },
   '#01-intro': { selector: '.walking-intro-track', progress: .16 },
   '#02': { selector: '.education-track', progress: .22 },
@@ -24,7 +22,16 @@ const chapterDeepLinks: Record<string, { selector: string; progress: number }> =
   '#contact': { selector: '.contact-finale-track', progress: .22 },
 }
 
+const prologueHashes = new Set(['#00', '#00-prologue'])
+const getCurrentHash = () => window.location.hash.toLowerCase()
 const getChapterDeepLink = () => chapterDeepLinks[window.location.hash.toLowerCase()]
+const getRootLocation = () => `${window.location.pathname}${window.location.search}`
+
+const normalizeInitialPrologueHash = () => {
+  if (!prologueHashes.has(getCurrentHash())) return false
+  window.history.replaceState(window.history.state, '', getRootLocation())
+  return true
+}
 
 function OpeningTitle() {
   return (
@@ -176,7 +183,10 @@ const clouds = [
 ]
 
 export default function FallIntro() {
-  const [phase, setPhase] = useState<JourneyPhase>(() => getChapterDeepLink() ? 'ready' : 'opening')
+  const [phase, setPhase] = useState<JourneyPhase>(() => {
+    if (normalizeInitialPrologueHash()) return 'opening'
+    return getChapterDeepLink() ? 'ready' : 'opening'
+  })
   const [showIntroScrollCue, setShowIntroScrollCue] = useState(false)
   const introTrackRef = useRef<HTMLElement>(null)
   const introCueTimerRef = useRef<number | null>(null)
@@ -222,6 +232,10 @@ export default function FallIntro() {
     let secondFrame = 0
 
     const moveToChapter = () => {
+      if (prologueHashes.has(getCurrentHash())) {
+        window.location.replace(getRootLocation())
+        return
+      }
       const deepLink = getChapterDeepLink()
       if (!deepLink) return
       if (phase !== 'ready') {

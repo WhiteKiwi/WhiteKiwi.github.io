@@ -357,7 +357,7 @@ export default function ContactFinale({ active }: { active: boolean }) {
           <p>THANKS FOR SCROLLING <span aria-hidden="true">✦</span> PORTFOLIO 2026</p>
           <div>
             <a href="/?view=guidelines">PORTFOLIO GUIDELINES <span aria-hidden="true">↗</span></a>
-            <a href="#00">RUN AGAIN <span aria-hidden="true">↺</span></a>
+            <a href="/">RUN AGAIN <span aria-hidden="true">↺</span></a>
           </div>
         </div>
       </div>
