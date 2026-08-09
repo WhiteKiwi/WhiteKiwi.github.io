@@ -222,11 +222,22 @@ export default function CareerJourney({ active }: { active: boolean }) {
     let lastPageY = window.scrollY
     let chapterTransitionLocked = false
     let chapterTransitionSettling = false
+    let lockedScrollY: number | null = null
     let chapterTransitionTimer = 0
     let chapterSettleTimer = 0
     let chapterTransitionFrame = 0
     let touchStartY: number | null = null
     const portalGateProgress = .74
+    const getTrackProgress = (track: HTMLElement) => {
+      const rect = track.getBoundingClientRect()
+      const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
+      return { progress: clamp(-rect.top / distance), rect, distance }
+    }
+    const normalizeWheelDelta = (event: WheelEvent) => {
+      if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) return event.deltaY * 16
+      if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) return event.deltaY * window.innerHeight
+      return event.deltaY
+    }
     let triggerForwardTransition = () => {}
     let triggerReverseTransition = () => {}
     const transitionOwnedElsewhere = () => {
@@ -423,9 +434,11 @@ export default function CareerJourney({ active }: { active: boolean }) {
     const scrollToTrackProgress = (track: HTMLElement, progress: number) => {
       const trackTop = window.scrollY + track.getBoundingClientRect().top
       const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
+      const targetY = trackTop + distance * progress
       const previousScrollBehavior = documentRoot.style.scrollBehavior
       documentRoot.style.scrollBehavior = 'auto'
-      window.scrollTo(0, trackTop + distance * progress)
+      lockedScrollY = targetY
+      window.scrollTo(0, targetY)
       documentRoot.style.scrollBehavior = previousScrollBehavior
       lastPageY = window.scrollY
       scrollingUp = false
@@ -468,6 +481,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
       chapterSettleTimer = window.setTimeout(() => {
         chapterTransitionLocked = false
         chapterTransitionSettling = false
+        lockedScrollY = null
         touchStartY = null
         lastPageY = window.scrollY
         releaseTransition()
@@ -481,6 +495,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
       if (reducedMotion) {
         chapterTransitionLocked = false
         chapterTransitionSettling = false
+        lockedScrollY = null
         releaseTransition()
         return
       }
@@ -489,16 +504,11 @@ export default function CareerJourney({ active }: { active: boolean }) {
     }
     const startForwardTransition = () => {
       if (chapterTransitionLocked || transitionOwnedElsewhere() || !aimpactTrack || !daangnTrack || !claimTransition()) return
-      const progress = Number.parseFloat(aimpactTrack.style.getPropertyValue('--chapter-progress'))
-      if (!Number.isFinite(progress)) {
-        releaseTransition()
-        return
-      }
-
       resetChapterTransitionClasses()
-      updatePortalOrigin()
       chapterTransitionLocked = true
       chapterTransitionSettling = false
+      scrollToTrackProgress(aimpactTrack, portalGateProgress)
+      updatePortalOrigin()
       carrotButton?.blur()
       setCurtainState('is-ready')
       aimpactTrack.classList.add('is-carrot-departing')
@@ -523,6 +533,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
       resetChapterTransitionClasses()
       chapterTransitionLocked = true
       chapterTransitionSettling = false
+      scrollToTrackProgress(daangnTrack, .075)
       setCurtainState('is-reverse-ready')
       onNextPaint(() => {
         setCurtainState('is-reverse-covering')
@@ -543,19 +554,15 @@ export default function CareerJourney({ active }: { active: boolean }) {
     const scrollKeys = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '])
     const aimpactWouldCrossPortalGate = (downwardDelta: number) => {
       if (!aimpactTrack) return false
-      const progress = Number.parseFloat(aimpactTrack.style.getPropertyValue('--chapter-progress'))
-      const rect = aimpactTrack.getBoundingClientRect()
-      const distance = Math.max(aimpactTrack.offsetHeight - window.innerHeight, 1)
+      const { progress, rect, distance } = getTrackProgress(aimpactTrack)
       const projectedProgress = progress + Math.max(downwardDelta, 0) / distance
-      return Number.isFinite(progress) && projectedProgress >= portalGateProgress && rect.top <= 1 && rect.bottom > 0
+      return projectedProgress >= portalGateProgress && rect.top <= 1 && rect.bottom > 0
     }
     const daangnWouldCrossPortalGate = (upwardDelta: number) => {
       if (!daangnTrack) return false
-      const progress = Number.parseFloat(daangnTrack.style.getPropertyValue('--chapter-progress'))
-      const rect = daangnTrack.getBoundingClientRect()
-      const distance = Math.max(daangnTrack.offsetHeight - window.innerHeight, 1)
+      const { progress, rect, distance } = getTrackProgress(daangnTrack)
       const projectedProgress = progress - Math.max(upwardDelta, 0) / distance
-      return Number.isFinite(progress) && projectedProgress < .075 && rect.top <= 1 && rect.bottom > 0
+      return projectedProgress < .075 && rect.top <= 1 && rect.bottom > 0
     }
     const onTransitionWheel = (event: WheelEvent) => {
       if (chapterTransitionLocked || transitionOwnedElsewhere()) {
@@ -563,12 +570,13 @@ export default function CareerJourney({ active }: { active: boolean }) {
         event.preventDefault()
         return
       }
-      if (event.deltaY > 0 && aimpactWouldCrossPortalGate(event.deltaY)) {
+      const deltaY = normalizeWheelDelta(event)
+      if (deltaY > 0 && aimpactWouldCrossPortalGate(deltaY)) {
         event.preventDefault()
         triggerForwardTransition()
         return
       }
-      if (event.deltaY < 0 && daangnWouldCrossPortalGate(-event.deltaY)) {
+      if (deltaY < 0 && daangnWouldCrossPortalGate(-deltaY)) {
         event.preventDefault()
         triggerReverseTransition()
       }
@@ -628,9 +636,18 @@ export default function CareerJourney({ active }: { active: boolean }) {
         triggerReverseTransition()
       }
     }
+    const onTransitionScroll = () => {
+      if (chapterTransitionLocked && lockedScrollY !== null && Math.abs(window.scrollY - lockedScrollY) > 1) {
+        const previousScrollBehavior = documentRoot.style.scrollBehavior
+        documentRoot.style.scrollBehavior = 'auto'
+        window.scrollTo(0, lockedScrollY)
+        documentRoot.style.scrollBehavior = previousScrollBehavior
+      }
+      requestUpdate()
+    }
 
     updateProgress()
-    window.addEventListener('scroll', requestUpdate, { passive: true })
+    window.addEventListener('scroll', onTransitionScroll, { passive: true })
     window.addEventListener('resize', requestUpdate)
     window.addEventListener('wheel', onTransitionWheel, { passive: false })
     window.addEventListener('touchstart', onTransitionTouchStart, { passive: true })
@@ -649,7 +666,8 @@ export default function CareerJourney({ active }: { active: boolean }) {
       if (chapterSettleTimer) window.clearTimeout(chapterSettleTimer)
       resetChapterTransitionClasses()
       releaseTransition()
-      window.removeEventListener('scroll', requestUpdate)
+      lockedScrollY = null
+      window.removeEventListener('scroll', onTransitionScroll)
       window.removeEventListener('resize', requestUpdate)
       window.removeEventListener('wheel', onTransitionWheel)
       window.removeEventListener('touchstart', onTransitionTouchStart)

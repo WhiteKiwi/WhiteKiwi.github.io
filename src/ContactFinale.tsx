@@ -78,7 +78,10 @@ export default function ContactFinale({ active }: { active: boolean }) {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let revealFrame = 0
     let snapFrame = 0
+    let snapSettleTimer = 0
     let snapLocked = false
+    let snapSettling = false
+    let snapAnchorY: number | null = null
     let previousScrollBehavior: string | null = null
     let lastPageY = window.scrollY
     let touchStartY: number | null = null
@@ -86,6 +89,16 @@ export default function ContactFinale({ active }: { active: boolean }) {
     const easeInOut = (value: number) => value < .5
       ? 4 * value * value * value
       : 1 - Math.pow(-2 * value + 2, 3) / 2
+    const getTrackProgress = (target: HTMLElement) => {
+      const rect = target.getBoundingClientRect()
+      const distance = Math.max(target.offsetHeight - window.innerHeight, 1)
+      return { progress: clamp(-rect.top / distance), rect, distance }
+    }
+    const normalizeWheelDelta = (event: WheelEvent) => {
+      if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) return event.deltaY * 16
+      if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) return event.deltaY * window.innerHeight
+      return event.deltaY
+    }
     const snapOwnedElsewhere = () => {
       const owner = documentRoot.dataset.portfolioTransition
       return Boolean(owner && owner !== 'contact')
@@ -102,6 +115,20 @@ export default function ContactFinale({ active }: { active: boolean }) {
       if (previousScrollBehavior === null) return
       documentRoot.style.scrollBehavior = previousScrollBehavior
       previousScrollBehavior = null
+    }
+    const releaseSnapAfterQuiet = () => {
+      if (!snapSettling) return
+      if (snapSettleTimer) window.clearTimeout(snapSettleTimer)
+      snapSettleTimer = window.setTimeout(() => {
+        lastPageY = window.scrollY
+        touchStartY = null
+        snapLocked = false
+        snapSettling = false
+        snapAnchorY = null
+        restoreScrollBehavior()
+        releaseSnap()
+        snapSettleTimer = 0
+      }, 280)
     }
 
     const startReveal = () => {
@@ -136,6 +163,7 @@ export default function ContactFinale({ active }: { active: boolean }) {
     const animateScrollTo = (targetY: number, onComplete?: () => void) => {
       if (snapLocked || !claimSnap()) return false
       snapLocked = true
+      snapSettling = false
       const startY = window.scrollY
       const distance = targetY - startY
       const duration = reducedMotion ? 20 : 650
@@ -144,15 +172,16 @@ export default function ContactFinale({ active }: { active: boolean }) {
       documentRoot.style.scrollBehavior = 'auto'
       const animate = (now: number) => {
         const progress = clamp((now - startedAt) / duration)
-        window.scrollTo(0, startY + distance * easeInOut(progress))
+        snapAnchorY = startY + distance * easeInOut(progress)
+        window.scrollTo(0, snapAnchorY)
         lastPageY = window.scrollY
         if (progress < 1) snapFrame = window.requestAnimationFrame(animate)
         else {
           snapFrame = 0
-          restoreScrollBehavior()
-          snapLocked = false
-          releaseSnap()
+          snapAnchorY = targetY
           onComplete?.()
+          snapSettling = true
+          releaseSnapAfterQuiet()
         }
       }
       snapFrame = window.requestAnimationFrame(animate)
@@ -166,11 +195,9 @@ export default function ContactFinale({ active }: { active: boolean }) {
     }
     const tossWouldCrossContactGate = (downwardDelta: number) => {
       if (!tossTrack) return false
-      const progress = Number.parseFloat(tossTrack.style.getPropertyValue('--toss-progress'))
-      const rect = tossTrack.getBoundingClientRect()
-      const distance = Math.max(tossTrack.offsetHeight - window.innerHeight, 1)
+      const { progress, rect, distance } = getTrackProgress(tossTrack)
       const projectedProgress = progress + Math.max(downwardDelta, 0) / distance
-      return Number.isFinite(progress) && projectedProgress >= .86 && rect.top <= 1 && rect.bottom > 0
+      return projectedProgress >= .86 && rect.top <= 1 && rect.bottom > 0
     }
     const contactIsActive = () => {
       const rect = track.getBoundingClientRect()
@@ -181,23 +208,31 @@ export default function ContactFinale({ active }: { active: boolean }) {
       const scrollingDown = nextPageY > lastPageY + 1
       const scrollingUp = nextPageY < lastPageY - 1
       lastPageY = nextPageY
-      if (snapLocked) return
+      if (snapLocked) {
+        if (snapAnchorY !== null && Math.abs(window.scrollY - snapAnchorY) > 1) {
+          window.scrollTo(0, snapAnchorY)
+          lastPageY = snapAnchorY
+        }
+        return
+      }
       if (scrollingDown && tossWouldCrossContactGate(0)) snapToContact()
       else if (scrollingUp && contactIsActive()) snapToToss()
     }
     const onWheel = (event: WheelEvent) => {
       if (snapLocked) {
+        if (snapSettling) releaseSnapAfterQuiet()
         event.preventDefault()
         return
       }
-      if (event.deltaY > 0 && tossWouldCrossContactGate(event.deltaY)) {
+      const deltaY = normalizeWheelDelta(event)
+      if (deltaY > 0 && tossWouldCrossContactGate(deltaY)) {
         event.preventDefault()
         snapToContact()
         return
       }
       const terminalLog = (event.target as Element | null)?.closest('.contact-terminal-log') as HTMLElement | null
-      if (event.deltaY < 0 && terminalLog && terminalLog.scrollTop > 0) return
-      if (event.deltaY < 0 && contactIsActive()) {
+      if (deltaY < 0 && terminalLog && terminalLog.scrollTop > 0) return
+      if (deltaY < 0 && contactIsActive()) {
         event.preventDefault()
         snapToToss()
       }
@@ -207,6 +242,7 @@ export default function ContactFinale({ active }: { active: boolean }) {
     }
     const onTouchMove = (event: TouchEvent) => {
       if (snapLocked) {
+        if (snapSettling) releaseSnapAfterQuiet()
         event.preventDefault()
         return
       }
@@ -229,6 +265,7 @@ export default function ContactFinale({ active }: { active: boolean }) {
       const target = event.target as HTMLElement | null
       if (target?.matches('input, textarea, select, [contenteditable="true"]')) return
       if (snapLocked) {
+        if (snapSettling) releaseSnapAfterQuiet()
         event.preventDefault()
         return
       }
@@ -272,6 +309,8 @@ export default function ContactFinale({ active }: { active: boolean }) {
       observer.disconnect()
       if (revealFrame) window.cancelAnimationFrame(revealFrame)
       if (snapFrame) window.cancelAnimationFrame(snapFrame)
+      if (snapSettleTimer) window.clearTimeout(snapSettleTimer)
+      snapAnchorY = null
       restoreScrollBehavior()
       releaseSnap()
       window.removeEventListener('scroll', onScroll)

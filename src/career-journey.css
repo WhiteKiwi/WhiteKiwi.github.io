@@ -404,7 +404,7 @@ button.crop { appearance: none; padding: 0; border: 0; color: inherit; font: inh
 
 .career-daangn { --map-x: 0vw; --map-y: 0vh; --explorer-x: -12vw; --explorer-y: 56vh; --explorer-opacity: 0; --route-progress: 0; --chat-opacity: 0; --toss-handoff: 0; }
 .career-daangn .career-progress { transition: opacity .18s ease; }
-.career-daangn.is-toss-returning .career-progress { opacity: 0; transition: none; }
+.career-daangn.is-toss-transitioning .career-progress { opacity: 0; transition: none; }
 .daangn-stage { color: #2d2926; background: #fff4e8; }
 .daangn-stage::before { content: ''; position: absolute; z-index: -5; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(255, 111, 15, .1), transparent 55%), #fff4e8; }
 .daangn-stage .career-meta { color: #ff6f0f; }

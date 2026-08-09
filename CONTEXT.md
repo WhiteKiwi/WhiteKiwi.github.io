@@ -122,6 +122,7 @@
 - 2026-08-09 Toss `CURRENT STATUS`는 현재보다 조금 늦게 시작하고 천천히 올라오는 타이밍으로 조정한다.
 - 2026-08-09 잠금 대칭화 후에도 파란 화면이 두 번 보인다는 피드백으로 시각 레이어를 재검토했다. Toss에는 스크롤 progress로 되감기는 stage 내부 `toss-entry-curtain`과 시간 기반 fixed overlay가 동시에 존재해 역방향에서 한 번의 호출도 두 파란 막의 연속 동작으로 보였다. 이전 스크럽 방식의 잔재인 stage curtain을 제거하고 fixed overlay 하나만 전환을 담당한다.
 - 2026-08-09 사용자가 역전환 중 보인 주황색 줄의 정체를 당근 장면 하단 progress bar로 확인했다. Toss fixed overlay가 화면을 덮은 동안 당근 대표 progress로 위치를 먼저 바꾸면서 bar가 70% 상태로 계산되고, 이후 파란 원이 축소될 때 다른 당근 요소보다 먼저 눈에 띄었다. Toss→당근 역전환 동안 progress bar만 숨긴 뒤 overlay가 완전히 제거된 다음 복구한다.
+- 2026-08-09 사용자는 휠을 빠르게 연속 회전하거나 큰 delta로 입력하면 전환 화면 위에 당근 progress bar가 다시 보이고 자동 전환 잠금도 의도대로 유지되지 않는다고 확인했다. 연속 wheel event가 같은 animation frame 안에서 들어오면 inline progress가 갱신되기 전에 각 event가 native scroll을 허용해 임계점을 지나칠 수 있다. 현재 geometry와 정규화한 delta로 첫 임계 통과를 잡고, 전환 중 문서 위치를 명시적으로 고정한다. progress bar 마스킹도 역방향만이 아니라 양방향 전체로 넓히며, 05↔06과 07↔Contact에도 같은 판정·관성 해제 위험이 있어 함께 보완한다.
 - Takeit 사업 제안서 PDF: 사용자가 다운로드 폴더에 저장했다고 알려줌. 저장소에는 포함하지 않음.
 - 이전 이력서 `장지훈.pdf`: 사용자가 다운로드 폴더에 있다고 알려줌. 저장소에는 포함하지 않음.
 - 충남삼성고등학교 UI: <https://www.cnsa.hs.kr/sub01/sub05.php>

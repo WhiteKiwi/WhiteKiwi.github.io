@@ -28,6 +28,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
     let settleTimer = 0
     let transitionLocked = false
     let transitionSettling = false
+    let lockedScrollY: number | null = null
     let contentProgress = 0
     let contentStarted = false
     let lastPageY = window.scrollY
@@ -40,6 +41,16 @@ export default function TossOngoing({ active }: { active: boolean }) {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const forwardGateProgress = .76
     const reverseGateProgress = .14
+    const getTrackProgress = (track: HTMLElement) => {
+      const rect = track.getBoundingClientRect()
+      const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
+      return { progress: clamp(-rect.top / distance), rect, distance }
+    }
+    const normalizeWheelDelta = (event: WheelEvent) => {
+      if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) return event.deltaY * 16
+      if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) return event.deltaY * window.innerHeight
+      return event.deltaY
+    }
 
     const update = () => {
       animationFrame = 0
@@ -69,9 +80,8 @@ export default function TossOngoing({ active }: { active: boolean }) {
       }
 
       if (scrollingDown && daangnTrack && !transitionLocked && !transitionOwnedElsewhere()) {
-        const daangnProgress = Number.parseFloat(daangnTrack.style.getPropertyValue('--chapter-progress'))
-        const daangnRect = daangnTrack.getBoundingClientRect()
-        if (Number.isFinite(daangnProgress) && daangnProgress >= forwardGateProgress && daangnRect.top <= 1 && daangnRect.bottom > 0) {
+        const { progress: daangnProgress, rect: daangnRect } = getTrackProgress(daangnTrack)
+        if (daangnProgress >= forwardGateProgress && daangnRect.top <= 1 && daangnRect.bottom > 0) {
           triggerForwardTransition()
         }
       }
@@ -126,12 +136,12 @@ export default function TossOngoing({ active }: { active: boolean }) {
     const maskDaangnProgress = () => {
       if (daangnProgressFrame) window.cancelAnimationFrame(daangnProgressFrame)
       daangnProgressFrame = 0
-      daangnTrack?.classList.add('is-toss-returning')
+      daangnTrack?.classList.add('is-toss-transitioning')
     }
     const revealDaangnProgress = () => {
       if (daangnProgressFrame) window.cancelAnimationFrame(daangnProgressFrame)
       daangnProgressFrame = window.requestAnimationFrame(() => {
-        daangnTrack?.classList.remove('is-toss-returning')
+        daangnTrack?.classList.remove('is-toss-transitioning')
         daangnProgressFrame = 0
       })
     }
@@ -150,27 +160,24 @@ export default function TossOngoing({ active }: { active: boolean }) {
         transitionFrame = window.requestAnimationFrame(callback)
       })
     }
-    const scrollToToss = () => {
-      const track = trackRef.current
-      if (!track) return
+    const scrollToTrackProgress = (track: HTMLElement, progress: number) => {
       const trackTop = window.scrollY + track.getBoundingClientRect().top
       const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
+      const targetY = trackTop + distance * progress
       const previousScrollBehavior = documentRoot.style.scrollBehavior
       documentRoot.style.scrollBehavior = 'auto'
-      window.scrollTo(0, trackTop + distance * .18)
+      lockedScrollY = targetY
+      window.scrollTo(0, targetY)
       documentRoot.style.scrollBehavior = previousScrollBehavior
       lastPageY = window.scrollY
       update()
     }
+    const scrollToToss = () => {
+      const track = trackRef.current
+      if (track) scrollToTrackProgress(track, .18)
+    }
     const scrollToDaangn = () => {
-      if (!daangnTrack) return
-      const trackTop = window.scrollY + daangnTrack.getBoundingClientRect().top
-      const distance = Math.max(daangnTrack.offsetHeight - window.innerHeight, 1)
-      const previousScrollBehavior = documentRoot.style.scrollBehavior
-      documentRoot.style.scrollBehavior = 'auto'
-      window.scrollTo(0, trackTop + distance * .7)
-      documentRoot.style.scrollBehavior = previousScrollBehavior
-      lastPageY = window.scrollY
+      if (daangnTrack) scrollToTrackProgress(daangnTrack, .7)
     }
     const releaseAfterQuiet = () => {
       if (!transitionSettling) return
@@ -180,6 +187,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
         touchStartY = null
         transitionLocked = false
         transitionSettling = false
+        lockedScrollY = null
         releaseTransition()
         settleTimer = 0
       }, 280)
@@ -192,6 +200,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
       if (reducedMotion) {
         transitionLocked = false
         transitionSettling = false
+        lockedScrollY = null
         releaseTransition()
         return
       }
@@ -203,11 +212,12 @@ export default function TossOngoing({ active }: { active: boolean }) {
     const revealDuration = reducedMotion ? 20 : 560
     triggerForwardTransition = () => {
       if (transitionLocked || transitionOwnedElsewhere() || !daangnTrack || !transitionOverlay || !trackRef.current) return
-      daangnTrack.classList.remove('is-toss-returning')
+      maskDaangnProgress()
       transitionLocked = true
       transitionSettling = false
       claimTransition()
       setOverlayState('is-ready')
+      scrollToTrackProgress(daangnTrack, forwardGateProgress)
       onNextPaint(() => {
         setOverlayState('is-covering')
         transitionTimer = window.setTimeout(() => {
@@ -230,6 +240,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
       transitionSettling = false
       claimTransition()
       setOverlayState('is-reverse-ready')
+      scrollToTrackProgress(trackRef.current, reverseGateProgress)
       onNextPaint(() => {
         setOverlayState('is-reverse-covering')
         transitionTimer = window.setTimeout(() => {
@@ -247,20 +258,16 @@ export default function TossOngoing({ active }: { active: boolean }) {
 
     const daangnWouldCrossForwardGate = (downwardDelta: number) => {
       if (!daangnTrack) return false
-      const progress = Number.parseFloat(daangnTrack.style.getPropertyValue('--chapter-progress'))
-      const rect = daangnTrack.getBoundingClientRect()
-      const distance = Math.max(daangnTrack.offsetHeight - window.innerHeight, 1)
+      const { progress, rect, distance } = getTrackProgress(daangnTrack)
       const projectedProgress = progress + Math.max(downwardDelta, 0) / distance
-      return Number.isFinite(progress) && projectedProgress >= forwardGateProgress && rect.top <= 1 && rect.bottom > 0
+      return projectedProgress >= forwardGateProgress && rect.top <= 1 && rect.bottom > 0
     }
     const tossWouldCrossReverseGate = (upwardDelta: number) => {
       const track = trackRef.current
       if (!track) return false
-      const progress = Number.parseFloat(track.style.getPropertyValue('--toss-progress'))
-      const rect = track.getBoundingClientRect()
-      const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
+      const { progress, rect, distance } = getTrackProgress(track)
       const projectedProgress = progress - Math.max(upwardDelta, 0) / distance
-      return Number.isFinite(progress) && projectedProgress <= reverseGateProgress && rect.top <= 1 && rect.bottom > 0
+      return projectedProgress <= reverseGateProgress && rect.top <= 1 && rect.bottom > 0
     }
     const onTransitionWheel = (event: WheelEvent) => {
       if (transitionLocked || transitionOwnedElsewhere()) {
@@ -268,12 +275,13 @@ export default function TossOngoing({ active }: { active: boolean }) {
         event.preventDefault()
         return
       }
-      if (event.deltaY > 0 && daangnWouldCrossForwardGate(event.deltaY)) {
+      const deltaY = normalizeWheelDelta(event)
+      if (deltaY > 0 && daangnWouldCrossForwardGate(deltaY)) {
         event.preventDefault()
         triggerForwardTransition()
         return
       }
-      if (event.deltaY < 0 && tossWouldCrossReverseGate(-event.deltaY)) {
+      if (deltaY < 0 && tossWouldCrossReverseGate(-deltaY)) {
         event.preventDefault()
         triggerReverseTransition()
       }
@@ -334,6 +342,15 @@ export default function TossOngoing({ active }: { active: boolean }) {
         triggerReverseTransition()
       }
     }
+    const onTransitionScroll = () => {
+      if (transitionLocked && lockedScrollY !== null && Math.abs(window.scrollY - lockedScrollY) > 1) {
+        const previousScrollBehavior = documentRoot.style.scrollBehavior
+        documentRoot.style.scrollBehavior = 'auto'
+        window.scrollTo(0, lockedScrollY)
+        documentRoot.style.scrollBehavior = previousScrollBehavior
+      }
+      requestUpdate()
+    }
 
     update()
     const stage = trackRef.current?.querySelector<HTMLElement>('.toss-ongoing-stage')
@@ -344,7 +361,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
       else if (!entry.isIntersecting) resetContentReveal()
     }, { threshold: [0, .55] })
     if (stage) contentObserver.observe(stage)
-    window.addEventListener('scroll', requestUpdate, { passive: true })
+    window.addEventListener('scroll', onTransitionScroll, { passive: true })
     window.addEventListener('resize', requestUpdate)
     window.addEventListener('wheel', onTransitionWheel, { passive: false })
     window.addEventListener('touchstart', onTransitionTouchStart, { passive: true })
@@ -359,9 +376,10 @@ export default function TossOngoing({ active }: { active: boolean }) {
       if (transitionTimer) window.clearTimeout(transitionTimer)
       if (settleTimer) window.clearTimeout(settleTimer)
       releaseTransition()
+      lockedScrollY = null
       setOverlayState()
-      daangnTrack?.classList.remove('is-toss-returning')
-      window.removeEventListener('scroll', requestUpdate)
+      daangnTrack?.classList.remove('is-toss-transitioning')
+      window.removeEventListener('scroll', onTransitionScroll)
       window.removeEventListener('resize', requestUpdate)
       window.removeEventListener('wheel', onTransitionWheel)
       window.removeEventListener('touchstart', onTransitionTouchStart)
