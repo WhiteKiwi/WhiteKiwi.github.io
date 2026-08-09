@@ -27,8 +27,9 @@ pnpm build
 - `src/CareerJourney.tsx` — 03 화이트블록부터 06 당근까지 네 경력 트랙의 공통 진행률과 회사별 장면 구조
 - `src/career-journey.css` — 배달 도로, 명품 쇼윈도, 성장하는 농장, 동네 지도와 회사별 반응형 모션
 - `public/assets/characters/kiwi-walk-cycle.png` — 3-C를 기준으로 만든 4프레임 보행 스프라이트
+- `public/assets/characters/kiwi-graduate-walk-cycle.png` — 기본 보행 실루엣과 프레임 간격을 유지하면서 학사모를 일체화한 Education 전용 4프레임 스프라이트
 - `public/assets/characters/kiwi-*.png` — 배달부·패션 큐레이터·농부·동네 탐험가로 변주한 투명 배경 캐릭터
-- `public/favicon-*.png`, `public/favicon.ico`, `public/apple-touch-icon.png` — D 미니멀 키위 심볼에서 파생한 브라우저·홈 화면 아이콘 세트
+- `public/favicon-*.png`, `public/favicon.ico`, `public/apple-touch-icon.png` — Glass Lab의 기존 `Before I Hatch` DOM 시안을 캡처해 파생한 브라우저·홈 화면 아이콘 세트
 - `src/EggLab.tsx`, `src/GlassLab.tsx`, `src/BirdLab.tsx` — 시안 비교를 위해 남긴 실험 페이지
 - `src/App.tsx` — 메인과 `?view=eggs|glass|birds|journey` 실험 뷰 진입점
 
@@ -55,6 +56,7 @@ pnpm build
 ### Introduction scroll track
 
 - 알 페이지와 소개 페이지를 DOM에서 세로로 바로 연결한다.
+- 알 클릭 후 사용자 휠·터치·스크롤 키 입력을 2초간 관찰하고 입력이 없을 때만 1회성 scroll cue를 표시한다. 프로그램이 실행한 smooth scroll은 사용자 입력으로 세지 않으며, cue가 표시된 뒤 입력이 들어오면 opacity transition으로 숨긴다.
 - 소개 페이지는 긴 스크롤 트랙 안에서 화면에 고정되고, 트랙 진행률을 `0..1`로 정규화한다.
 - 같은 진행률로 다음 값을 계산한다.
   - 키위의 X 위치
@@ -81,16 +83,16 @@ pnpm build
 - 4프레임 키위 보행 스프라이트를 재사용하되 학교 배경과의 대비를 위해 크기와 그림자를 장면별로 조정한다.
 - 모바일에서는 학교 건물을 단순화하고 큰 문구를 세로로 재배치하며, 꽃잎 수와 레이어 크기를 줄이지 않고 화면 밖 overflow만 잘라 밀도를 유지한다.
 - 학력 트랙도 데스크톱보다 모바일 진행 거리를 더 길게 두고, 전환·학교·프로젝트·대학 구간을 한 번의 관성 스크롤로 뛰어넘지 않게 한다.
-- 대학 진학 엔딩에서만 기존 키위 위로 학사모가 떨어져 안착한다. 대학 졸업으로 오해되지 않도록 학력 장면 전체의 고정 의상으로 사용하지 않는다.
-- 키위는 대학 진학 구간에 들어오면 보행 속도를 낮춰 화면 안에 머물고, 학사모와 진학 문구가 함께 읽힌 뒤 다음 챕터로 이동한다.
+- Education 전용 4프레임 스프라이트에 학사모를 캐릭터와 같은 선·채색으로 일체화하고, 기존과 같은 스크롤 기반 프레임 인덱스·바운스·기울기를 적용한다.
+- 키위는 대학 진학 구간에 들어오면 보행 속도를 낮춰 화면 안에 머물고, 진학 문구가 충분히 읽힌 뒤 다음 챕터로 이동한다.
 
 ## Visual system
 
 ### Browser identity
 
-- favicon은 1차 시안 D의 크림 배경, 물방울형 갈색 몸, 금색 부리, 짙은 눈으로 구성한 세 형태 심볼을 사용한다.
+- favicon은 `?view=glass`의 기존 D `Before I Hatch` 시안을 그대로 사용한다. 보라색 배경 위 반투명 Glass Shell, 연두색 키위 실루엣, 흰 glint와 민트 rim을 코드 원본에서 정사각형으로 렌더한다.
 - 작은 브라우저 탭은 16 px·32 px PNG와 multi-size ICO를 제공하고, 홈 화면은 180 px Apple touch icon을 사용한다.
-- 원본 시안은 `public/assets/favicon-concepts/d-three-shape.png`에 보존하고 실제 로딩 에셋은 필요한 크기로 축소해 초기 전송량을 제한한다.
+- DOM 렌더 스냅샷은 `public/assets/favicon-concepts/before-i-hatch.png`에 보존하고 실제 로딩 에셋은 필요한 크기로 축소해 초기 전송량을 제한한다.
 
 ### Prologue
 
@@ -126,7 +128,8 @@ pnpm build
 
 - 네 챕터는 각각 `long scroll track + sticky stage`를 사용하되 하나의 scroll listener에서 보이는 트랙의 진행률만 갱신한다.
 - 공통 메타 정보와 진행선은 유지하고 무대 팔레트, 주 이동축, 캐릭터 행동, 정보 카드 문법을 바꾼다.
-- 03 화이트블록은 횡방향 도로와 바이크 이동, 04 FETCHING은 쇼윈도 깊이와 세로 스캐너, 05 에이임팩트는 고정된 농부와 작물 성장, 06 당근은 대각선 지도 이동을 사용한다.
+- 03 화이트블록은 횡방향 도로와 바이크 이동에 라이더의 미세한 바운스를 더하고, 04 FETCHING은 쇼윈도 깊이·세로 스캐너·유리 반사 glint를 사용한다. 05 에이임팩트는 고정된 농부와 작물 성장에 물방울·잎·구름의 ambient loop를 더하고, 06 당근은 대각선 지도 이동과 매물 핀의 작은 부유감을 사용한다.
+- 에이임팩트 후반에는 밭의 당근 위치에서 오렌지 원이 화면 전체로 커지고, 당근 트랙 초반에는 같은 원이 줄어들며 동네 지도를 드러내도록 두 sticky 트랙의 끝과 시작 상태를 맞춘다.
 - 챕터 경계에는 `앞 장면의 마지막 오브젝트 → 다음 장면의 첫 오브젝트` 매치컷을 배치한다.
   - 학교 기록 카드 → 배달 주문 전표
   - 배달 박스 → 명품 쇼윈도 박스

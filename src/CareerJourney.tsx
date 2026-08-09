@@ -25,7 +25,7 @@ const aimpactNotes = [
 const daangnNotes = [
   ['FEEDBACK CHAT', '반응이 낮을 매물에 먼저 건넨 피드백'],
   ['MAP VIEW', '부동산 직거래 매물을 지도로 탐색'],
-  ['ZERO TO ONE', '신사업 리서치부터 기획·개발까지'],
+  ['USED CAR', '중고차 직거래 리서치 및 초기 셋업'],
 ]
 
 function ChapterMeta({ number, company, period }: { number: string; company: string; period: string }) {
@@ -145,10 +145,13 @@ function AimpactChapter({ trackRef }: { trackRef: RefObject<HTMLElement | null> 
           ))}
         </ol>
         <div className="kiwi-farmer" aria-hidden="true">
-          <div className="water-stream"><i /><i /><i /><i /><i /></div>
+          <div className="water-stream">
+            {Array.from({ length: 7 }, (_, index) => <i style={{ '--index': index } as IndexedStyle} key={index} />)}
+          </div>
           <img src="/assets/characters/kiwi-farmer.png" alt="" />
         </div>
         <div className="farm-soil" aria-hidden="true"><i /><i /><i /></div>
+        <div className="aimpact-carrot-transition" aria-hidden="true"><i /><b /></div>
         <div className="career-progress" aria-hidden="true"><i /></div>
       </div>
     </section>
@@ -250,12 +253,15 @@ export default function CareerJourney({ active }: { active: boolean }) {
       } else if (index === 2) {
         const seed = 1 - smoothstep(reveal(progress, .01, .15))
         const grow = smoothstep(reveal(progress, .23, .68))
+        const carrotTransition = smoothstep(reveal(progress, .84, .995))
         track.style.setProperty('--seed-opacity', String(seed))
         track.style.setProperty('--seed-turn', `${reveal(progress, .01, .15) * -16}deg`)
         track.style.setProperty('--crop-grow', String(grow))
         track.style.setProperty('--water-opacity', String(visibility(progress, .18, .28, .63, .72)))
         track.style.setProperty('--farmer-opacity', String(visibility(progress, .11, .22, .78, .88)))
         track.style.setProperty('--farm-sun-y', `${progress * 8}vh`)
+        track.style.setProperty('--carrot-transition-scale', String(carrotTransition))
+        track.style.setProperty('--carrot-transition-leaf-opacity', String(1 - reveal(progress, .89, .97)))
       } else {
         const portal = smoothstep(reveal(progress, .01, .17))
         track.style.setProperty('--portal-scale', String(portal))

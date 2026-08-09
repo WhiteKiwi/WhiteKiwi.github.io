@@ -82,7 +82,13 @@ function GlassGround() {
   )
 }
 
-function WalkingIntroduction({ trackRef }: { trackRef: RefObject<HTMLElement | null> }) {
+function WalkingIntroduction({
+  trackRef,
+  showScrollCue,
+}: {
+  trackRef: RefObject<HTMLElement | null>
+  showScrollCue: boolean
+}) {
   const contactLinks = [
     { label: 'GitHub', href: 'https://github.com/whitekiwi' },
     { label: 'Blog', href: 'https://blog.whitekiwi.link' },
@@ -117,6 +123,12 @@ function WalkingIntroduction({ trackRef }: { trackRef: RefObject<HTMLElement | n
           </div>
         </div>
 
+        <div className={`intro-scroll-cue ${showScrollCue ? 'is-visible' : ''}`} aria-hidden={!showScrollCue}>
+          <span>SCROLL TO BEGIN</span>
+          <i><b /></i>
+          <small>아래로 스크롤해 여정을 이어가세요</small>
+        </div>
+
         <nav className="intro-contact" aria-label="연락처와 외부 링크">
           <div className="intro-contact-primary">
             <span>CONTACT</span>
@@ -142,7 +154,12 @@ const clouds = [
 
 export default function FallIntro() {
   const [phase, setPhase] = useState<'opening' | 'idle' | 'descending' | 'landed' | 'ready'>('opening')
+  const [showIntroScrollCue, setShowIntroScrollCue] = useState(false)
   const introTrackRef = useRef<HTMLElement>(null)
+  const introCueTimerRef = useRef<number | null>(null)
+  const introCueEligibleRef = useRef(false)
+  const introCueVisibleRef = useRef(false)
+  const introCueConsumedRef = useRef(false)
 
   useEffect(() => {
     if (phase !== 'opening') return
@@ -306,9 +323,67 @@ export default function FallIntro() {
     }
   }, [phase])
 
+  useEffect(() => {
+    if (phase !== 'ready') return
+
+    let touchY = 0
+    const dismissScrollCue = () => {
+      if (!introCueEligibleRef.current && !introCueVisibleRef.current) return
+      introCueEligibleRef.current = false
+      introCueVisibleRef.current = false
+      introCueConsumedRef.current = true
+      if (introCueTimerRef.current !== null) {
+        window.clearTimeout(introCueTimerRef.current)
+        introCueTimerRef.current = null
+      }
+      setShowIntroScrollCue(false)
+    }
+    const onWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaY) > 2) dismissScrollCue()
+    }
+    const onTouchStart = (event: TouchEvent) => {
+      touchY = event.touches[0]?.clientY ?? 0
+    }
+    const onTouchMove = (event: TouchEvent) => {
+      const currentY = event.touches[0]?.clientY ?? touchY
+      if (Math.abs(currentY - touchY) > 6) dismissScrollCue()
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target instanceof HTMLElement ? event.target : null
+      if (target?.closest('button, a, input, textarea, select')) return
+      if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', ' ', 'Home', 'End'].includes(event.key)) dismissScrollCue()
+    }
+
+    window.addEventListener('wheel', onWheel, { passive: true })
+    window.addEventListener('touchstart', onTouchStart, { passive: true })
+    window.addEventListener('touchmove', onTouchMove, { passive: true })
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      window.removeEventListener('wheel', onWheel)
+      window.removeEventListener('touchstart', onTouchStart)
+      window.removeEventListener('touchmove', onTouchMove)
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [phase])
+
+  useEffect(() => () => {
+    if (introCueTimerRef.current !== null) window.clearTimeout(introCueTimerRef.current)
+  }, [])
+
   const hasDescended = phase === 'descending' || phase === 'landed' || phase === 'ready'
   const hasLanded = phase === 'landed' || phase === 'ready'
   const goToIntroduction = () => {
+    if (!introCueConsumedRef.current) {
+      introCueEligibleRef.current = true
+      if (introCueTimerRef.current !== null) window.clearTimeout(introCueTimerRef.current)
+      introCueTimerRef.current = window.setTimeout(() => {
+        introCueTimerRef.current = null
+        if (!introCueEligibleRef.current) return
+        introCueVisibleRef.current = true
+        introCueConsumedRef.current = true
+        setShowIntroScrollCue(true)
+      }, 2000)
+    }
     introTrackRef.current?.scrollIntoView({
       behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
       block: 'start',
@@ -354,7 +429,7 @@ export default function FallIntro() {
         />
         <div className="fall-vignette" aria-hidden="true" />
       </section>
-      <WalkingIntroduction trackRef={introTrackRef} />
+      <WalkingIntroduction trackRef={introTrackRef} showScrollCue={showIntroScrollCue} />
       <EducationJourney active={phase === 'ready'} />
       <CareerJourney active={phase === 'ready'} />
     </main>
