@@ -129,12 +129,16 @@ export default function EducationJourney({ active }: { active: boolean }) {
     let animationFrame = 0
     let pointerAnimationFrame = 0
     let windFrameTime = 0
-    let pointerActiveUntil = 0
     let lastPointer: { x: number; y: number; time: number } | null = null
-    const pointerPosition = { x: 0, y: 0 }
-    const pointerVelocity = { x: 0, y: 0 }
-    const pointerDirection = { x: 0, y: 0 }
-    const residualWind = { x: 0, y: 0 }
+    const trailLifetime = 460
+    const trailPoints: Array<{
+      x: number
+      y: number
+      velocityX: number
+      velocityY: number
+      speed: number
+      time: number
+    }> = []
 
     const clamp = (value: number) => Math.min(Math.max(value, 0), 1)
     const reveal = (progress: number, start: number, end: number) => clamp((progress - start) / (end - start))
@@ -213,10 +217,7 @@ export default function EducationJourney({ active }: { active: boolean }) {
 
     const resetPetalTransforms = () => {
       petalMotions.forEach(resetPetalMotion)
-      residualWind.x = 0
-      residualWind.y = 0
-      pointerDirection.x = 0
-      pointerDirection.y = 0
+      trailPoints.length = 0
     }
 
     const onPetalIteration = (event: AnimationEvent) => {
@@ -230,44 +231,59 @@ export default function EducationJourney({ active }: { active: boolean }) {
       pointerAnimationFrame = 0
       const step = windFrameTime ? Math.min(Math.max((timestamp - windFrameTime) / 16.67, .25), 2) : 1
       windFrameTime = timestamp
-      const pointerIsActive = timestamp < pointerActiveUntil
-      const pointerSpeed = Math.hypot(pointerVelocity.x, pointerVelocity.y)
-      const radius = Math.min(Math.max(window.innerWidth * .24, 300), 460)
+      while (trailPoints.length && timestamp - trailPoints[0].time > trailLifetime) trailPoints.shift()
       let totalEnergy = 0
 
       petalMotions.forEach((motion) => {
-        if (pointerIsActive && pointerSpeed > .04 && motion.petal) {
+        if (motion.petal && trailPoints.length > 1) {
           const rect = motion.petal.getBoundingClientRect()
-          const deltaX = rect.left + rect.width / 2 - pointerPosition.x
-          const deltaY = rect.top + rect.height / 2 - pointerPosition.y
-          const normalX = -pointerDirection.y
-          const normalY = pointerDirection.x
-          const wakeCenterX = pointerPosition.x - pointerDirection.x * radius * .32
-          const wakeCenterY = pointerPosition.y - pointerDirection.y * radius * .32
-          const wakeDeltaX = rect.left + rect.width / 2 - wakeCenterX
-          const wakeDeltaY = rect.top + rect.height / 2 - wakeCenterY
-          const alongWake = wakeDeltaX * pointerDirection.x + wakeDeltaY * pointerDirection.y
-          const acrossWake = wakeDeltaX * normalX + wakeDeltaY * normalY
-          const ellipticalDistance = Math.hypot(alongWake / radius, acrossWake / (radius * .64))
-          const proximity = clamp(1 - ellipticalDistance)
-          const ahead = deltaX * pointerDirection.x + deltaY * pointerDirection.y
-          const aheadFade = 1 - smoothstep(clamp((ahead - radius * .04) / (radius * .38)))
-          const influence = smoothstep(proximity) * aheadFade * motion.depthStrength
+          const petalX = rect.left + rect.width / 2
+          const petalY = rect.top + rect.height / 2
+          let bestInfluence = 0
+          let bestDirectionX = 0
+          let bestDirectionY = 0
+          let bestSpeed = 0
 
-          if (influence > .001) {
-            const pathPull = -(acrossWake / (radius * .64)) * pointerSpeed * .024
-            const transport = pointerSpeed * .074
-            motion.velocityX += (pointerDirection.x * transport + normalX * pathPull) * influence * step
-            motion.velocityY += (pointerDirection.y * transport + normalY * pathPull) * influence * step
-            motion.turnVelocity += (pointerDirection.x * .014 + motion.crossflow * pointerSpeed * .006)
+          for (let index = 1; index < trailPoints.length; index += 1) {
+            const start = trailPoints[index - 1]
+            const end = trailPoints[index]
+            const segmentX = end.x - start.x
+            const segmentY = end.y - start.y
+            const segmentLengthSquared = segmentX * segmentX + segmentY * segmentY
+            if (segmentLengthSquared < .01) continue
+
+            const projection = clamp(((petalX - start.x) * segmentX + (petalY - start.y) * segmentY) / segmentLengthSquared)
+            const closestX = start.x + segmentX * projection
+            const closestY = start.y + segmentY * projection
+            const distance = Math.hypot(petalX - closestX, petalY - closestY)
+            const sampleTime = start.time + (end.time - start.time) * projection
+            const age = timestamp - sampleTime
+            if (age < 0 || age > trailLifetime) continue
+
+            const sampledSpeed = start.speed + (end.speed - start.speed) * projection
+            const radius = Math.min(Math.max(250 + sampledSpeed * 11, 270), 450)
+            const distanceFalloff = smoothstep(clamp(1 - distance / radius))
+            const ageFalloff = smoothstep(clamp(1 - age / trailLifetime))
+            const influence = distanceFalloff * ageFalloff
+
+            if (influence > bestInfluence) {
+              const segmentLength = Math.sqrt(segmentLengthSquared)
+              bestInfluence = influence
+              bestDirectionX = segmentX / segmentLength
+              bestDirectionY = segmentY / segmentLength
+              bestSpeed = sampledSpeed
+            }
+          }
+
+          if (bestInfluence > .001) {
+            const influence = bestInfluence * motion.depthStrength * motion.fieldCoupling
+            const transport = bestSpeed * .02
+            motion.velocityX += bestDirectionX * transport * influence * step
+            motion.velocityY += bestDirectionY * transport * influence * step
+            motion.turnVelocity += (bestDirectionX * .012 + motion.crossflow * bestSpeed * .005)
               * influence * step
           }
         }
-
-        motion.velocityX += residualWind.x * .009 * motion.fieldCoupling * step
-        motion.velocityY += residualWind.y * .007 * motion.fieldCoupling * step
-        motion.turnVelocity += (residualWind.x * .004 + residualWind.y * motion.crossflow * .003)
-          * motion.fieldCoupling * step
 
         const drag = Math.pow(motion.drag, step)
         motion.velocityX *= drag
@@ -284,28 +300,10 @@ export default function EducationJourney({ active }: { active: boolean }) {
           + Math.abs(motion.turnVelocity) * 4
       })
 
-      const pointerDecay = Math.pow(pointerIsActive ? .965 : .86, step)
-      pointerVelocity.x *= pointerDecay
-      pointerVelocity.y *= pointerDecay
-      const residualDecay = Math.pow(pointerIsActive ? .994 : .982, step)
-      residualWind.x *= residualDecay
-      residualWind.y *= residualDecay
-
-      if (
-        pointerIsActive
-        || totalEnergy > .06
-        || Math.hypot(pointerVelocity.x, pointerVelocity.y) > .03
-        || Math.hypot(residualWind.x, residualWind.y) > .008
-      ) {
+      if (trailPoints.length || totalEnergy > .06) {
         pointerAnimationFrame = window.requestAnimationFrame(updatePetalWind)
       } else {
         windFrameTime = 0
-        pointerVelocity.x = 0
-        pointerVelocity.y = 0
-        pointerDirection.x = 0
-        pointerDirection.y = 0
-        residualWind.x = 0
-        residualWind.y = 0
         petalMotions.forEach((motion) => {
           motion.velocityX = 0
           motion.velocityY = 0
@@ -319,8 +317,6 @@ export default function EducationJourney({ active }: { active: boolean }) {
       const now = performance.now()
       if (!lastPointer) {
         lastPointer = { x: event.clientX, y: event.clientY, time: now }
-        pointerPosition.x = event.clientX
-        pointerPosition.y = event.clientY
         return
       }
 
@@ -333,29 +329,43 @@ export default function EducationJourney({ active }: { active: boolean }) {
       const strength = smoothstep(clamp((rawSpeed - .06) / 8.5))
       const windVelocityX = rawVelocityX * strength
       const windVelocityY = rawVelocityY * strength
-      const smoothing = 1 - Math.exp(-elapsed / 42)
-      pointerPosition.x = event.clientX
-      pointerPosition.y = event.clientY
+      const previousPointer = lastPointer
       lastPointer = { x: event.clientX, y: event.clientY, time: now }
 
       if (strength <= .0005) return
 
       const windSpeed = Math.hypot(windVelocityX, windVelocityY)
-      pointerDirection.x = windVelocityX / windSpeed
-      pointerDirection.y = windVelocityY / windSpeed
-      pointerVelocity.x += (windVelocityX - pointerVelocity.x) * smoothing
-      pointerVelocity.y += (windVelocityY - pointerVelocity.y) * smoothing
-      const residualSmoothing = smoothing * .42
-      residualWind.x += (windVelocityX * .3 - residualWind.x) * residualSmoothing
-      residualWind.y += (windVelocityY * .24 - residualWind.y) * residualSmoothing
-      pointerActiveUntil = now + 75
+      const travel = Math.hypot(event.clientX - previousPointer.x, event.clientY - previousPointer.y)
+      const sampleCount = Math.min(Math.max(Math.ceil(travel / 24), 1), 6)
+      if (!trailPoints.length) {
+        trailPoints.push({
+          x: previousPointer.x,
+          y: previousPointer.y,
+          velocityX: windVelocityX,
+          velocityY: windVelocityY,
+          speed: windSpeed,
+          time: previousPointer.time,
+        })
+      }
+
+      for (let index = 1; index <= sampleCount; index += 1) {
+        const progress = index / sampleCount
+        trailPoints.push({
+          x: previousPointer.x + (event.clientX - previousPointer.x) * progress,
+          y: previousPointer.y + (event.clientY - previousPointer.y) * progress,
+          velocityX: windVelocityX,
+          velocityY: windVelocityY,
+          speed: windSpeed,
+          time: previousPointer.time + elapsed * progress,
+        })
+      }
+      if (trailPoints.length > 48) trailPoints.splice(0, trailPoints.length - 48)
 
       if (!pointerAnimationFrame) pointerAnimationFrame = window.requestAnimationFrame(updatePetalWind)
     }
 
     const resetPetalWind = () => {
       lastPointer = null
-      pointerActiveUntil = 0
       if (!pointerAnimationFrame) pointerAnimationFrame = window.requestAnimationFrame(updatePetalWind)
     }
 
