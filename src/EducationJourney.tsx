@@ -133,6 +133,7 @@ export default function EducationJourney({ active }: { active: boolean }) {
     let lastPointer: { x: number; y: number; time: number } | null = null
     const pointerPosition = { x: 0, y: 0 }
     const pointerVelocity = { x: 0, y: 0 }
+    const pointerDirection = { x: 0, y: 0 }
     const residualWind = { x: 0, y: 0 }
 
     const clamp = (value: number) => Math.min(Math.max(value, 0), 1)
@@ -214,6 +215,8 @@ export default function EducationJourney({ active }: { active: boolean }) {
       petalMotions.forEach(resetPetalMotion)
       residualWind.x = 0
       residualWind.y = 0
+      pointerDirection.x = 0
+      pointerDirection.y = 0
     }
 
     const onPetalIteration = (event: AnimationEvent) => {
@@ -237,24 +240,32 @@ export default function EducationJourney({ active }: { active: boolean }) {
           const rect = motion.petal.getBoundingClientRect()
           const deltaX = rect.left + rect.width / 2 - pointerPosition.x
           const deltaY = rect.top + rect.height / 2 - pointerPosition.y
-          const distance = Math.hypot(deltaX, deltaY)
-          const proximity = clamp(1 - distance / radius)
-          const influence = smoothstep(proximity) * motion.depthStrength
+          const normalX = -pointerDirection.y
+          const normalY = pointerDirection.x
+          const wakeCenterX = pointerPosition.x - pointerDirection.x * radius * .32
+          const wakeCenterY = pointerPosition.y - pointerDirection.y * radius * .32
+          const wakeDeltaX = rect.left + rect.width / 2 - wakeCenterX
+          const wakeDeltaY = rect.top + rect.height / 2 - wakeCenterY
+          const alongWake = wakeDeltaX * pointerDirection.x + wakeDeltaY * pointerDirection.y
+          const acrossWake = wakeDeltaX * normalX + wakeDeltaY * normalY
+          const ellipticalDistance = Math.hypot(alongWake / radius, acrossWake / (radius * .64))
+          const proximity = clamp(1 - ellipticalDistance)
+          const ahead = deltaX * pointerDirection.x + deltaY * pointerDirection.y
+          const aheadFade = 1 - smoothstep(clamp((ahead - radius * .04) / (radius * .38)))
+          const influence = smoothstep(proximity) * aheadFade * motion.depthStrength
 
           if (influence > .001) {
-            const crossflowX = -pointerVelocity.y * motion.crossflow * .008
-            const crossflowY = pointerVelocity.x * motion.crossflow * .008
-            motion.velocityX += (pointerVelocity.x * .068 + crossflowX) * influence * step
-            motion.velocityY += (pointerVelocity.y * .052 + crossflowY) * influence * step
-            motion.turnVelocity += (pointerVelocity.x * .016 + pointerVelocity.y * motion.crossflow * .012)
+            const pathPull = -(acrossWake / (radius * .64)) * pointerSpeed * .024
+            const transport = pointerSpeed * .074
+            motion.velocityX += (pointerDirection.x * transport + normalX * pathPull) * influence * step
+            motion.velocityY += (pointerDirection.y * transport + normalY * pathPull) * influence * step
+            motion.turnVelocity += (pointerDirection.x * .014 + motion.crossflow * pointerSpeed * .006)
               * influence * step
           }
         }
 
-        const fieldX = residualWind.x - residualWind.y * motion.crossflow * .06
-        const fieldY = residualWind.y + residualWind.x * motion.crossflow * .045
-        motion.velocityX += fieldX * .009 * motion.fieldCoupling * step
-        motion.velocityY += fieldY * .007 * motion.fieldCoupling * step
+        motion.velocityX += residualWind.x * .009 * motion.fieldCoupling * step
+        motion.velocityY += residualWind.y * .007 * motion.fieldCoupling * step
         motion.turnVelocity += (residualWind.x * .004 + residualWind.y * motion.crossflow * .003)
           * motion.fieldCoupling * step
 
@@ -291,6 +302,8 @@ export default function EducationJourney({ active }: { active: boolean }) {
         windFrameTime = 0
         pointerVelocity.x = 0
         pointerVelocity.y = 0
+        pointerDirection.x = 0
+        pointerDirection.y = 0
         residualWind.x = 0
         residualWind.y = 0
         petalMotions.forEach((motion) => {
@@ -327,6 +340,9 @@ export default function EducationJourney({ active }: { active: boolean }) {
 
       if (strength <= .0005) return
 
+      const windSpeed = Math.hypot(windVelocityX, windVelocityY)
+      pointerDirection.x = windVelocityX / windSpeed
+      pointerDirection.y = windVelocityY / windSpeed
       pointerVelocity.x += (windVelocityX - pointerVelocity.x) * smoothing
       pointerVelocity.y += (windVelocityY - pointerVelocity.y) * smoothing
       const residualSmoothing = smoothing * .42
