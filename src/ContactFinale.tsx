@@ -88,6 +88,7 @@ export default function ContactFinale({ active }: { active: boolean }) {
   const [bootReady, setBootReady] = useState(false)
   const [isStrolling, setIsStrolling] = useState(false)
   const [peekKey, setPeekKey] = useState(0)
+  const notFoundCountRef = useRef(0)
 
   const commandHistory = useMemo(() => entries.map((entry) => entry.command).filter(Boolean), [entries])
 
@@ -497,8 +498,10 @@ export default function ContactFinale({ active }: { active: boolean }) {
         { text: `zsh: command not found: ${command}`, tone: 'error' },
         { text: 'Type `help` to see the commands available here.', tone: 'muted' },
       ]
-      // 오답일 때만 키위가 위 경계로 빼꼼 올라온다. key를 바꿔 매번 다시 재생한다.
-      setPeekKey((current) => current + 1)
+      // 첫 오답은 그냥 넘기고 두 번째부터 키위가 터미널 뒤에서 빼꼼 올라온다.
+      // 한 번 만에 나오면 우연이 아니라 기능처럼 보여서 발견하는 재미가 줄어든다.
+      notFoundCountRef.current += 1
+      if (notFoundCountRef.current >= 2) setPeekKey((current) => current + 1)
     }
 
     nextEntryIdRef.current += 1
@@ -563,6 +566,12 @@ export default function ContactFinale({ active }: { active: boolean }) {
           <p>좋은 제품에 관한 흥미로운 이야기라면,<br />언제든 반갑습니다.</p>
         </div>
 
+        {peekKey > 0 && (
+          <div className="contact-kiwi-peek" key={peekKey} aria-hidden="true">
+            <img src="/assets/characters/kiwi-peek.png" alt="" />
+          </div>
+        )}
+
         <section className={`contact-terminal ${bootReady ? 'is-ready' : ''}`} aria-label="대화형 연락처 터미널">
           <header className="contact-terminal-bar">
             <span aria-hidden="true"><i /><i /><i /></span>
@@ -592,12 +601,6 @@ export default function ContactFinale({ active }: { active: boolean }) {
               </div>
             ))}
           </div>
-
-          {peekKey > 0 && (
-            <div className="contact-kiwi-peek" key={peekKey} aria-hidden="true">
-              <img src="/assets/characters/kiwi-peek.png" alt="" />
-            </div>
-          )}
 
           {isStrolling && (
             <div

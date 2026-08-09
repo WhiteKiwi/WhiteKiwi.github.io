@@ -205,7 +205,8 @@ export const companies: Company[] = [
     role: { ko: 'Backend Developer · 정규직', en: 'Backend Developer · Full-time' },
     start: '2020.08',
     end: '2021.02',
-    accent: '#511f2d',
+    // 공식 사이트의 정체성은 검정 워드마크다. 세일 강조색 #ff5722는 당근 주황과 부딪혀 쓰지 않는다.
+    accent: '#000000',
     projects: [
       {
         title: { ko: '크롤러 memory leak 해결', en: 'Fixing the crawler memory leak' },
@@ -313,7 +314,8 @@ export const companies: Company[] = [
     role: { ko: 'Backend Developer · 정규직', en: 'Backend Developer · Full-time' },
     start: '2020.02',
     end: '2020.06',
-    accent: '#f17c58',
+    // 테이킷 로고의 짙은 네이비. 기존 코랄은 당근 주황과 구분되지 않았다.
+    accent: '#17194b',
     projects: [
       {
         title: { ko: '테이킷 배달 기능 런칭', en: 'Launching delivery on TAKEIT' },

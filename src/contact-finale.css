@@ -410,28 +410,23 @@
 
 .contact-kiwi-peek {
   position: absolute;
-  /* 로그(z-index 2)보다 뒤에 둬서 글자를 가리지 않고 실루엣처럼 비친다. */
-  z-index: 1;
-  top: 42px;
-  left: 62%;
-  width: clamp(52px, 6.6vw, 82px);
-  overflow: hidden;
+  /* 터미널(z-index 6)보다 뒤에 둬서 평소에는 창 뒤에 완전히 가려져 있다. */
+  z-index: 5;
+  top: 14vh;
+  right: calc(5vw + 74px);
+  width: clamp(56px, 7vw, 88px);
   pointer-events: none;
-  animation: contact-kiwi-peek 2.7s cubic-bezier(.22, 1, .36, 1) forwards;
+  animation: contact-kiwi-peek 2.9s cubic-bezier(.34, 1.3, .5, 1) forwards;
 }
 
-.contact-kiwi-peek img {
-  display: block;
-  width: 100%;
-  height: auto;
-  opacity: .62;
-}
+.contact-kiwi-peek img { display: block; width: 100%; height: auto; }
 
+/* top이 터미널 상단선과 같으므로 0%는 창 뒤에 완전히 숨은 상태다. */
 @keyframes contact-kiwi-peek {
-  0% { transform: translateY(100%); }
-  18%, 62% { transform: translateY(6%); }
-  100% { transform: translateY(100%); }
+  0% { transform: translateY(0); }
+  20%, 66% { transform: translateY(-64%); }
+  100% { transform: translateY(0); }
 }
 
-@media (max-width: 720px) { .contact-kiwi-peek { display: none; } }
+@media (max-width: 900px) { .contact-kiwi-peek { display: none; } }
 @media (prefers-reduced-motion: reduce) { .contact-kiwi-peek { display: none; } }
