@@ -191,9 +191,7 @@ function DaangnChapter({ trackRef }: { trackRef: RefObject<HTMLElement | null> }
         <div className="daangn-chat" aria-hidden="true">
           <span>이 매물, 사진을 더 추가해보는 건 어때요?</span><i>피드백 보내기&nbsp; →</i>
         </div>
-        <div className="next-journey">
-          <span>NEXT CHAPTER</span><strong>TOSS</strong><i>곧 이어집니다</i>
-        </div>
+        <div className="toss-handoff" aria-hidden="true"><i /><span /></div>
         <div className="career-progress" aria-hidden="true"><i /></div>
       </div>
     </section>
@@ -285,8 +283,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
         track.style.setProperty('--explorer-opacity', String(visibility(progress, .14, .24, .72, .84)))
         track.style.setProperty('--route-progress', String(reveal(progress, .2, .76)))
         track.style.setProperty('--chat-opacity', String(visibility(progress, .46, .56, .73, .82)))
-        track.style.setProperty('--next-opacity', String(reveal(progress, .82, .94)))
-        track.style.setProperty('--next-y', `${(1 - reveal(progress, .82, .94)) * 30}px`)
+        track.style.setProperty('--toss-handoff', String(smoothstep(reveal(progress, .82, .96))))
         if (scrollingUp && progress < .075 && rect.top <= 1 && rect.bottom > 0 && !chapterTransitionLocked) {
           triggerReverseTransition()
         }
