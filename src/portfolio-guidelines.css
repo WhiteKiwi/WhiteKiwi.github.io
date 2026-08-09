@@ -170,7 +170,9 @@
 }
 
 .guidelines-hero-title p {
-  margin: 0 0 -1.8vw .5vw;
+  position: relative;
+  z-index: 1;
+  margin: 0 0 clamp(10px, 1.2vw, 18px) .5vw;
   color: var(--guide-amber);
   font: 500 clamp(.7rem, 1vw, .9rem)/1 'DM Mono', monospace;
   letter-spacing: .16em;
