@@ -325,7 +325,7 @@
 
 /* 05 — AIMPACT */
 
-.career-aimpact { --seed-opacity: 1; --seed-turn: 0deg; --crop-grow: 0; --farmer-opacity: 0; --farm-sun-y: 0vh; --carrot-cover-scale: 180; --carrot-origin-x: 66.3%; --carrot-origin-y: 85%; --carrot-guide-opacity: 0; --carrot-siblings-opacity: 1; --farm-field-z: 8; }
+.career-aimpact { --seed-opacity: 1; --seed-turn: 0deg; --crop-grow: 0; --farmer-opacity: 0; --farm-sun-y: 0vh; --carrot-origin-x: 66.3%; --carrot-origin-y: 85%; --carrot-guide-opacity: 0; --carrot-siblings-opacity: 1; --farm-field-z: 8; }
 .aimpact-stage { color: #19483c; background: #f5f7f5; }
 .aimpact-stage::before { content: ''; position: absolute; z-index: -5; inset: 0; background: linear-gradient(180deg, #d9f0e9 0%, #f5f7f5 62%, #b8cb92 100%); }
 .aimpact-stage .career-meta { color: #2b7d68; }
@@ -370,13 +370,13 @@ button.crop { appearance: none; padding: 0; border: 0; color: inherit; font: inh
 .career-aimpact.is-carrot-departing { --carrot-guide-opacity: 0; }
 .career-aimpact.is-carrot-departing .carrot-action-guide { opacity: 0; }
 .aimpact-stage { transform-origin: var(--carrot-origin-x) var(--carrot-origin-y); }
-.career-aimpact.is-carrot-departing .aimpact-stage { transform: scale(var(--carrot-cover-scale)); transition: transform .48s cubic-bezier(.76,0,.24,1); }
+.career-aimpact.is-carrot-departing .aimpact-stage { opacity: .72; filter: blur(8px) saturate(1.08); transform: scale(1.28); transition: transform .46s cubic-bezier(.76,0,.24,1), filter .38s ease, opacity .3s ease; }
 
-.carrot-transition-overlay { position: fixed; z-index: 1000; inset: -10vh -5vw; opacity: 0; background: #d96e32; border-radius: 0 0 48% 52% / 0 0 7% 8%; transform: translate3d(0,-112%,0); visibility: hidden; pointer-events: none; }
-.carrot-transition-overlay.is-ready { opacity: 1; transform: translate3d(0,-112%,0); visibility: visible; transition: none; }
-.carrot-transition-overlay.is-covering { opacity: 1; transform: translate3d(0,0,0); visibility: visible; transition: transform .42s cubic-bezier(.76,0,.24,1); }
-.carrot-transition-overlay.is-covered { opacity: 1; transform: translate3d(0,0,0); visibility: visible; transition: none; }
-.carrot-transition-overlay.is-revealing { opacity: 0; transform: translate3d(0,-112%,0); visibility: visible; transition: transform .68s cubic-bezier(.76,0,.24,1), opacity .32s .32s ease; }
+.carrot-transition-overlay { --portal-x: 66.3vw; --portal-y: 85vh; position: fixed; z-index: 1000; inset: 0; opacity: 0; background: #d96e32; clip-path: circle(0 at var(--portal-x) var(--portal-y)); visibility: hidden; pointer-events: none; }
+.carrot-transition-overlay.is-ready { opacity: 1; clip-path: circle(0 at var(--portal-x) var(--portal-y)); visibility: visible; transition: none; }
+.carrot-transition-overlay.is-covering { opacity: 1; clip-path: circle(160vmax at var(--portal-x) var(--portal-y)); visibility: visible; transition: clip-path .46s cubic-bezier(.76,0,.24,1); }
+.carrot-transition-overlay.is-covered { opacity: 1; clip-path: circle(160vmax at var(--portal-x) var(--portal-y)); visibility: visible; transition: none; }
+.carrot-transition-overlay.is-revealing { opacity: 0; clip-path: circle(160vmax at var(--portal-x) var(--portal-y)); visibility: visible; transition: opacity .42s cubic-bezier(.4,0,.2,1); }
 
 .carrot-action-guide { position: absolute; z-index: 24; bottom: 39%; left: 66.3%; display: grid; opacity: var(--carrot-guide-opacity); color: #246c5a; pointer-events: none; filter: drop-shadow(0 7px 15px rgba(23,74,60,.12)); transform: translateX(-50%); transition: opacity .24s ease, transform .35s cubic-bezier(.16,1,.3,1); }
 .carrot-action-guide span { font: 750 .62rem 'DM Mono', monospace; letter-spacing: .13em; }
@@ -489,6 +489,7 @@ button.crop { appearance: none; padding: 0; border: 0; color: inherit; font: inh
   .carrot-action-guide small { display: none; }
 
   .career-aimpact { --carrot-origin-x: 73%; --carrot-origin-y: 86%; }
+  .carrot-transition-overlay { --portal-x: 73vw; --portal-y: 86vh; }
   .daangn-copy { top: 13vh; }
   .neighborhood-map { inset: -23%; }
   .local-explorer { width: 43vw; }

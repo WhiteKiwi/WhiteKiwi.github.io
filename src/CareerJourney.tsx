@@ -396,29 +396,24 @@ export default function CareerJourney({ active }: { active: boolean }) {
       settleFarmBreeze()
     }
 
-    const zoomDuration = reducedMotion ? 20 : 480
-    const curtainCoverDuration = reducedMotion ? 20 : 420
-    const curtainHoldDuration = reducedMotion ? 0 : 90
-    const curtainRevealDuration = reducedMotion ? 20 : 680
+    const portalCoverDuration = reducedMotion ? 20 : 460
+    const portalHoldDuration = reducedMotion ? 0 : 70
+    const portalRevealDuration = reducedMotion ? 20 : 420
     const scrollToTrackProgress = (track: HTMLElement, progress: number) => {
       const trackTop = window.scrollY + track.getBoundingClientRect().top
       const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
       window.scrollTo(0, trackTop + distance * progress)
       lastPageY = window.scrollY
+      scrollingUp = false
+      trackRefs.forEach((ref, index) => {
+        if (ref.current) updateTrack(ref.current, index)
+      })
     }
-    const updateCarrotCoverScale = () => {
-      if (!aimpactTrack) return
-      const compact = window.innerWidth <= 700
-      const cropWidth = Math.min(66, Math.max(38, window.innerWidth * .04))
-      const cropHeight = Math.min(180, Math.max(110, window.innerHeight * .17))
-      const rootWidth = cropWidth * .42
-      const rootHeight = cropHeight * .35 * .86
-      const rootCenterX = window.innerWidth * (compact ? .73 : .663)
-      const rootCenterY = window.innerHeight * (compact ? .86 : .85)
-      const horizontalScale = Math.max(rootCenterX, window.innerWidth - rootCenterX) * 2 / rootWidth
-      const verticalScale = Math.max(rootCenterY, window.innerHeight - rootCenterY) * 2 / rootHeight
-      const coverScale = Math.ceil(Math.max(horizontalScale, verticalScale) * 1.6)
-      aimpactTrack.style.setProperty('--carrot-cover-scale', String(coverScale))
+    const updatePortalOrigin = () => {
+      if (!carrotButton || !transitionOverlay) return
+      const rect = carrotButton.getBoundingClientRect()
+      transitionOverlay.style.setProperty('--portal-x', `${rect.left + rect.width / 2}px`)
+      transitionOverlay.style.setProperty('--portal-y', `${rect.bottom}px`)
     }
     const onNextPaint = (callback: () => void) => {
       chapterTransitionFrame = window.requestAnimationFrame(() => {
@@ -444,22 +439,26 @@ export default function CareerJourney({ active }: { active: boolean }) {
       const progress = Number.parseFloat(aimpactTrack.style.getPropertyValue('--chapter-progress'))
       if (!Number.isFinite(progress) || progress < .64) return
 
-      updateCarrotCoverScale()
       resetChapterTransitionClasses()
+      updatePortalOrigin()
       chapterTransitionLocked = true
       carrotButton?.blur()
+      setCurtainState('is-ready')
       aimpactTrack.classList.add('is-carrot-departing')
-      chapterTransitionTimer = window.setTimeout(() => {
-        setCurtainState('is-covered')
-        scrollToTrackProgress(daangnTrack, .035)
-        aimpactTrack.classList.remove('is-carrot-departing')
+      onNextPaint(() => {
+        setCurtainState('is-covering')
         chapterTransitionTimer = window.setTimeout(() => {
-          onNextPaint(() => {
-            setCurtainState('is-revealing')
-            chapterTransitionTimer = window.setTimeout(finishChapterTransition, curtainRevealDuration)
-          })
-        }, curtainHoldDuration)
-      }, zoomDuration)
+          setCurtainState('is-covered')
+          scrollToTrackProgress(daangnTrack, .035)
+          aimpactTrack.classList.remove('is-carrot-departing')
+          chapterTransitionTimer = window.setTimeout(() => {
+            onNextPaint(() => {
+              setCurtainState('is-revealing')
+              chapterTransitionTimer = window.setTimeout(finishChapterTransition, portalRevealDuration)
+            })
+          }, portalHoldDuration)
+        }, portalCoverDuration)
+      })
     }
     triggerReverseTransition = () => {
       if (chapterTransitionLocked || !aimpactTrack || !daangnTrack) return
@@ -470,14 +469,14 @@ export default function CareerJourney({ active }: { active: boolean }) {
         setCurtainState('is-covering')
         chapterTransitionTimer = window.setTimeout(() => {
           setCurtainState('is-covered')
-          scrollToTrackProgress(aimpactTrack, .74)
+          scrollToTrackProgress(aimpactTrack, .66)
           chapterTransitionTimer = window.setTimeout(() => {
             onNextPaint(() => {
               setCurtainState('is-revealing')
-              chapterTransitionTimer = window.setTimeout(finishChapterTransition, curtainRevealDuration)
+              chapterTransitionTimer = window.setTimeout(finishChapterTransition, portalRevealDuration)
             })
-          }, curtainHoldDuration)
-        }, curtainCoverDuration)
+          }, portalHoldDuration)
+        }, portalCoverDuration)
       })
     }
 
