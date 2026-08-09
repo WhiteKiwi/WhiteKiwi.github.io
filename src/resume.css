@@ -1,0 +1,604 @@
+.resume {
+  --ink: #171717;
+  --ink-soft: #5b5750;
+  --canvas: #f4f0e7;
+  --amber: #d89a1d;
+  --rule: rgba(23, 23, 23, .13);
+  --glow-x: 68vw;
+  --glow-y: 22vh;
+
+  position: relative;
+  min-height: 100vh;
+  padding: 0 0 14vh;
+  color: var(--ink);
+  background: var(--canvas);
+  font-family: Manrope, 'Pretendard Variable', Pretendard, sans-serif;
+  isolation: isolate;
+}
+
+.resume-glow {
+  position: fixed;
+  z-index: -2;
+  top: var(--glow-y);
+  left: var(--glow-x);
+  width: min(58vw, 720px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(216, 154, 29, .17) 0, rgba(216, 154, 29, .05) 40%, transparent 72%);
+  filter: blur(46px);
+  transform: translate(-50%, -50%);
+  /* 본문 가독성이 우선이라 옅게 두고, 잔상이 길게 남도록 느리게 따라온다. */
+  transition: top 1.9s cubic-bezier(.16, 1, .3, 1), left 1.9s cubic-bezier(.16, 1, .3, 1);
+  pointer-events: none;
+}
+
+.resume-grid {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  opacity: .5;
+  background-image:
+    linear-gradient(rgba(23, 23, 23, .045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 23, 23, .045) 1px, transparent 1px);
+  background-size: 78px 78px;
+  mask-image: radial-gradient(circle at 50% 30%, #000 0, transparent 72%);
+  pointer-events: none;
+}
+
+.resume-mark {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  color: var(--amber);
+  font: 700 .95em 'DM Mono', monospace;
+}
+
+.resume-mark i {
+  display: inline-block;
+  font-style: normal;
+  animation: resume-caret 1.15s steps(1) infinite;
+}
+
+@keyframes resume-caret { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+
+/* ── rail ─────────────────────────────────────────────── */
+
+.resume-rail {
+  position: fixed;
+  z-index: 4;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 232px;
+  height: 100vh;
+  padding: 40px 26px 34px;
+  flex-direction: column;
+  gap: 34px;
+  border-right: 1px solid var(--rule);
+  background: rgba(244, 240, 231, .82);
+  backdrop-filter: blur(7px);
+}
+
+.resume-rail-home {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 800 1.02rem Manrope, 'Pretendard Variable', Pretendard, sans-serif;
+  letter-spacing: -.05em;
+}
+
+.resume-rail nav {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.resume-rail nav a {
+  position: relative;
+  padding: 7px 0 7px 16px;
+  color: var(--ink-soft);
+  font: 500 .68rem 'DM Mono', monospace;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  transition: color .3s ease;
+}
+
+.resume-rail nav a::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 6px;
+  height: 1px;
+  background: var(--ink-soft);
+  opacity: .4;
+  transition: width .35s cubic-bezier(.22, 1, .36, 1), background .3s ease, opacity .3s ease;
+}
+
+.resume-rail nav a:hover { color: var(--ink); }
+
+.resume-rail nav a.is-active { color: var(--ink); }
+.resume-rail nav a.is-active::before { width: 11px; background: var(--amber); opacity: 1; }
+
+.resume-rail-actions { display: grid; gap: 12px; }
+
+.resume-lang {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  justify-self: start;
+}
+
+.resume-lang button {
+  padding: 5px 12px;
+  color: var(--ink-soft);
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font: 600 .58rem 'DM Mono', monospace;
+  letter-spacing: .08em;
+  cursor: pointer;
+  transition: color .25s ease, background .25s ease;
+}
+
+.resume-lang button[aria-pressed='true'] { color: var(--canvas); background: var(--ink); }
+
+.resume-print {
+  padding: 11px 14px;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: 8px;
+  background: transparent;
+  font: 600 .6rem 'DM Mono', monospace;
+  letter-spacing: .07em;
+  text-align: left;
+  cursor: pointer;
+  transition: color .25s ease, background .25s ease;
+}
+
+.resume-print:hover { color: var(--canvas); background: var(--ink); }
+
+/* ── sheet ────────────────────────────────────────────── */
+
+.resume-sheet {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 15vh 6vw 0 calc(232px + 6vw);
+}
+
+@media (min-width: 1500px) {
+  .resume-sheet { padding-left: 6vw; }
+}
+
+[data-reveal='out'] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity .85s cubic-bezier(.22, 1, .36, 1), transform .85s cubic-bezier(.22, 1, .36, 1);
+}
+
+[data-reveal='in'] { opacity: 1; transform: none; }
+
+.resume-eyebrow {
+  margin: 0 0 26px;
+  color: var(--ink-soft);
+  font: 500 .66rem 'DM Mono', monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.resume-hero h1 {
+  font: 400 clamp(3.4rem, 8vw, 6.2rem)/.92 'DM Serif Display', 'Noto Serif KR', serif;
+  letter-spacing: -.05em;
+}
+
+.resume-hero h1 em {
+  display: block;
+  margin-top: 20px;
+  color: var(--amber);
+  font: 500 clamp(.82rem, 1.5vw, 1rem) 'DM Mono', monospace;
+  font-style: normal;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+}
+
+.resume-role {
+  display: flex;
+  margin: 30px 0 0;
+  gap: 14px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  font: 600 .92rem Manrope, 'Pretendard Variable', Pretendard, sans-serif;
+}
+
+.resume-role b {
+  padding: 4px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font: 500 .6rem 'DM Mono', monospace;
+  letter-spacing: .06em;
+}
+
+.resume-tagline {
+  max-width: 46ch;
+  margin: 22px 0 0;
+  color: var(--ink-soft);
+  font-size: 1rem;
+  line-height: 1.85;
+  letter-spacing: -.01em;
+}
+
+.resume-contacts {
+  display: grid;
+  margin: 44px 0 0;
+  padding: 0;
+  gap: 0;
+  border-top: 1px solid var(--rule);
+  list-style: none;
+}
+
+.resume-contacts li {
+  display: grid;
+  padding: 11px 0;
+  grid-template-columns: 92px 1fr;
+  gap: 12px;
+  align-items: baseline;
+  border-bottom: 1px solid var(--rule);
+}
+
+.resume-contacts span {
+  color: var(--ink-soft);
+  font: 500 .58rem 'DM Mono', monospace;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.resume-contacts a {
+  font: 500 .84rem 'DM Mono', monospace;
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 4px;
+  transition: text-decoration-color .25s ease, color .25s ease;
+}
+
+.resume-contacts a:hover { color: var(--amber); text-decoration-color: var(--amber); }
+
+/* ── sections ─────────────────────────────────────────── */
+
+.resume-section { padding: 13vh 0 0; scroll-margin-top: 8vh; }
+
+.resume-section-title {
+  display: flex;
+  margin: 0 0 8vh;
+  gap: 16px;
+  align-items: baseline;
+  font: 400 clamp(1.9rem, 3.6vw, 2.9rem) 'DM Serif Display', 'Noto Serif KR', serif;
+  letter-spacing: -.04em;
+}
+
+.resume-section-title span {
+  color: var(--amber);
+  font: 500 .66rem 'DM Mono', monospace;
+  letter-spacing: .12em;
+}
+
+.resume-companies { margin: 0; padding: 0; list-style: none; }
+
+.resume-company {
+  position: relative;
+  padding: 0 0 9vh 26px;
+}
+
+.resume-company::before {
+  content: '';
+  position: absolute;
+  top: 9px;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.resume-company::after {
+  content: '';
+  position: absolute;
+  top: 24px;
+  bottom: 0;
+  left: 4px;
+  width: 1px;
+  background: var(--rule);
+}
+
+.resume-company:last-child::after { display: none; }
+
+.resume-company-head {
+  display: flex;
+  gap: 18px;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.resume-company-name h3 {
+  font: 700 clamp(1.28rem, 2.4vw, 1.7rem) Manrope, 'Pretendard Variable', Pretendard, sans-serif;
+  letter-spacing: -.045em;
+}
+
+.resume-company-name p {
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+  font: 500 .68rem 'DM Mono', monospace;
+  letter-spacing: .04em;
+}
+
+.resume-company-time { text-align: right; }
+
+.resume-company-time b {
+  display: block;
+  font: 600 .74rem 'DM Mono', monospace;
+  letter-spacing: .04em;
+}
+
+.resume-company-time span {
+  color: var(--ink-soft);
+  font: 500 .62rem 'DM Mono', monospace;
+}
+
+.resume-company-summary {
+  display: flex;
+  max-width: 52ch;
+  margin: 20px 0 0;
+  gap: 10px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  color: var(--ink-soft);
+  font-size: .92rem;
+  line-height: 1.8;
+}
+
+.resume-company-summary mark {
+  padding: 3px 9px;
+  color: var(--ink);
+  border: 1px dashed var(--accent);
+  border-radius: 999px;
+  background: transparent;
+  font: 600 .55rem 'DM Mono', monospace;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.resume-projects {
+  display: grid;
+  margin: 30px 0 0;
+  padding: 0;
+  gap: 30px;
+  list-style: none;
+}
+
+.resume-project-head {
+  display: flex;
+  margin-bottom: 12px;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 9px;
+}
+
+.resume-project-head h4 {
+  margin: 0;
+  font: 700 1rem Manrope, 'Pretendard Variable', Pretendard, sans-serif;
+  letter-spacing: -.03em;
+}
+
+.resume-project-head span {
+  flex: 0 0 auto;
+  color: var(--ink-soft);
+  font: 500 .6rem 'DM Mono', monospace;
+  letter-spacing: .04em;
+}
+
+.resume-projects ul {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  gap: 9px;
+  list-style: none;
+}
+
+.resume-projects ul li {
+  position: relative;
+  max-width: 60ch;
+  padding-left: 17px;
+  color: var(--ink-soft);
+  font-size: .89rem;
+  line-height: 1.82;
+}
+
+.resume-projects ul li::before {
+  content: '';
+  position: absolute;
+  top: .78em;
+  left: 0;
+  width: 7px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.resume-skills {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  gap: 9px;
+  flex-wrap: wrap;
+  list-style: none;
+}
+
+.resume-skills li {
+  padding: 10px 15px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font: 500 .74rem 'DM Mono', monospace;
+  letter-spacing: .02em;
+  transition: border-color .25s ease, color .25s ease;
+}
+
+.resume-skills li:hover { color: var(--amber); border-color: var(--amber); }
+
+.resume-list { margin: 0; padding: 0; border-top: 1px solid var(--rule); list-style: none; }
+
+.resume-list li {
+  display: flex;
+  padding: 20px 0;
+  gap: 18px;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--rule);
+}
+
+.resume-list h3 { font: 700 1.02rem Manrope, 'Pretendard Variable', Pretendard, sans-serif; letter-spacing: -.035em; }
+
+.resume-list p { margin: 6px 0 0; color: var(--ink-soft); font-size: .85rem; }
+
+.resume-list span {
+  flex: 0 0 auto;
+  color: var(--ink-soft);
+  font: 500 .64rem 'DM Mono', monospace;
+  letter-spacing: .04em;
+}
+
+.resume-outro-mail {
+  margin: 0;
+  font: 400 clamp(1.5rem, 4.4vw, 3rem) 'DM Serif Display', 'Noto Serif KR', serif;
+  letter-spacing: -.04em;
+  overflow-wrap: anywhere;
+}
+
+.resume-outro-mail a { transition: color .25s ease; }
+.resume-outro-mail a:hover { color: var(--amber); }
+
+.resume-outro-link {
+  margin: 34px 0 0;
+  font: 500 .68rem 'DM Mono', monospace;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.resume-outro-link a { color: var(--ink-soft); transition: color .25s ease; }
+.resume-outro-link a:hover { color: var(--amber); }
+
+/* ── responsive ───────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .resume-rail {
+    position: sticky;
+    width: 100%;
+    height: auto;
+    padding: 14px 5vw;
+    flex-direction: row;
+    gap: 14px;
+    align-items: center;
+    justify-content: space-between;
+    border-right: 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .resume-rail nav { display: none; }
+  .resume-rail-actions { display: flex; gap: 9px; align-items: center; }
+  .resume-print { padding: 9px 12px; }
+  .resume-sheet { padding: 9vh 6vw 0; }
+  .resume-section { padding-top: 11vh; }
+  .resume-section-title { margin-bottom: 6vh; }
+  .resume-company-head { flex-direction: column; gap: 10px; }
+  .resume-company-time { text-align: left; }
+  .resume-contacts li { grid-template-columns: 76px 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resume-glow { transition: none; }
+  .resume-mark i { animation: none; }
+  [data-reveal='out'] { opacity: 1; transform: none; }
+}
+
+/* ── print ────────────────────────────────────────────── */
+
+@page { size: A4; margin: 14mm 13mm; }
+
+@media print {
+  /* 진입 연출 상태를 되돌리지 않으면 아직 보지 않은 섹션이 빈 칸으로 인쇄된다. */
+  [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
+
+  .resume-glow,
+  .resume-grid,
+  .resume-rail,
+  .resume-outro-link { display: none !important; }
+
+  .resume {
+    min-height: 0;
+    padding: 0;
+    background: #fff;
+    color: #000;
+    --ink: #000;
+    --ink-soft: #333;
+    --rule: #c9c4b8;
+  }
+
+  .resume-sheet { max-width: none; margin: 0; padding: 0; }
+
+  .resume-hero h1 { font-size: 30pt; }
+  .resume-hero h1 em { margin-top: 4pt; font-size: 8pt; letter-spacing: .18em; }
+  .resume-eyebrow { margin-bottom: 10pt; font-size: 7.5pt; }
+  .resume-role { margin-top: 12pt; font-size: 10pt; }
+  .resume-role b { font-size: 7.5pt; }
+  .resume-tagline { max-width: none; margin-top: 9pt; font-size: 9.5pt; line-height: 1.6; }
+
+  .resume-contacts { margin-top: 14pt; }
+  .resume-contacts li { padding: 4pt 0; grid-template-columns: 62pt 1fr; }
+  .resume-contacts span { font-size: 7pt; }
+  .resume-contacts a { font-size: 9pt; text-decoration: none; }
+
+  .resume-section { padding-top: 20pt; }
+  .resume-section-title { margin-bottom: 12pt; font-size: 15pt; gap: 9pt; }
+  .resume-section-title span { color: #000; font-size: 7.5pt; }
+
+  .resume-company { padding: 0 0 16pt 12pt; break-inside: avoid; }
+  .resume-company::before { top: 5pt; width: 5pt; height: 5pt; background: #000; }
+  .resume-company::after { top: 13pt; left: 2pt; background: #c9c4b8; }
+  .resume-company-name h3 { font-size: 12.5pt; }
+  .resume-company-name p { margin-top: 2pt; font-size: 8pt; }
+  .resume-company-time b { font-size: 8.5pt; }
+  .resume-company-time span { font-size: 7.5pt; }
+
+  .resume-company-summary { max-width: none; margin-top: 7pt; font-size: 9pt; line-height: 1.55; }
+  .resume-company-summary mark { border-color: #666; font-size: 7pt; }
+
+  .resume-projects { margin-top: 11pt; gap: 11pt; }
+  .resume-projects > li { break-inside: avoid; }
+  .resume-project-head { margin-bottom: 5pt; padding-bottom: 3pt; }
+  .resume-project-head h4 { font-size: 10pt; }
+  .resume-project-head span { font-size: 7.5pt; }
+  .resume-projects ul { gap: 3pt; }
+  .resume-projects ul li { max-width: none; padding-left: 10pt; font-size: 9pt; line-height: 1.55; }
+  .resume-projects ul li::before { background: #000; width: 5pt; }
+
+  .resume-skills { gap: 4pt; }
+  .resume-skills li { padding: 3pt 7pt; font-size: 8.5pt; }
+
+  .resume-list li { padding: 7pt 0; break-inside: avoid; }
+  .resume-list h3 { font-size: 10pt; }
+  .resume-list p { margin-top: 2pt; font-size: 8.5pt; }
+  .resume-list span { font-size: 8pt; }
+
+  .resume-outro { padding-top: 16pt; break-inside: avoid; }
+  .resume-outro-mail { font-size: 13pt; }
+
+  /* 종이에서도 주소를 확인할 수 있게 외부 링크는 URL을 함께 인쇄한다. */
+  .resume-contacts a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    color: #555;
+    font-size: 7.5pt;
+  }
+}

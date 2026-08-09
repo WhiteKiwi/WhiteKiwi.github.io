@@ -423,6 +423,10 @@ export default function TossOngoing({ active }: { active: boolean }) {
           <p>토스에서 시작해 토스인컴으로.<br />다음 이야기는 아직 현재진행형입니다.</p>
         </article>
 
+        <div className="toss-kiwi" aria-hidden="true">
+          <img src="/assets/characters/kiwi-toss-developer.png" alt="" />
+        </div>
+
         <aside className="toss-status-card" aria-label="경력 챕터 작성 상태">
           <header>
             <span>CURRENT STATUS</span>

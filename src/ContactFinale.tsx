@@ -29,6 +29,40 @@ const emailUrl = 'mailto:jh145478@gmail.com'
 
 const availableCommands = ['help', 'whoami', 'open github', 'open blog', 'open linkedin', 'open instagram', 'open email', 'clear']
 
+/**
+ * `whoami`는 neofetch처럼 아스키 키위를 왼쪽에, 정보를 오른쪽에 둔다.
+ * 아스키 열은 고정 폭이라 오른쪽 칸의 한글 전각 문자가 정렬을 흔들지 않는다.
+ */
+const kiwiArt = [
+  '     ___       ',
+  '   .`   `.     ',
+  '  /  o    `-.._',
+  ' |             `>',
+  ' |            _.`',
+  '  \\          /  ',
+  '   `.______.`   ',
+  '     ||  ||     ',
+]
+
+const kiwiFacts = [
+  '-----------------',
+  'name     Jihoon Jang / 장지훈',
+  'role     Node.js Developer',
+  'since    2020.02',
+  'stack    Node.js · TypeScript · NestJS',
+  'infra    AWS · Docker · MySQL · Redis',
+  'where    Seoul, Korea (KST)',
+  'resume   /resume/',
+]
+
+const kiwiFetch = kiwiArt.map((art, index) => ({
+  text: `${art}  ${kiwiFacts[index] ?? ''}`.trimEnd(),
+  tone: index === 0 ? ('accent' as const) : ('default' as const),
+}))
+
+/** 로컬에서는 짧게 잡아 확인하기 쉽게 한다. */
+const IDLE_STROLL_DELAY = import.meta.env.DEV ? 10_000 : 30_000
+
 const loadTerminalEntries = (): TerminalEntry[] => {
   try {
     const saved = window.sessionStorage.getItem(TERMINAL_STORAGE_KEY)
@@ -52,8 +86,31 @@ export default function ContactFinale({ active }: { active: boolean }) {
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [bootCommand, setBootCommand] = useState('')
   const [bootReady, setBootReady] = useState(false)
+  const [isStrolling, setIsStrolling] = useState(false)
 
   const commandHistory = useMemo(() => entries.map((entry) => entry.command).filter(Boolean), [entries])
+
+  // 터미널이 준비된 뒤 일정 시간 입력이 없으면 키위가 아래 경계를 한 번 걸어 지나간다.
+  useEffect(() => {
+    if (!bootReady || isStrolling) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    let timer = window.setTimeout(() => setIsStrolling(true), IDLE_STROLL_DELAY)
+    const restart = () => {
+      window.clearTimeout(timer)
+      timer = window.setTimeout(() => setIsStrolling(true), IDLE_STROLL_DELAY)
+    }
+
+    const terminal = terminalLogRef.current?.closest('.contact-terminal')
+    terminal?.addEventListener('keydown', restart)
+    terminal?.addEventListener('pointerdown', restart)
+
+    return () => {
+      window.clearTimeout(timer)
+      terminal?.removeEventListener('keydown', restart)
+      terminal?.removeEventListener('pointerdown', restart)
+    }
+  }, [bootReady, isStrolling, entries, input])
 
   useEffect(() => {
     try {
@@ -389,10 +446,8 @@ export default function ContactFinale({ active }: { active: boolean }) {
       ]
     } else if (command === 'whoami') {
       lines = [
-        { text: 'Jihoon Jang / 장지훈', tone: 'success' },
-        { text: 'Node.js Developer', tone: 'default' },
-        { text: 'Building useful products and dependable systems.', tone: 'muted' },
-        { text: 'Seoul, Korea · KST', tone: 'muted' },
+        { text: 'visitor@portfolio', tone: 'accent' },
+        ...kiwiFetch,
       ]
     } else if (command === 'iloveyou') {
       lines = [{ text: 'I love you too', tone: 'accent' }]
@@ -534,6 +589,18 @@ export default function ContactFinale({ active }: { active: boolean }) {
             ))}
           </div>
 
+          {isStrolling && (
+            <div
+              className="contact-kiwi-stroll"
+              aria-hidden="true"
+              onAnimationEnd={() => setIsStrolling(false)}
+            >
+              <span className="contact-kiwi-sprite">
+                <img src="/assets/characters/kiwi-walk-cycle.png" alt="" />
+              </span>
+            </div>
+          )}
+
           <form className="contact-terminal-form" onSubmit={submitCommand}>
             <label htmlFor="contact-terminal-input">visitor@portfolio %</label>
             <input
@@ -578,6 +645,7 @@ export default function ContactFinale({ active }: { active: boolean }) {
         <div className="contact-finale-bottom">
           <p>THANKS FOR SCROLLING <span aria-hidden="true">✦</span> PORTFOLIO 2026</p>
           <div>
+            <a href="/resume/">RESUME <span aria-hidden="true">↗</span></a>
             <a href="/guidelines/">PORTFOLIO GUIDELINES <span aria-hidden="true">↗</span></a>
             <a href="/">RUN AGAIN <span aria-hidden="true">↺</span></a>
           </div>

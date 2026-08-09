@@ -18,7 +18,7 @@
 .opening-status { top: 8vh; }
 .opening-signature { bottom: 7vh; }
 .opening-lettering { position: absolute; top: 50%; left: 50%; width: min(98vw,1260px); overflow: visible; transform: translate(-50%,-50%); }
-.opening-stroke { fill: transparent; stroke: rgba(255,255,255,.94); stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1250; stroke-dashoffset: 1250; paint-order: stroke; font-family: 'Manrope', sans-serif; font-size: 164px; font-weight: 650; letter-spacing: -10px; filter: drop-shadow(0 8px 14px rgba(63,133,176,.15)); animation: opening-write 2.35s cubic-bezier(.55,.03,.23,1) forwards, opening-letters-away .7s 3.05s ease forwards; }
+.opening-stroke { fill: transparent; stroke: rgba(255,255,255,.94); stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1250; stroke-dashoffset: 1250; paint-order: stroke; font-family: 'Manrope', 'Pretendard Variable', Pretendard, sans-serif; font-size: 164px; font-weight: 650; letter-spacing: -10px; filter: drop-shadow(0 8px 14px rgba(63,133,176,.15)); animation: opening-write 2.35s cubic-bezier(.55,.03,.23,1) forwards, opening-letters-away .7s 3.05s ease forwards; }
 .opening-stroke-right { animation-delay: .82s, 3.05s; }
 .opening-world-o { fill: rgba(255,255,255,.04); stroke: rgba(255,255,255,.94); stroke-width: 2.8; stroke-dasharray: 220; stroke-dashoffset: 220; transform-box: fill-box; transform-origin: center; filter: drop-shadow(0 8px 14px rgba(63,133,176,.14)); animation: opening-o-draw .9s 1.3s ease forwards, opening-o-morph 1.3s 3.05s cubic-bezier(.2,.7,.18,1) forwards; }
 .sky-depth { position: absolute; inset: -20%; z-index: -5; pointer-events: none; }

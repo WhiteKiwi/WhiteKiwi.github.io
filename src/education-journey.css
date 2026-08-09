@@ -286,7 +286,7 @@
 
 .school-center > strong {
   color: #005daa;
-  font: 800 clamp(1.6rem, 2.8vw, 3.2rem) 'Manrope', sans-serif;
+  font: 800 clamp(1.6rem, 2.8vw, 3.2rem) 'Manrope', 'Pretendard Variable', Pretendard, sans-serif;
   letter-spacing: -.07em;
   line-height: 1;
 }
@@ -533,7 +533,7 @@
   color: #13314b;
   font-size: clamp(3.1rem, 6.3vw, 7.2rem);
   font-weight: 750;
-  font-family: Manrope, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  font-family: Manrope, 'Pretendard Variable', Pretendard, 'Apple SD Gothic Neo', sans-serif;
   line-height: .96;
   letter-spacing: -.078em;
   word-break: keep-all;

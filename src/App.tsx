@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 
 const FallIntro = lazy(() => import('./FallIntro'))
+const Resume = lazy(() => import('./Resume'))
 const PortfolioGuidelines = lazy(() => import('./PortfolioGuidelines'))
 
 // 개발 환경에서만 존재한다. 프로덕션 빌드에서는 조건이 false로 접히면서 실험 번들이 산출물에서 빠진다.
@@ -19,6 +20,10 @@ function App() {
         <LabRouter slug={path.slice('/labs/'.length)} />
       </Suspense>
     )
+  }
+
+  if (path === '/resume') {
+    return <Suspense fallback={<main className="resume" />}><Resume /></Suspense>
   }
 
   if (path === '/guidelines') {

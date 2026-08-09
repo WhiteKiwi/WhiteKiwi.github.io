@@ -5,7 +5,7 @@
 .lab-close { justify-self: end; }
 .lab-intro { display: grid; grid-template-columns: .55fr 1.25fr .75fr; gap: 3vw; align-items: end; padding: 9vw 2vw 7vw; }
 .lab-intro > p { align-self: start; margin: 7px 0 0; color: #8b95a1; font: 500 .64rem 'DM Mono', monospace; letter-spacing: .12em; }
-.lab-intro h1 { font: 700 clamp(3.8rem, 7vw, 7.5rem)/.93 Manrope, sans-serif; letter-spacing: -.09em; }
+.lab-intro h1 { font: 700 clamp(3.8rem, 7vw, 7.5rem)/.93 Manrope, 'Pretendard Variable', Pretendard, sans-serif; letter-spacing: -.09em; }
 .lab-intro > span { max-width: 320px; color: #6b7684; font-size: .9rem; line-height: 1.8; letter-spacing: -.03em; }
 .concept-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 18px; }
 .concept-card { position: relative; grid-column: span 6; min-height: 620px; padding: 24px; display: flex; flex-direction: column; overflow: hidden; border-radius: 34px; isolation: isolate; }
@@ -15,7 +15,7 @@
 .concept-meta a { margin-left: 15px; padding: 6px 8px; border: 1px solid currentColor; border-radius: 100px; }
 .concept-visual { position: relative; z-index: 1; min-height: 0; flex: 1; display: grid; place-items: center; }
 .concept-copy { position: relative; z-index: 3; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: end; }
-.concept-copy h2 { font: 700 clamp(2rem, 3vw, 3.7rem)/.95 Manrope, sans-serif; letter-spacing: -.07em; }
+.concept-copy h2 { font: 700 clamp(2rem, 3vw, 3.7rem)/.95 Manrope, 'Pretendard Variable', Pretendard, sans-serif; letter-spacing: -.07em; }
 .concept-copy p { max-width: 260px; justify-self: end; margin: 0; font-size: .75rem; line-height: 1.65; letter-spacing: -.025em; }
 
 .concept-tossface { background: #e8ebee; color: #333d4b; }

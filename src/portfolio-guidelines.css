@@ -16,7 +16,7 @@
   min-height: 100vh;
   color: var(--guide-graphite);
   background: var(--guide-ivory);
-  font-family: Manrope, sans-serif;
+  font-family: Manrope, 'Pretendard Variable', Pretendard, sans-serif;
   font-synthesis: none;
 }
 
@@ -181,7 +181,7 @@
 
 .guidelines-hero-title h1 {
   margin: 0;
-  font: 800 clamp(5.4rem, 12.2vw, 13.5rem)/.78 Manrope, sans-serif;
+  font: 800 clamp(5.4rem, 12.2vw, 13.5rem)/.78 Manrope, 'Pretendard Variable', Pretendard, sans-serif;
   letter-spacing: -.105em;
   white-space: nowrap;
 }
@@ -272,7 +272,7 @@
 .guidelines-section-heading h2 {
   margin: 0;
   color: inherit;
-  font: 800 clamp(3.4rem, 7vw, 8.5rem)/.84 Manrope, sans-serif;
+  font: 800 clamp(3.4rem, 7vw, 8.5rem)/.84 Manrope, 'Pretendard Variable', Pretendard, sans-serif;
   letter-spacing: -.09em;
 }
 
@@ -348,7 +348,7 @@
   right: 25px;
   bottom: -24px;
   color: rgba(23, 23, 23, .055);
-  font: 800 clamp(6rem, 12vw, 12rem)/1 Manrope, sans-serif;
+  font: 800 clamp(6rem, 12vw, 12rem)/1 Manrope, 'Pretendard Variable', Pretendard, sans-serif;
   letter-spacing: -.12em;
 }
 

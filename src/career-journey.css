@@ -292,7 +292,7 @@
   will-change: clip-path;
 }
 .boutique-curtain i { width: 100%; height: 100%; background: repeating-linear-gradient(90deg, rgba(255,255,255,.04) 0 2px, transparent 2px 44px); }
-.boutique-curtain strong { padding: 0 6vw; font: 550 clamp(4rem, 10vw, 10rem)/.78 'Manrope', sans-serif; letter-spacing: -.09em; text-align: center; }
+.boutique-curtain strong { padding: 0 6vw; font: 550 clamp(4rem, 10vw, 10rem)/.78 'Manrope', 'Pretendard Variable', Pretendard, sans-serif; letter-spacing: -.09em; text-align: center; }
 
 .showcase-grid { position: absolute; z-index: 2; right: -7vw; bottom: 12%; display: flex; gap: 2vw; transform: translateX(var(--showcase-shift)); }
 .showcase { position: relative; display: flex; width: clamp(190px, 20vw, 310px); height: 55vh; min-height: 380px; overflow: hidden; align-items: center; justify-content: center; isolation: isolate; border: 1px solid rgba(213, 183, 140, .32); background: linear-gradient(160deg, rgba(255,255,255,.04), rgba(255,255,255,.01)); box-shadow: inset 0 0 70px rgba(201, 173, 131, .05); }

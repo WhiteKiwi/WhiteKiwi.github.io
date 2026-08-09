@@ -1,7 +1,10 @@
 @import url('https://cdn.jsdelivr.net/gh/toss/tossface/dist/tossface.css');
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;600;700;800&family=Noto+Serif+KR:wght@400;600;700&display=swap');
+/* 한글 본문용. Manrope와 DM Serif Display에는 한글 글리프가 없어 운영체제마다 다른 폰트로 떨어진다. */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css');
 
-:root { font-family: Manrope, sans-serif; color: #203b33; background: #fff9ed; font-synthesis: none; }
+/* 라틴 글리프는 Manrope에서, 한글은 Pretendard에서 가져온다. */
+:root { font-family: Manrope, 'Pretendard Variable', Pretendard, system-ui, sans-serif; color: #203b33; background: #fff9ed; font-synthesis: none; }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; min-width: 320px; overflow-x: clip; }

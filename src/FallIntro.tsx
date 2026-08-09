@@ -262,7 +262,13 @@ export default function FallIntro() {
           if (!target) return
           const targetTop = window.scrollY + target.getBoundingClientRect().top
           const distance = Math.max(target.offsetHeight - window.innerHeight, 0)
-          window.scrollTo({ top: targetTop + distance * deepLink.progress, behavior: 'auto' })
+          // `behavior: 'auto'`는 즉시 이동이 아니라 CSS의 `scroll-behavior`를 따른다.
+          // 전역 smooth가 켜져 있으면 긴 거리 애니메이션이 시작되고, 도중에 취소되면 중간 챕터에서 멈춘다.
+          const documentRoot = document.documentElement
+          const previousScrollBehavior = documentRoot.style.scrollBehavior
+          documentRoot.style.scrollBehavior = 'auto'
+          window.scrollTo(0, targetTop + distance * deepLink.progress)
+          documentRoot.style.scrollBehavior = previousScrollBehavior
         })
       })
     }

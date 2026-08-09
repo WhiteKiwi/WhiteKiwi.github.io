@@ -176,6 +176,31 @@
   letter-spacing: -.035em;
 }
 
+/* 좌하단에 두고 같은 하단 행인 상태 카드와 같은 타이밍·거리로 올라온다. */
+.toss-kiwi {
+  position: absolute;
+  z-index: 11;
+  bottom: 9vh;
+  left: 7vw;
+  width: min(20vw, 268px);
+  opacity: calc(var(--toss-card-opacity) * .96);
+  transform: translate3d(0, var(--toss-card-y), 0);
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.toss-kiwi img {
+  display: block;
+  width: 100%;
+  height: auto;
+  animation: toss-kiwi-breathe 4.6s ease-in-out infinite;
+}
+
+@keyframes toss-kiwi-breathe {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-6px) rotate(-.6deg); }
+}
+
 .toss-status-card {
   position: absolute;
   z-index: 12;
@@ -277,6 +302,8 @@
   .toss-status-card dd { font-size: .56rem; }
   .toss-ongoing-exit { right: 6vw; bottom: 3.5vh; left: 6vw; grid-template-columns: auto 1fr; gap: 10px; }
   .toss-ongoing-exit small { display: none; }
+  /* 모바일에서는 상태 카드가 하단 폭을 거의 차지해 키위가 겹친다. */
+  .toss-kiwi { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -287,6 +314,7 @@
   .toss-transition-overlay.is-reverse-covering { transform: translate3d(0, 0, 0); transition-duration: .02s; }
   .toss-ongoing-meta strong i,
   .toss-status-card header strong i,
+  .toss-kiwi img,
   .toss-loading i { animation: none; }
   .toss-loading i { left: 0; width: 62%; }
 }

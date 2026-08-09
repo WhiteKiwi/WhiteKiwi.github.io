@@ -5,7 +5,7 @@
 .bird-wordmark { font-size: 1rem; font-weight: 800; letter-spacing: -.08em; }
 .bird-lab-intro { display: grid; grid-template-columns: .55fr 1.35fr .7fr; gap: 4vw; align-items: end; padding: 9vw 2vw 7vw; }
 .bird-lab-intro > p:first-child { align-self: start; margin: 7px 0 0; color: #829087; font: 500 .62rem 'DM Mono', monospace; letter-spacing: .12em; }
-.bird-lab-intro h1 { margin: 0; font: 700 clamp(3.7rem, 6.8vw, 7.7rem)/.91 Manrope, sans-serif; letter-spacing: -.09em; }
+.bird-lab-intro h1 { margin: 0; font: 700 clamp(3.7rem, 6.8vw, 7.7rem)/.91 Manrope, 'Pretendard Variable', Pretendard, sans-serif; letter-spacing: -.09em; }
 .bird-intro-copy { max-width: 330px; margin: 0; color: #6c7871; font-size: .88rem; line-height: 1.8; letter-spacing: -.03em; }
 .bird-sheet-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
 .bird-sheet { position: relative; min-width: 0; padding: 24px; overflow: hidden; border-radius: 34px; background: #e8ebe6; }
@@ -18,7 +18,7 @@
 .sheet-pins span { position: absolute; display: grid; width: 28px; height: 28px; place-items: center; border-radius: 50%; background: rgba(25,31,28,.86); color: #fff; box-shadow: 0 3px 10px rgba(0,0,0,.15); font: 600 .58rem 'DM Mono', monospace; }
 .pin-a { top: 16px; left: 16px; }.pin-b { top: 16px; right: 16px; }.pin-c { bottom: 16px; left: 16px; }.pin-d { right: 16px; bottom: 16px; }
 .bird-sheet-copy { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: end; padding-top: 24px; }
-.bird-sheet-copy h2 { margin: 0; font: 700 clamp(2.2rem, 3.5vw, 4rem)/.93 Manrope, sans-serif; letter-spacing: -.075em; }
+.bird-sheet-copy h2 { margin: 0; font: 700 clamp(2.2rem, 3.5vw, 4rem)/.93 Manrope, 'Pretendard Variable', Pretendard, sans-serif; letter-spacing: -.075em; }
 .bird-sheet-copy p { max-width: 280px; justify-self: end; margin: 0; font-size: .73rem; line-height: 1.65; letter-spacing: -.025em; }
 .bird-lab-footer { display: grid; grid-template-columns: .4fr 1fr; gap: 4vw; margin-top: 18px; padding: 7vw 2vw; border-radius: 34px; background: #1d2722; color: #f4f7f2; }
 .bird-lab-footer span { color: #7e9186; font: 600 .62rem 'DM Mono', monospace; letter-spacing: .1em; }

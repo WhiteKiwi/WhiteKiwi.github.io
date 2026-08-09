@@ -358,3 +358,49 @@
   .terminal-entry-command,
   .terminal-entry-output > span { animation-duration: .01ms; animation-delay: 0s; }
 }
+
+/* ── idle stroll ──────────────────────────────────────── */
+/* 터미널이 한동안 조용하면 키위가 입력 줄 위 경계를 한 번 걸어 지나간다. */
+
+.contact-kiwi-stroll {
+  position: absolute;
+  z-index: 3;
+  /* 입력 줄과 명령 힌트 줄은 불투명하다. 그 위 경계선에 발이 닿도록 둔다. */
+  bottom: 92px;
+  left: -12%;
+  width: clamp(34px, 4.4vw, 52px);
+  aspect-ratio: 443.5 / 548;
+  pointer-events: none;
+  animation: contact-kiwi-cross 12s linear forwards;
+}
+
+.contact-kiwi-sprite {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: .5;
+  filter: grayscale(1) brightness(1.7);
+  animation: contact-kiwi-bob .58s steps(2) infinite;
+}
+
+.contact-kiwi-sprite img {
+  display: block;
+  width: 400%;
+  max-width: none;
+  height: 100%;
+  object-fit: fill;
+  animation: contact-kiwi-frames .58s steps(1) infinite;
+}
+
+@keyframes contact-kiwi-cross { to { left: 106%; } }
+@keyframes contact-kiwi-bob { 0% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+
+@keyframes contact-kiwi-frames {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-25%); }
+  50% { transform: translateX(-50%); }
+  75% { transform: translateX(-75%); }
+}
+
+@media (max-width: 720px) { .contact-kiwi-stroll { display: none; } }
+@media (prefers-reduced-motion: reduce) { .contact-kiwi-stroll { display: none; } }

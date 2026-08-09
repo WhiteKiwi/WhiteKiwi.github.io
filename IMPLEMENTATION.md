@@ -8,6 +8,7 @@
 - pnpm 패키지 관리
 - `mise.toml`로 Node.js와 pnpm 버전 고정
 - CSS/SVG를 기본 렌더링 수단으로 사용
+- 라틴은 Manrope과 DM Serif Display, DM Mono를 쓰고 한글은 Pretendard와 Noto Serif KR로 받는다. 두 라틴 폰트에 한글 글리프가 없어 운영체제 기본 폰트로 떨어지면 macOS와 Windows에서 인상이 달라진다. 폰트 스택은 라틴을 먼저 두고 한글을 뒤에 둬 글리프 단위로 나눠 받는다. 두 한글 폰트 모두 유니코드 구간별 subset을 제공하는 CDN에서 불러온다.
 - GSAP과 Three.js는 복잡한 스크롤 연출이나 3D 장면이 실제로 필요할 때 단계적으로 도입
 - GitHub Pages 정적 배포
 
@@ -37,13 +38,15 @@ pnpm build
 - `src/labs/EggLab.tsx`, `src/labs/GlassLab.tsx`, `src/labs/BirdLab.tsx`와 각 CSS — 시안 비교를 위해 남긴 개발 전용 실험 페이지
 - `src/labs/LabRouter.tsx` — `/labs/*` 경로를 실험 페이지로 연결하는 개발 전용 진입점
 - `src/PortfolioGuidelines.tsx`, `src/portfolio-guidelines.css` — 아이덴티티 원칙과 토큰을 보여주는 링크 전용 브랜드 가이드라인 페이지
+- `src/Resume.tsx`, `src/resume.css`, `src/resume-data.ts` — 인쇄까지 고려한 정리형 이력 페이지와 한국어·영문 콘텐츠
 - `index.html` — 메인 여정 `/`의 HTML 진입점
+- `resume/index.html` — `/resume/`의 HTML 진입점
 - `guidelines/index.html` — `/guidelines/`의 HTML 진입점
 - `src/App.tsx` — `window.location.pathname` 기준 진입점 분기
 
 ## Routing and entry points
 
-- 공개 페이지는 Vite 멀티페이지 빌드로 각자 실제 HTML 파일을 만든다. `rollupOptions.input`에 `index.html`과 `guidelines/index.html`을 등록한다.
+- 공개 페이지는 Vite 멀티페이지 빌드로 각자 실제 HTML 파일을 만든다. `rollupOptions.input`에 `index.html`, `resume/index.html`, `guidelines/index.html`을 등록한다.
 - 두 HTML은 같은 `src/main.tsx`를 로드하고, `src/App.tsx`가 `window.location.pathname`으로 화면을 고른다. 끝 슬래시 유무는 정규화해 `/guidelines`와 `/guidelines/`를 같게 처리한다.
 - 각 HTML은 자신의 `<title>`, description, canonical과 Open Graph·Twitter 메타를 직접 가진다. 공유 미리보기와 검색 색인이 페이지마다 달라야 하고, 뒤늦게 실행되는 스크립트로는 이를 만들 수 없다.
 - 실험 페이지는 `/labs/eggs`, `/labs/glass`, `/labs/birds`에 두고 `import.meta.env.DEV`가 참일 때만 분기와 `lazy(() => import(...))`가 존재한다. 프로덕션 빌드에서는 조건이 상수 `false`로 접히면서 실험 번들이 산출물에서 사라진다.
@@ -58,6 +61,7 @@ pnpm build
 - `#00`과 `#00-prologue`는 검토용 ready 상태로 이동하지 않는다. 해시를 제거하고 `/` 기본 진입과 같은 오프닝 상태로 시작한다.
 - 번호를 예약하지 않는 최종 화면용 `#contact` hash도 지원한다. 이후 07 이상 경력 챕터가 추가돼도 Contact 주소는 유지한다.
 - 유효한 hash로 처음 진입하면 오프닝·낙하 대기 상태를 건너뛰어 문서 스크롤 잠금을 즉시 해제한다.
+- 목표 위치로 이동할 때는 `scroll-behavior`를 잠시 `auto`로 바꾸고 스크롤한 뒤 되돌린다. `window.scrollTo`의 `behavior: 'auto'`는 즉시 이동이 아니라 CSS의 `scroll-behavior` 값을 따르므로, 전역 smooth가 켜진 상태에서는 긴 애니메이션이 시작되고 중간 챕터의 전환에 걸려 멈춘다.
 - 단순히 긴 track의 시작점에 맞추지 않고 각 챕터의 대표 문구가 보이는 내부 progress로 스크롤해 검토 시간을 줄인다.
 - 같은 문서에서 hash가 바뀌는 경우에도 새로고침 없이 목표 챕터로 이동하며 브라우저 history와 직접 공유 가능한 URL은 유지한다.
 - 알 수 없는 hash는 무시해 기존 기본 진입 경험에 영향을 주지 않는다.
@@ -70,6 +74,7 @@ pnpm build
 - 공식 색상인 Toss Blue `#0064FF`, Toss Gray `#202632`와 흰색, 큰 타이포와 제품 상태 UI를 중심으로 정체성을 만들고 공식 로고는 우측 상단에만 절제해 노출한다.
 - 06↔07 fixed 전환막은 장식용 외곽 원과 안쪽 원이 공유하는 중심을 CSS 변수로 계산하고 모든 `clip-path: circle()` 상태가 같은 좌표를 사용한다.
 - 07 메타의 원형 챕터 배지는 기존처럼 `07`을 표시한다. 장면 내부 우측 상단의 `toss-blue-object`는 워드마크가 없는 공식 심벌 PNG `img`를 기존 포인트 오브젝트와 비슷한 크기로 표시하며 별도 색상·필터·그림자·회전은 적용하지 않는다.
+- 좌하단에는 노트북 앞의 개발자 키위를 두고 같은 하단 행인 상태 카드와 진입 opacity·이동 거리를 공유해 함께 올라오게 한다. 모바일에서는 상태 카드가 하단 폭을 차지해 겹치므로 숨긴다.
 - 로딩 바와 live dot은 반복 ambient motion으로 현재진행형을 표현한다. 모션 감소 환경에서는 반복을 멈추고 정적인 진행 상태로 대체한다.
 - 06 후반의 텍스트형 `next-journey`는 제거한다. 하향 wheel·touch·스크롤 키가 장면의 정보가 해체되기 전 임계 progress를 넘으려 하면 입력을 소비하고, fixed Toss Blue 원형 cover를 시간 기반으로 끝까지 재생한다. wheel delta는 `deltaMode`를 픽셀 단위로 정규화하고 CSS 변수의 이전 frame 값이 아니라 현재 track geometry로 임계 통과를 계산한다. 전환을 시작하면 문서 scroll 위치를 경계 progress에 고정하고, 의도적인 장면 교체 때만 잠금 위치를 갱신하며, reveal 뒤 마지막 관성 입력이 끝날 때까지 이 위치를 유지한다. 완전히 가린 프레임에서 07의 대표 progress로 즉시 이동한 뒤 같은 fixed layer를 위로 퇴장시킨다. 상향 입력도 07 초입 임계점에서 소비하고 같은 fixed layer를 위에서 복귀시킨 뒤 06의 문구·카드·캐릭터가 함께 남아 있는 완성 progress로 위치를 교체하고 원형을 축소한다. 당근 progress bar는 양방향 전환 전체에서 track 상태 class로 숨기고, fixed layer가 제거된 다음 frame부터 짧게 복구한다. stage 내부의 스크롤형 entry curtain은 제거해 fixed layer와 같은 파란 화면이 중복 재생되지 않게 한다.
 - 05↔06, 06↔07, Contact↔07 전환은 document root의 같은 전환 소유권을 각각 `career`, `toss`, `contact`로 사용한다. 세 경계 모두 현재 track geometry로 임계를 판정하고, 전환이 소유권을 가진 동안 각 시퀀스가 의도한 위치를 scroll anchor로 유지한다. 다른 컴포넌트의 wheel·touch·스크롤 fallback은 다음 전환을 시작하지 않으며, reveal이 끝난 뒤에도 마지막 입력부터 짧은 무입력 시간이 확보될 때까지 소유권과 anchor를 유지한다. 완료·중단 시 자신이 가진 소유권, anchor와 scroll behavior를 복구한다.
@@ -89,7 +94,9 @@ pnpm build
 - GitHub, Blog, LinkedIn과 Instagram은 사용자 submit 이벤트 안에서 새 탭으로 열고 email은 `mailto:`로 연결한다. 화면의 명령 힌트 버튼도 같은 실행 경로를 직접 호출한다.
 - 터미널이 viewport의 절반 이상 들어오면 Contact 자동 조립과 함께 부팅 행을 순차적으로 보여준다. 강제 포커스로 모바일 키보드를 열지는 않으며 stage나 input을 직접 선택하면 입력할 수 있다.
 - 터미널 아래에는 Introduction과 같은 순서의 Email·GitHub·Blog·LinkedIn·Instagram 실제 앵커를 두고, 재시작은 `/`로 이동해 오프닝을 처음부터 실행한다.
-- 하단의 `Portfolio Guidelines` 링크는 `/guidelines/`로 이동하며 이것이 메인 여정의 유일한 Guidelines 진입점이다.
+- 하단에는 `RESUME`, `PORTFOLIO GUIDELINES`, `RUN AGAIN` 세 링크를 둔다. 각각 `/resume/`, `/guidelines/`, `/`로 이동하며 이것이 메인 여정의 유일한 진입점이다.
+- `whoami`는 neofetch처럼 아스키 키위를 왼쪽 고정 폭 열에, 정보를 오른쪽에 배치한다. 한글 전각 문자는 마지막 열에만 들어가 아스키 정렬을 흔들지 않는다.
+- 터미널이 준비된 뒤 일정 시간 입력이 없으면 키위 보행 스프라이트가 입력 줄 위 경계를 한 번 걸어 지나간다. 대기 시간은 개발 환경에서 10초, 배포에서 30초다. 입력·포인터 조작이 있으면 대기를 다시 시작하고, 모션 감소 환경과 좁은 화면에서는 실행하지 않는다.
 - 모바일에서는 헤드라인과 터미널을 세로로 재배치하고 히스토리 영역에 독립적인 세로 스크롤을 허용한다. 모션 감소 환경에서는 포인터 추적, 자동 타이핑 지연과 반복 커서 모션을 끈다.
 
 ### Portfolio Guidelines document
@@ -100,6 +107,26 @@ pnpm build
 - 색상 swatch는 실제 버튼으로 구현해 hex 값을 clipboard에 복사하고, 성공 여부를 텍스트 상태로 알린다.
 - 기존 favicon과 OG 이미지를 문서 안의 실제 배포 예시로 재사용하고 별도의 무거운 이미지 자산은 추가하지 않는다.
 - title은 `guidelines/index.html`이 직접 선언하므로 컴포넌트에서 다시 설정하지 않는다. theme color만 가이드라인 문맥에 맞게 바꾸고 이탈 시 복원한다.
+
+### Resume document
+
+- `src/Resume.tsx`와 `src/resume.css`, 내용은 `src/resume-data.ts`에 한국어·영문을 같은 구조로 나란히 둔다. 컴포넌트는 언어 키만 바꿔 같은 레이아웃을 렌더한다.
+- 언어 상태는 `localStorage`에 저장하고 `<html lang>`을 함께 바꾼다. 초기 언어는 저장값이 없으면 한국어다.
+- 진입 연출은 `IntersectionObserver`로 섹션이 보일 때 한 번만 실행하고, 이후 상태를 되돌리지 않는다. 스크롤 progress로 계속 보간하지 않으므로 읽는 도중 문장이 다시 사라지지 않는다.
+- 포인터 반응은 Contact 피날레와 같은 방식으로 `--glow-x`, `--glow-y` 커스텀 속성만 갱신하고 CSS가 나머지를 처리한다. 좌표 갱신에 긴 easing transition을 걸어 잔상처럼 따라오게 한다. `pointerType === 'touch'`는 무시한다.
+- 좌측 타임라인 레일은 현재 보이는 회사에 표시를 옮긴다. 레일 자체는 인쇄에서 제거한다.
+- 경력 길이와 회사별 재직 기간, 상단 갱신 스탬프는 고정 문자열이 아니라 조회 시점에 계산한다. 총 경력은 회사 구간을 월 단위로 합집합해 세므로 공백기는 빠지고 겹치는 달은 한 번만 센다.
+- 경력·학력·수상은 모두 시간 역순으로 나열한다.
+- 글로우는 본문 가독성이 우선이므로 Contact 피날레보다 옅게 두고, 잔상이 길게 남도록 좌표 전환을 더 느리게 한다.
+
+#### Print output
+
+- 인쇄는 별도 경로가 아니라 `@media print` 한 겹으로 처리한다. 화면용 마크업을 그대로 쓰고 조판만 교체한다.
+- 진입 연출로 생긴 `opacity`와 `transform` 상태를 인쇄에서 모두 초기값으로 강제한다. 이 재설정이 없으면 아직 보지 않은 섹션이 빈 칸으로 인쇄된다.
+- `@page`는 A4에 여백을 지정하고, 본문은 단일 컬럼으로 재조판한다. 회사 블록과 프로젝트 블록에 `break-inside: avoid`를 건다.
+- 배경 글로우, 그리드, 타임라인 레일, 언어 토글, 스크롤 안내처럼 화면 전용 요소는 인쇄에서 숨긴다.
+- 색은 잉크 기준으로 다시 정한다. 어두운 배경을 인쇄하지 않고 본문은 검정에 가까운 잉크, 강조만 Prompt Amber로 남긴다. `print-color-adjust`에 의존해 어두운 배경을 그대로 찍지 않는다.
+- 외부 링크는 URL을 함께 인쇄해 종이에서도 주소를 확인할 수 있게 한다.
 
 ### Egg state machine
 

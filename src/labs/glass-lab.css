@@ -5,7 +5,7 @@
 .glass-wordmark { font-size: 1rem; font-weight: 800; letter-spacing: -.08em; }
 .glass-lab-intro { display: grid; grid-template-columns: .55fr 1.45fr .7fr; gap: 4vw; align-items: end; padding: 10vw 2vw 8vw; }
 .glass-lab-intro > p:first-child { align-self: start; margin: 7px 0 0; color: #77829a; font: 500 .62rem 'DM Mono', monospace; letter-spacing: .12em; }
-.glass-lab-intro h1 { margin: 0; font: 700 clamp(4rem, 7.5vw, 8rem)/.9 Manrope, sans-serif; letter-spacing: -.09em; }
+.glass-lab-intro h1 { margin: 0; font: 700 clamp(4rem, 7.5vw, 8rem)/.9 Manrope, 'Pretendard Variable', Pretendard, sans-serif; letter-spacing: -.09em; }
 .glass-lab-intro h1 em { color: #a8f25a; font-style: normal; }
 .glass-intro-copy { max-width: 340px; margin: 0; color: #a8b0c2; font-size: .88rem; line-height: 1.8; letter-spacing: -.03em; }
 .glass-study-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 18px; }
@@ -16,7 +16,7 @@
 .glass-study-meta { position: relative; z-index: 4; display: flex; justify-content: space-between; color: rgba(255,255,255,.64); font: 600 .58rem 'DM Mono', monospace; letter-spacing: .09em; }
 .glass-study-visual { position: relative; z-index: 2; min-height: 0; flex: 1; display: grid; place-items: center; perspective: 1000px; }
 .glass-study-copy { position: relative; z-index: 4; display: grid; grid-template-columns: 1fr 1fr; gap: 26px; align-items: end; }
-.glass-study-copy h2 { margin: 0; color: #fff; font: 700 clamp(2.2rem, 3.6vw, 4.4rem)/.92 Manrope, sans-serif; letter-spacing: -.075em; }
+.glass-study-copy h2 { margin: 0; color: #fff; font: 700 clamp(2.2rem, 3.6vw, 4.4rem)/.92 Manrope, 'Pretendard Variable', Pretendard, sans-serif; letter-spacing: -.075em; }
 .glass-study-copy p { max-width: 290px; justify-self: end; margin: 0; color: rgba(244,246,255,.72); font-size: .73rem; line-height: 1.65; letter-spacing: -.025em; }
 
 .study-specimen { background: radial-gradient(circle at 52% 42%, #4e469e, #17172e 72%); }
