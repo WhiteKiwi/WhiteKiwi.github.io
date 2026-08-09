@@ -26,6 +26,7 @@ pnpm build
 - `src/education-journey.css` — CNSA 컬러, 학교 건물, 벚꽃, 학력 타이포와 반응형 표현
 - `src/CareerJourney.tsx` — 03 화이트블록부터 06 당근까지 네 경력 트랙의 공통 진행률과 회사별 장면 구조
 - `src/career-journey.css` — 배달 도로, 명품 쇼윈도, 성장하는 농장, 동네 지도와 회사별 반응형 모션
+- `src/ContactFinale.tsx`, `src/contact-finale.css` — 현재 여정 끝의 실제 터미널형 Contact 피날레와 스크롤·포인터 반응
 - `public/assets/characters/kiwi-walk-cycle.png` — 3-C를 기준으로 만든 4프레임 보행 스프라이트
 - `public/assets/characters/kiwi-graduate-walk-cycle.png` — 기본 보행 실루엣과 프레임 간격을 유지하면서 학사모를 일체화한 Education 전용 4프레임 스프라이트
 - `public/assets/characters/kiwi-*.png` — 배달부·패션 큐레이터·농부·동네 탐험가로 변주한 투명 배경 캐릭터
@@ -40,14 +41,28 @@ pnpm build
 ### Chapter deep links
 
 - 메인 여정은 `#00`부터 `#06`까지 짧은 hash와 `#01-intro` 같은 설명형 alias를 지원한다.
+- 번호를 예약하지 않는 최종 화면용 `#contact` hash도 지원한다. 이후 07 이상 경력 챕터가 추가돼도 Contact 주소는 유지한다.
 - 유효한 hash로 처음 진입하면 오프닝·낙하 대기 상태를 건너뛰어 문서 스크롤 잠금을 즉시 해제한다.
 - 단순히 긴 track의 시작점에 맞추지 않고 각 챕터의 대표 문구가 보이는 내부 progress로 스크롤해 검토 시간을 줄인다.
 - 같은 문서에서 hash가 바뀌는 경우에도 새로고침 없이 목표 챕터로 이동하며 브라우저 history와 직접 공유 가능한 URL은 유지한다.
 - 알 수 없는 hash는 무시해 기존 기본 진입 경험에 영향을 주지 않는다.
 
+### Contact finale
+
+- Career Journey 뒤에 독립 컴포넌트로 붙여, 이후 Toss·Toss Income이 구현되면 코드 순서만 옮길 수 있게 한다.
+- 긴 track 안의 sticky stage에서 스크롤 진행률을 계산해 프롬프트형 헤드라인과 터미널을 조립하고, 포인터 입력이 가능한 환경에서는 배경의 앰버 글로우만 느리게 따라오게 한다.
+- 터미널은 제어된 text input과 submit form으로 구현한다. `help`, `whoami`, `open linkedin`, `open instagram`, `open email`만 정상 실행하며 `open instargram`은 사용자 입력 호환 alias로 처리한다.
+- `cd`로 시작하는 입력은 `permission denied`, 그 밖의 미지원 입력은 `command not found` 결과를 추가한다. 명령과 출력은 시간순 entry로 렌더하고 `sessionStorage`에 저장하며 위·아래 화살표로 입력 명령 history를 탐색한다.
+- `open`만 입력하면 오류 대신 `usage: open <channel>`과 허용 채널을 보여주며, 미지원 `open <channel>`은 일반 명령 오류와 구분한 `unknown channel` 안내를 반환한다.
+- LinkedIn과 Instagram은 사용자 submit 이벤트 안에서 새 탭으로 열고 email은 `mailto:`로 연결한다. 화면의 명령 힌트 버튼도 같은 실행 경로를 직접 호출한다.
+- 터미널이 처음 viewport에 들어오면 부팅 행을 순차적으로 보여준다. 강제 포커스로 모바일 키보드를 열지는 않으며 stage나 input을 직접 선택하면 입력할 수 있다.
+- 터미널 아래에는 Introduction과 같은 순서의 Email·GitHub·Blog·LinkedIn·Instagram 실제 앵커를 두고, 재시작은 `#00`으로 이동해 기존 deep-link 처리 흐름을 재사용한다.
+- 하단의 `Portfolio Guidelines` 링크는 `?view=guidelines`로 이동하며 이것이 메인 여정의 유일한 Guidelines 진입점이다.
+- 모바일에서는 헤드라인과 터미널을 세로로 재배치하고 히스토리 영역에 독립적인 세로 스크롤을 허용한다. 모션 감소 환경에서는 포인터 추적, 자동 타이핑 지연과 반복 커서 모션을 끈다.
+
 ### Portfolio Guidelines document
 
-- `?view=guidelines` query에서만 lazy-load하며 메인 포트폴리오에는 링크를 추가하지 않는다.
+- `?view=guidelines` query에서만 lazy-load하며 메인 포트폴리오에서는 Contact 피날레 하단 링크 하나만 제공한다.
 - 넓은 화면에서는 고정 목차와 스크롤 문서를 나란히 두고, 모바일에서는 목차를 상단 가로 스크롤로 전환한다.
 - 섹션 anchor를 사용해 아이덴티티, 마크, 색상, 타이포, 보이스, 모션, 일러스트와 소셜 자산으로 바로 이동한다.
 - 색상 swatch는 실제 버튼으로 구현해 hex 값을 clipboard에 복사하고, 성공 여부를 텍스트 상태로 알린다.
