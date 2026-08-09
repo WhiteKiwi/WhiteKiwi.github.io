@@ -115,8 +115,10 @@ export default function EducationJourney({ active }: { active: boolean }) {
       element,
       petal: element.querySelector<HTMLElement>('.education-petal'),
       depthStrength: .74 + Number(element.dataset.petalDepth ?? 0) * .18,
-      spring: .026 + (index % 5) * .002,
-      drag: .86 - (index % 3) * .012,
+      fieldCoupling: .64 + ((index * 7) % 5) * .09,
+      crossflow: (((index * 13) % 9) - 4) / 4,
+      spring: .0045 + (index % 5) * .00055,
+      drag: .945 + (index % 4) * .004,
       x: 0,
       y: 0,
       velocityX: 0,
@@ -131,6 +133,7 @@ export default function EducationJourney({ active }: { active: boolean }) {
     let lastPointer: { x: number; y: number; time: number } | null = null
     const pointerPosition = { x: 0, y: 0 }
     const pointerVelocity = { x: 0, y: 0 }
+    const residualWind = { x: 0, y: 0 }
 
     const clamp = (value: number) => Math.min(Math.max(value, 0), 1)
     const reveal = (progress: number, start: number, end: number) => clamp((progress - start) / (end - start))
@@ -207,6 +210,8 @@ export default function EducationJourney({ active }: { active: boolean }) {
         motion.element.style.setProperty('--petal-wind-y', '0px')
         motion.element.style.setProperty('--petal-wind-turn', '0deg')
       })
+      residualWind.x = 0
+      residualWind.y = 0
     }
 
     const updatePetalWind = (timestamp: number) => {
@@ -215,7 +220,7 @@ export default function EducationJourney({ active }: { active: boolean }) {
       windFrameTime = timestamp
       const pointerIsActive = timestamp < pointerActiveUntil
       const pointerSpeed = Math.hypot(pointerVelocity.x, pointerVelocity.y)
-      const radius = Math.min(Math.max(window.innerWidth * .135, 170), 245)
+      const radius = Math.min(Math.max(window.innerWidth * .24, 300), 460)
       let totalEnergy = 0
 
       petalMotions.forEach((motion) => {
@@ -228,15 +233,21 @@ export default function EducationJourney({ active }: { active: boolean }) {
           const influence = smoothstep(proximity) * motion.depthStrength
 
           if (influence > .001) {
-            const cross = pointerVelocity.x * deltaY - pointerVelocity.y * deltaX
-            const side = Math.sign(cross)
-            const curlX = -pointerVelocity.y * side * .018
-            const curlY = pointerVelocity.x * side * .018
-            motion.velocityX += (pointerVelocity.x * .105 + curlX) * influence * step
-            motion.velocityY += (pointerVelocity.y * .072 + curlY) * influence * step
-            motion.turnVelocity += (side * pointerSpeed * .055 + pointerVelocity.x * .018) * influence * step
+            const crossflowX = -pointerVelocity.y * motion.crossflow * .008
+            const crossflowY = pointerVelocity.x * motion.crossflow * .008
+            motion.velocityX += (pointerVelocity.x * .068 + crossflowX) * influence * step
+            motion.velocityY += (pointerVelocity.y * .052 + crossflowY) * influence * step
+            motion.turnVelocity += (pointerVelocity.x * .016 + pointerVelocity.y * motion.crossflow * .012)
+              * influence * step
           }
         }
+
+        const fieldX = residualWind.x - residualWind.y * motion.crossflow * .06
+        const fieldY = residualWind.y + residualWind.x * motion.crossflow * .045
+        motion.velocityX += fieldX * .009 * motion.fieldCoupling * step
+        motion.velocityY += fieldY * .007 * motion.fieldCoupling * step
+        motion.turnVelocity += (residualWind.x * .004 + residualWind.y * motion.crossflow * .003)
+          * motion.fieldCoupling * step
 
         motion.velocityX += -motion.x * motion.spring * step
         motion.velocityY += -motion.y * (motion.spring * 1.08) * step
@@ -245,10 +256,10 @@ export default function EducationJourney({ active }: { active: boolean }) {
         const drag = Math.pow(motion.drag, step)
         motion.velocityX *= drag
         motion.velocityY *= drag
-        motion.turnVelocity *= Math.pow(motion.drag - .02, step)
-        motion.x = Math.min(Math.max(motion.x + motion.velocityX * step, -58), 58)
-        motion.y = Math.min(Math.max(motion.y + motion.velocityY * step, -34), 34)
-        motion.turn = Math.min(Math.max(motion.turn + motion.turnVelocity * step, -28), 28)
+        motion.turnVelocity *= Math.pow(motion.drag - .012, step)
+        motion.x = Math.min(Math.max(motion.x + motion.velocityX * step, -118), 118)
+        motion.y = Math.min(Math.max(motion.y + motion.velocityY * step, -72), 72)
+        motion.turn = Math.min(Math.max(motion.turn + motion.turnVelocity * step, -44), 44)
 
         motion.element.style.setProperty('--petal-wind-x', `${motion.x.toFixed(2)}px`)
         motion.element.style.setProperty('--petal-wind-y', `${motion.y.toFixed(2)}px`)
@@ -258,11 +269,19 @@ export default function EducationJourney({ active }: { active: boolean }) {
           + Math.abs(motion.turnVelocity) * 4
       })
 
-      const pointerDecay = Math.pow(pointerIsActive ? .94 : .72, step)
+      const pointerDecay = Math.pow(pointerIsActive ? .965 : .86, step)
       pointerVelocity.x *= pointerDecay
       pointerVelocity.y *= pointerDecay
+      const residualDecay = Math.pow(pointerIsActive ? .994 : .982, step)
+      residualWind.x *= residualDecay
+      residualWind.y *= residualDecay
 
-      if (pointerIsActive || totalEnergy > .06 || Math.hypot(pointerVelocity.x, pointerVelocity.y) > .03) {
+      if (
+        pointerIsActive
+        || totalEnergy > .06
+        || Math.hypot(pointerVelocity.x, pointerVelocity.y) > .03
+        || Math.hypot(residualWind.x, residualWind.y) > .008
+      ) {
         pointerAnimationFrame = window.requestAnimationFrame(updatePetalWind)
       } else {
         windFrameTime = 0
@@ -288,9 +307,12 @@ export default function EducationJourney({ active }: { active: boolean }) {
       const smoothing = 1 - Math.exp(-elapsed / 42)
       pointerVelocity.x += (rawVelocityX - pointerVelocity.x) * smoothing
       pointerVelocity.y += (rawVelocityY - pointerVelocity.y) * smoothing
+      const residualSmoothing = smoothing * .42
+      residualWind.x += (rawVelocityX * .3 - residualWind.x) * residualSmoothing
+      residualWind.y += (rawVelocityY * .24 - residualWind.y) * residualSmoothing
       pointerPosition.x = event.clientX
       pointerPosition.y = event.clientY
-      pointerActiveUntil = now + 105
+      pointerActiveUntil = now + 155
       lastPointer = { x: event.clientX, y: event.clientY, time: now }
 
       if (!pointerAnimationFrame) pointerAnimationFrame = window.requestAnimationFrame(updatePetalWind)
