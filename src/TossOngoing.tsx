@@ -31,7 +31,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
     const daangnTrack = document.querySelector<HTMLElement>('.career-daangn')
     const transitionOverlay = transitionOverlayRef.current
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const forwardGateProgress = .82
+    const forwardGateProgress = .76
     const reverseGateProgress = .14
 
     const update = () => {
@@ -114,7 +114,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
       const documentRoot = document.documentElement
       const previousScrollBehavior = documentRoot.style.scrollBehavior
       documentRoot.style.scrollBehavior = 'auto'
-      window.scrollTo(0, trackTop + distance * .8)
+      window.scrollTo(0, trackTop + distance * .7)
       documentRoot.style.scrollBehavior = previousScrollBehavior
       lastPageY = window.scrollY
     }
@@ -296,9 +296,9 @@ export default function TossOngoing({ active }: { active: boolean }) {
         </div>
 
         <header className="toss-ongoing-meta">
-          <span>VIVA REPUBLICA → TOSS INCOME</span>
+          <span>07 / VIVA REPUBLICA → TOSS INCOME</span>
           <span>2021.11 — NOW</span>
-          <strong><i aria-hidden="true" />07</strong>
+          <img src="/assets/brands/toss-logo-primary.png" alt="Toss" />
         </header>
 
         <div className="toss-ongoing-word" aria-hidden="true">ONGOING</div>
