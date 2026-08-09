@@ -172,7 +172,7 @@
 
 ## Career visual references
 
-- 2026-08-09 사용자가 추가로 제공한 테이킷 로고 이미지의 버터 옐로 배경, 짙은 네이비 로고·텍스트, 봉투 상단의 작은 코랄 포인트를 화이트블록 장면의 최종 팔레트 기준으로 삼는다. 기존 주문 전표·도로·바이크 구조는 유지하고 색만 재매핑한다: <https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo3vEIxgBpTac4W5lLbKTivf4ixYaSLzZQtHSvJ1WezKd2qx4BgqJ3OaE&s=10>
+- 2026-08-09 사용자가 추가로 제공한 테이킷 로고 이미지는 버터 옐로 배경, 짙은 네이비 로고·텍스트, 봉투 상단의 작은 코랄 포인트로 구성된다. 장면 전체를 이 팔레트로 바꾸자 큰 면적의 남색 도로가 지나치게 강해 이전 디자인이 더 좋아 보인다는 피드백이 있었다. 기존 크림·딥그린 무대를 복구하고 세 브랜드색은 주문 전표 안에만 제한한다: <https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo3vEIxgBpTac4W5lLbKTivf4ixYaSLzZQtHSvJ1WezKd2qx4BgqJ3OaE&s=10>
 - 에이임팩트는 공식 어레인지 소개의 직거래 주문처리 맥락을 따뜻한 밭과 시스템 레이어의 성장으로 표현한다. 농장은 주요 사용자군을 암시할 뿐 전체 사용자를 농부로 규정하지 않는다. 제품 정보 레이어에는 공식 사이트에서 확인한 민트 `#38a080`·`#3db087`, 화이트와 라이트 그레이 톤을 반영한다: <https://aimpact.kr/>
 - 당근은 공식 서비스 소개의 동네 연결 맥락과 오렌지 포인트를 지도·매물 핀·채팅으로 표현했다: <https://about.daangn.com/service/>
 - FETCHING은 현재 확인 가능한 공식 사이트가 없어 이력서의 명품 편집숍 크롤링 경험을 기준으로 버건디·블랙·브라스 쇼윈도 톤을 구성했다.
