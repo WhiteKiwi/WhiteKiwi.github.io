@@ -108,6 +108,7 @@ export default function EducationJourney({ active }: { active: boolean }) {
 
     const projectCards = Array.from(track.querySelectorAll<HTMLElement>('.education-project-card'))
     const stage = track.querySelector<HTMLElement>('.education-stage')
+    const petalLayer = track.querySelector<HTMLElement>('.education-petals')
     const petalWinds = Array.from(track.querySelectorAll<HTMLElement>('.education-petal-wind'))
     const pointerWindEnabled = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
       && window.matchMedia('(pointer: fine)').matches
@@ -117,7 +118,6 @@ export default function EducationJourney({ active }: { active: boolean }) {
       depthStrength: .74 + Number(element.dataset.petalDepth ?? 0) * .18,
       fieldCoupling: .64 + ((index * 7) % 5) * .09,
       crossflow: (((index * 13) % 9) - 4) / 4,
-      spring: .0045 + (index % 5) * .00055,
       drag: .945 + (index % 4) * .004,
       x: 0,
       y: 0,
@@ -198,20 +198,29 @@ export default function EducationJourney({ active }: { active: boolean }) {
       if (!animationFrame) animationFrame = window.requestAnimationFrame(updateProgress)
     }
 
+    const resetPetalMotion = (motion: (typeof petalMotions)[number]) => {
+      motion.x = 0
+      motion.y = 0
+      motion.velocityX = 0
+      motion.velocityY = 0
+      motion.turn = 0
+      motion.turnVelocity = 0
+      motion.element.style.setProperty('--petal-wind-x', '0px')
+      motion.element.style.setProperty('--petal-wind-y', '0px')
+      motion.element.style.setProperty('--petal-wind-turn', '0deg')
+    }
+
     const resetPetalTransforms = () => {
-      petalMotions.forEach((motion) => {
-        motion.x = 0
-        motion.y = 0
-        motion.velocityX = 0
-        motion.velocityY = 0
-        motion.turn = 0
-        motion.turnVelocity = 0
-        motion.element.style.setProperty('--petal-wind-x', '0px')
-        motion.element.style.setProperty('--petal-wind-y', '0px')
-        motion.element.style.setProperty('--petal-wind-turn', '0deg')
-      })
+      petalMotions.forEach(resetPetalMotion)
       residualWind.x = 0
       residualWind.y = 0
+    }
+
+    const onPetalIteration = (event: AnimationEvent) => {
+      const petal = event.target
+      if (!(petal instanceof HTMLElement) || !petal.classList.contains('education-petal')) return
+      const motion = petalMotions.find(({ element }) => element === petal.parentElement)
+      if (motion) resetPetalMotion(motion)
     }
 
     const updatePetalWind = (timestamp: number) => {
@@ -249,10 +258,6 @@ export default function EducationJourney({ active }: { active: boolean }) {
         motion.turnVelocity += (residualWind.x * .004 + residualWind.y * motion.crossflow * .003)
           * motion.fieldCoupling * step
 
-        motion.velocityX += -motion.x * motion.spring * step
-        motion.velocityY += -motion.y * (motion.spring * 1.08) * step
-        motion.turnVelocity += -motion.turn * (motion.spring * 1.18) * step
-
         const drag = Math.pow(motion.drag, step)
         motion.velocityX *= drag
         motion.velocityY *= drag
@@ -264,8 +269,7 @@ export default function EducationJourney({ active }: { active: boolean }) {
         motion.element.style.setProperty('--petal-wind-x', `${motion.x.toFixed(2)}px`)
         motion.element.style.setProperty('--petal-wind-y', `${motion.y.toFixed(2)}px`)
         motion.element.style.setProperty('--petal-wind-turn', `${motion.turn.toFixed(2)}deg`)
-        totalEnergy += Math.abs(motion.x) + Math.abs(motion.y) + Math.abs(motion.turn)
-          + Math.abs(motion.velocityX) * 4 + Math.abs(motion.velocityY) * 4
+        totalEnergy += Math.abs(motion.velocityX) * 4 + Math.abs(motion.velocityY) * 4
           + Math.abs(motion.turnVelocity) * 4
       })
 
@@ -285,7 +289,15 @@ export default function EducationJourney({ active }: { active: boolean }) {
         pointerAnimationFrame = window.requestAnimationFrame(updatePetalWind)
       } else {
         windFrameTime = 0
-        resetPetalTransforms()
+        pointerVelocity.x = 0
+        pointerVelocity.y = 0
+        residualWind.x = 0
+        residualWind.y = 0
+        petalMotions.forEach((motion) => {
+          motion.velocityX = 0
+          motion.velocityY = 0
+          motion.turnVelocity = 0
+        })
       }
     }
 
@@ -304,16 +316,23 @@ export default function EducationJourney({ active }: { active: boolean }) {
       const clampVelocity = (value: number) => Math.min(Math.max(value, -18), 18)
       const rawVelocityX = clampVelocity((event.clientX - lastPointer.x) * normalizeToFrame)
       const rawVelocityY = clampVelocity((event.clientY - lastPointer.y) * normalizeToFrame)
+      const rawSpeed = Math.hypot(rawVelocityX, rawVelocityY)
+      const strength = smoothstep(clamp((rawSpeed - .06) / 8.5))
+      const windVelocityX = rawVelocityX * strength
+      const windVelocityY = rawVelocityY * strength
       const smoothing = 1 - Math.exp(-elapsed / 42)
-      pointerVelocity.x += (rawVelocityX - pointerVelocity.x) * smoothing
-      pointerVelocity.y += (rawVelocityY - pointerVelocity.y) * smoothing
-      const residualSmoothing = smoothing * .42
-      residualWind.x += (rawVelocityX * .3 - residualWind.x) * residualSmoothing
-      residualWind.y += (rawVelocityY * .24 - residualWind.y) * residualSmoothing
       pointerPosition.x = event.clientX
       pointerPosition.y = event.clientY
-      pointerActiveUntil = now + 155
       lastPointer = { x: event.clientX, y: event.clientY, time: now }
+
+      if (strength <= .0005) return
+
+      pointerVelocity.x += (windVelocityX - pointerVelocity.x) * smoothing
+      pointerVelocity.y += (windVelocityY - pointerVelocity.y) * smoothing
+      const residualSmoothing = smoothing * .42
+      residualWind.x += (windVelocityX * .3 - residualWind.x) * residualSmoothing
+      residualWind.y += (windVelocityY * .24 - residualWind.y) * residualSmoothing
+      pointerActiveUntil = now + 75
 
       if (!pointerAnimationFrame) pointerAnimationFrame = window.requestAnimationFrame(updatePetalWind)
     }
@@ -329,6 +348,7 @@ export default function EducationJourney({ active }: { active: boolean }) {
     window.addEventListener('resize', requestUpdate)
     stage?.addEventListener('pointermove', onPointerMove, { passive: true })
     stage?.addEventListener('pointerleave', resetPetalWind)
+    petalLayer?.addEventListener('animationiteration', onPetalIteration)
     return () => {
       if (animationFrame) window.cancelAnimationFrame(animationFrame)
       if (pointerAnimationFrame) window.cancelAnimationFrame(pointerAnimationFrame)
@@ -337,6 +357,7 @@ export default function EducationJourney({ active }: { active: boolean }) {
       window.removeEventListener('resize', requestUpdate)
       stage?.removeEventListener('pointermove', onPointerMove)
       stage?.removeEventListener('pointerleave', resetPetalWind)
+      petalLayer?.removeEventListener('animationiteration', onPetalIteration)
     }
   }, [active])
 
