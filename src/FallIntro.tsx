@@ -147,11 +147,12 @@ function WalkingIntroduction({
           <span className="intro-ground-line" />
         </div>
 
-        <div className="intro-copy">
-          <p className="intro-line intro-hello">안녕하세요</p>
-          <p className="intro-line intro-role"><strong>Node.js</strong>{' '}Developer</p>
-          <p className="intro-line intro-name">장지훈입니다</p>
-        </div>
+        {/* 세 줄이 모여 한 문장이므로 컨테이너를 h1로 둔다. 검색엔진이 읽는 문서의 제목이다. */}
+        <h1 className="intro-copy">
+          <span className="intro-line intro-hello">안녕하세요</span>{' '}
+          <span className="intro-line intro-role"><strong>Node.js</strong>{' '}Developer</span>{' '}
+          <span className="intro-line intro-name">장지훈입니다</span>
+        </h1>
 
         <div className="kiwi-walk-path" aria-hidden="true">
           <div className="kiwi-walk-shadow" />

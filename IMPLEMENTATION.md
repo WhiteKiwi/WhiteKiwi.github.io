@@ -88,6 +88,8 @@ pnpm build
 - 07→Contact 하향 입력이 Toss 후반 임계 progress를 넘으려 하면 입력을 소비하고 Contact 시작점까지 약 650ms 동안 자동 스크롤한다. Contact 초입의 상향 입력은 같은 방식으로 07의 대표 progress로 돌아가며, 이동 중 추가 wheel·touch·스크롤 키를 잠근다.
 - 포인터 입력이 가능한 환경에서는 자동 조립과 별개로 배경의 앰버 글로우만 느리게 따라오게 한다.
 - 헤드라인 위의 프롬프트 줄은 문구 없이 `>`와 깜빡이는 커서만 둔다. 파비콘·Guidelines의 프롬프트 마크와 같은 기호다. 의미는 헤드라인이 가지므로 접근성 트리에서는 제외한다.
+- 터미널 안에서 시작한 wheel·touch 제스처는 장면 전환을 만들지 않는다. 터미널은 자체 세로 스크롤과 가로 스크롤을 가진 위젯이라, 히스토리를 위로 끌거나 명령 힌트를 옆으로 넘기는 동작이 Contact↔07 전환으로 소비되면 조작 자체가 불가능해진다. 스크롤 가능한 영역에는 `overscroll-behavior: contain`으로 페이지 연쇄 스크롤도 막는다.
+- 터미널 밖의 touch 제스처도 세로 성분이 가로 성분보다 클 때만 전환으로 인정한다.
 - 터미널은 제어된 text input과 submit form으로 구현한다. 공개 명령은 `help`, `whoami`, `open resume`, `open github`, `open blog`, `open linkedin`, `open instagram`, `open email`, `clear`이며 `open instargram`은 사용자 입력 호환 alias로 처리한다.
 - 숨은 `iloveyou` 분기는 `I love you too` 한 줄을 반환하지만 공개 명령 배열에는 넣지 않아 help 출력과 shortcut 렌더에서 제외한다.
 - `cd`로 시작하는 입력은 `permission denied`, 그 밖의 미지원 입력은 `command not found` 결과를 추가한다. 명령과 출력은 시간순 entry로 렌더하고 `sessionStorage`에 저장하며 위·아래 화살표로 입력 명령 history를 탐색한다.
@@ -98,6 +100,9 @@ pnpm build
 - 터미널 아래에는 Introduction과 같은 순서의 Email·GitHub·Blog·LinkedIn·Instagram 실제 앵커를 두고, 재시작은 `/`로 이동해 오프닝을 처음부터 실행한다.
 - 하단에는 `RESUME`, `PORTFOLIO GUIDELINES`, `RUN AGAIN` 세 링크를 둔다. 각각 `/resume/`, `/guidelines/`, `/`로 이동하며 이것이 메인 여정의 유일한 진입점이다.
 - `whoami`는 neofetch처럼 아스키 키위를 왼쪽 고정 폭 열에, 정보를 오른쪽에 배치한다. 한글 전각 문자는 마지막 열에만 들어가 아스키 정렬을 흔들지 않는다.
+- 아스키 키위는 손으로 그리지 않고 `kiwi-walk-cycle.png`의 첫 프레임을 알파와 밝기 기준으로 변환한 것이다. 실제 캐릭터에서 나온 실루엣이라 손으로 그린 것보다 키위로 읽힌다.
+- 760px 미만에서는 두 열이 들어가지 않으므로 더 좁은 아트를 위에 쌓고 정보를 아래에 둔다. 프롬프트 줄이 이미 `visitor@portfolio %`를 보여주므로 출력에 같은 문자열을 반복하지 않는다.
+- `help`는 명령마다 영문 한 줄 설명을 함께 보여준다. 명령 이름을 고정 폭으로 채워 설명 열을 맞춘다.
 - `command not found`가 두 번째로 발생할 때부터 키위가 터미널 창 뒤에서 상단 테두리 위로 빼꼼 올라왔다 내려간다. 터미널보다 낮은 z-index로 두고 좌상단 모서리 안쪽에 배치해 평소에는 창에 완전히 가려진다. 터미널의 top·right·width를 CSS 변수로 공유해 브레이크포인트가 바뀌어도 같은 모서리를 따라간다. 700px 이하에서는 헤드라인이 터미널 바로 위를 차지하므로 표시하지 않는다. 첫 오답을 건너뛰는 이유는 한 번 만에 나오면 우연이 아니라 기능처럼 읽혀 발견하는 재미가 줄기 때문이다. 같은 오답이 반복돼도 다시 재생되도록 key를 바꿔 다시 마운트한다.
 - 빼꼼 키위는 재생 중에만 DOM에 존재하고 애니메이션이 끝나면 제거한다. 상시 존재하면 06↔07↔Contact 전환에서 터미널이 진입 transform으로 비켜나거나 아직 나타나지 않은 프레임에 가려줄 창이 없어 그대로 드러난다. 같은 이유로 터미널과 같은 `--contact-progress` 진입 게이트를 opacity에 공유한다.
 - 터미널이 준비된 뒤 일정 시간 입력이 없으면 키위 보행 스프라이트가 입력 줄 위 경계를 한 번 걸어 지나간다. 대기 시간은 개발 환경에서 10초, 배포에서 30초다. 입력·포인터 조작이 있으면 대기를 다시 시작하고, 모션 감소 환경과 좁은 화면에서는 실행하지 않는다.
@@ -252,6 +257,9 @@ pnpm build
 - 생성 이미지와 큰 실험용 번들은 실제 메인 경로에 필요한 범위만 로드한다.
 
 ## Search and social metadata
+
+- 메인 여정의 소개 문구 세 줄은 한 문장이므로 컨테이너를 `h1`으로 둔다. 이전에는 문서 전체에 `h1`이 없었다.
+- 메인과 `/resume/`에 JSON-LD를 넣는다. 메인은 `Person`, 이력서는 `ProfilePage`가 같은 `Person`을 `mainEntity`로 감싼다.
 
 - 메인 여정의 브라우저 title과 Open Graph·Twitter Card title은 OG 이미지의 명령어 모티프와 같은 `$ whoami`를 사용한다.
 - canonical URL과 `og:url`은 HTTPS custom domain을 기준으로 하되 각 HTML이 자신의 주소를 선언한다. 메인은 `https://portfolio.whitekiwi.link/`, 가이드라인은 `https://portfolio.whitekiwi.link/guidelines/`다.

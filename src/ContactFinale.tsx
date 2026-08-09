@@ -28,25 +28,64 @@ const instagramUrl = 'https://www.instagram.com/whitekiwi_'
 const emailUrl = 'mailto:jh145478@gmail.com'
 const resumeUrl = '/resume/'
 
-const availableCommands = ['help', 'whoami', 'open resume', 'open github', 'open blog', 'open linkedin', 'open instagram', 'open email', 'clear']
+const commandList = [
+  ['help', 'Show this list'],
+  ['whoami', 'Print who is behind this portfolio'],
+  ['open resume', 'Open the readable resume page'],
+  ['open github', 'Open the GitHub profile'],
+  ['open blog', 'Open the blog'],
+  ['open linkedin', 'Open the LinkedIn profile'],
+  ['open instagram', 'Open the Instagram profile'],
+  ['open email', 'Start an email'],
+  ['clear', "Clear the screen and this tab's history"],
+] as const
+
+const availableCommands = commandList.map(([command]) => command)
 
 /**
  * `whoami`는 neofetch처럼 아스키 키위를 왼쪽에, 정보를 오른쪽에 둔다.
- * 아스키 열은 고정 폭이라 오른쪽 칸의 한글 전각 문자가 정렬을 흔들지 않는다.
+ * 아트는 `kiwi-walk-cycle.png`의 첫 프레임을 알파와 밝기 기준으로 변환한 것이다.
+ * 좁은 화면에서는 두 열이 들어가지 않아 아트를 위로 쌓는다.
  */
-const kiwiArt = [
-  '     ___       ',
-  '   .`   `.     ',
-  '  /  o    `-.._',
-  ' |             `>',
-  ' |            _.`',
-  '  \\          /  ',
-  '   `.______.`   ',
-  '     ||  ||     ',
+const kiwiArtWide = [
+  '          .+*##*=.',
+  '         .####%###:',
+  '         +##########*=:',
+  '         #######*  :-=*#=',
+  '        :%######+      .=+',
+  '      .+########%',
+  '     -###########-',
+  '    :%###########+',
+  '    #############=',
+  '   .%############',
+  '   :%##########*',
+  '    %########+:',
+  '    -=*%==-.#.',
+  '     -+     .#',
+  '    +-       :*',
+  '  .*:         -+',
+  '::#.           =+  .:.',
+  ':**=:           ***##.',
+  ' -#++:         :=::::',
+]
+
+const kiwiArtNarrow = [
+  '       =*##+.',
+  '      =#####*=-.',
+  '      *####+ .-=*:',
+  '     =#####+     :',
+  '   :########',
+  '   #########.',
+  '  -########+',
+  '  -#######-',
+  '   =**=-+',
+  '   --    +',
+  '  +.     .+',
+  '-*.       .+:--',
+  ' **=       =--:',
 ]
 
 const kiwiFacts = [
-  '-----------------',
   'name     Jihoon Jang / 장지훈',
   'role     Node.js Developer',
   'since    2020.02',
@@ -56,10 +95,26 @@ const kiwiFacts = [
   'resume   /resume/  (open resume)',
 ]
 
-const kiwiFetch = kiwiArt.map((art, index) => ({
-  text: `${art}  ${kiwiFacts[index] ?? ''}`.trimEnd(),
-  tone: index === 0 ? ('accent' as const) : ('default' as const),
-}))
+const buildWhoami = (): TerminalLine[] => {
+  const narrow = window.innerWidth < 760
+  const art = narrow ? kiwiArtNarrow : kiwiArtWide
+  const artWidth = art.reduce((max, line) => Math.max(max, line.length), 0)
+
+  if (narrow) {
+    return [
+      ...art.map((line) => ({ text: line, tone: 'accent' as const })),
+      { text: '', tone: 'default' as const },
+      ...kiwiFacts.map((fact) => ({ text: fact, tone: 'default' as const })),
+    ]
+  }
+
+  // 정보 블록을 아트 높이의 가운데에 맞춘다.
+  const offset = Math.max(0, Math.floor((art.length - kiwiFacts.length) / 2))
+  return art.map((line, index) => {
+    const fact = kiwiFacts[index - offset] ?? ''
+    return { text: `${line.padEnd(artWidth)}   ${fact}`.trimEnd(), tone: 'default' as const }
+  })
+}
 
 /** 로컬에서는 짧게 잡아 확인하기 쉽게 한다. */
 const IDLE_STROLL_DELAY = import.meta.env.DEV ? 10_000 : 30_000
@@ -146,6 +201,11 @@ export default function ContactFinale({ active }: { active: boolean }) {
     let previousScrollBehavior: string | null = null
     let lastPageY = window.scrollY
     let touchStartY: number | null = null
+    let touchStartX: number | null = null
+    let touchFromTerminal = false
+    /** 터미널은 자체 스크롤과 가로 스크롤을 가진 위젯이다. 그 안의 제스처를 장면 전환으로 소비하지 않는다. */
+    const insideTerminal = (target: EventTarget | null) =>
+      Boolean((target as Element | null)?.closest?.('.contact-terminal'))
     const clamp = (value: number) => Math.min(Math.max(value, 0), 1)
     const easeInOut = (value: number) => value < .5
       ? 4 * value * value * value
@@ -291,8 +351,7 @@ export default function ContactFinale({ active }: { active: boolean }) {
         snapToContact()
         return
       }
-      const terminalLog = (event.target as Element | null)?.closest('.contact-terminal-log') as HTMLElement | null
-      if (deltaY < 0 && terminalLog && terminalLog.scrollTop > 0) return
+      if (deltaY < 0 && insideTerminal(event.target)) return
       if (deltaY < 0 && contactIsActive()) {
         event.preventDefault()
         snapToToss()
@@ -300,6 +359,8 @@ export default function ContactFinale({ active }: { active: boolean }) {
     }
     const onTouchStart = (event: TouchEvent) => {
       touchStartY = event.touches[0]?.clientY ?? null
+      touchStartX = event.touches[0]?.clientX ?? null
+      touchFromTerminal = insideTerminal(event.target)
     }
     const onTouchMove = (event: TouchEvent) => {
       if (snapLocked) {
@@ -307,15 +368,21 @@ export default function ContactFinale({ active }: { active: boolean }) {
         event.preventDefault()
         return
       }
+      if (touchFromTerminal) return
+
       const currentY = event.touches[0]?.clientY
-      const downwardDelta = touchStartY !== null && currentY !== undefined ? touchStartY - currentY : 0
-      if (downwardDelta > 8 && tossWouldCrossContactGate(downwardDelta)) {
+      const currentX = event.touches[0]?.clientX
+      const dy = touchStartY !== null && currentY !== undefined ? currentY - touchStartY : 0
+      const dx = touchStartX !== null && currentX !== undefined ? currentX - touchStartX : 0
+      // 가로로 쓸어넘기려는 제스처에 섞인 세로 성분을 전환으로 오해하지 않는다.
+      if (Math.abs(dy) <= Math.abs(dx)) return
+
+      if (-dy > 8 && tossWouldCrossContactGate(-dy)) {
         event.preventDefault()
         snapToContact()
         return
       }
-      const upwardDelta = touchStartY !== null && currentY !== undefined ? currentY - touchStartY : 0
-      if (upwardDelta > 8 && contactIsActive()) {
+      if (dy > 8 && contactIsActive()) {
         event.preventDefault()
         snapToToss()
       }
@@ -445,14 +512,14 @@ export default function ContactFinale({ active }: { active: boolean }) {
     if (command === 'help') {
       lines = [
         { text: 'AVAILABLE COMMANDS', tone: 'accent' },
-        ...availableCommands.map((item) => ({ text: `  ${item}`, tone: 'default' as const })),
+        ...commandList.map(([command, description]) => ({
+          text: `  ${command.padEnd(15)}${description}`,
+          tone: 'default' as const,
+        })),
         { text: 'Use ↑ and ↓ to revisit command history.', tone: 'muted' },
       ]
     } else if (command === 'whoami') {
-      lines = [
-        { text: 'visitor@portfolio', tone: 'accent' },
-        ...kiwiFetch,
-      ]
+      lines = buildWhoami()
     } else if (command === 'iloveyou') {
       lines = [{ text: 'I love you too', tone: 'accent' }]
     } else if (command === 'open') {

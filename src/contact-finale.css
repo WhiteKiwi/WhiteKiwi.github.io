@@ -188,6 +188,8 @@
   position: relative;
   z-index: 2;
   overflow: auto;
+  /* 끝에 닿아도 페이지로 스크롤이 이어지지 않게 한다. */
+  overscroll-behavior: contain;
   padding: 22px 24px 14px;
   scrollbar-width: thin;
   scrollbar-color: rgba(232, 173, 69, .42) transparent;
@@ -251,6 +253,7 @@
   padding: 9px 12px;
   gap: 6px;
   overflow-x: auto;
+  overscroll-behavior: contain;
   border-top: 1px solid rgba(246, 240, 223, .07);
   background: rgba(14, 16, 15, .98);
   scrollbar-width: none;
