@@ -197,8 +197,9 @@ export default function FallIntro() {
   useEffect(() => {
     if (phase !== 'idle') return
 
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let touchY = 0
-    const beginDescent = () => setPhase((current) => current === 'idle' ? 'descending' : current)
+    const beginDescent = () => setPhase((current) => current === 'idle' ? (reducedMotion ? 'landed' : 'descending') : current)
     const onWheel = (event: WheelEvent) => {
       if (event.deltaY > 4) beginDescent()
     }
@@ -227,7 +228,8 @@ export default function FallIntro() {
 
   useEffect(() => {
     if (phase !== 'landed') return
-    const readyTimer = window.setTimeout(() => setPhase('ready'), 2350)
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const readyTimer = window.setTimeout(() => setPhase('ready'), reducedMotion ? 80 : 2350)
     return () => window.clearTimeout(readyTimer)
   }, [phase])
 

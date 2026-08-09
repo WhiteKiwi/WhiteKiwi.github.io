@@ -132,7 +132,7 @@ function AimpactChapter({ trackRef }: { trackRef: RefObject<HTMLElement | null> 
         </article>
         <div className="farm-field">
           {Array.from({ length: 10 }, (_, index) => index === 4 ? (
-            <button className="crop crop-1 crop-transition-source" type="button" style={{ '--index': index } as IndexedStyle} aria-label="당근을 눌러 다음 경력으로 이동" aria-describedby="carrot-action-guide" key={index}>
+            <button className="crop crop-1 crop-transition-source" type="button" style={{ '--index': index } as IndexedStyle} aria-label="당근을 눌러 다음 경력으로 이동" aria-describedby="carrot-action-guide" disabled key={index}>
               <i /><b /><em />
             </button>
           ) : (
@@ -262,6 +262,8 @@ export default function CareerJourney({ active }: { active: boolean }) {
       } else if (index === 2) {
         const seed = 1 - smoothstep(reveal(progress, .01, .15))
         const grow = smoothstep(reveal(progress, .23, .68))
+        const transitionButton = track.querySelector<HTMLButtonElement>('.crop-transition-source')
+        if (transitionButton) transitionButton.disabled = progress < .64
         track.style.setProperty('--seed-opacity', String(seed))
         track.style.setProperty('--seed-turn', `${reveal(progress, .01, .15) * -16}deg`)
         track.style.setProperty('--crop-grow', String(grow))

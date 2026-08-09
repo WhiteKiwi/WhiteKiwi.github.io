@@ -136,6 +136,8 @@ function ThreeEgg() {
     let pointerX = 0
     let pointerY = 0
     let frame = 0
+    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let reducedMotion = motionPreference.matches
     const onPointerMove = (event: PointerEvent) => {
       const bounds = mount.getBoundingClientRect()
       pointerX = (event.clientX - bounds.left) / bounds.width - 0.5
@@ -149,6 +151,7 @@ function ThreeEgg() {
       renderer.setSize(width, height, false)
       camera.aspect = width / Math.max(height, 1)
       camera.updateProjectionMatrix()
+      if (reducedMotion) renderer.render(scene, camera)
     }
     const observer = new ResizeObserver(resize)
     observer.observe(mount)
@@ -156,6 +159,12 @@ function ThreeEgg() {
 
     const clock = new THREE.Clock()
     const render = () => {
+      frame = 0
+      if (reducedMotion) {
+        egg.position.y = 0
+        renderer.render(scene, camera)
+        return
+      }
       const time = clock.getElapsedTime()
       egg.rotation.y += (pointerX * 0.55 - egg.rotation.y) * 0.04
       egg.rotation.x += (-pointerY * 0.3 - egg.rotation.x) * 0.04
@@ -163,10 +172,19 @@ function ThreeEgg() {
       renderer.render(scene, camera)
       frame = requestAnimationFrame(render)
     }
+    const onMotionPreferenceChange = () => {
+      reducedMotion = motionPreference.matches
+      if (frame) cancelAnimationFrame(frame)
+      frame = 0
+      if (!reducedMotion) clock.start()
+      render()
+    }
+    motionPreference.addEventListener('change', onMotionPreferenceChange)
     render()
 
     return () => {
       cancelAnimationFrame(frame)
+      motionPreference.removeEventListener('change', onMotionPreferenceChange)
       observer.disconnect()
       mount.removeEventListener('pointermove', onPointerMove)
       geometry.dispose()

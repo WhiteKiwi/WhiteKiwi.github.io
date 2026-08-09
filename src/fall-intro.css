@@ -191,4 +191,21 @@
 }
 
 @media (max-width: 700px) { .fall-intro { min-height: 560px; }.egg-scroll-rig { width: clamp(160px, 46vw, 220px); }.glass-cloud { width: 190px; height: 76px; }.glass-cloud span { width: 68px; height: 68px; }.glass-cloud i { left: 79px; width: 82px; height: 82px; }.glass-cloud b { width: 52px; height: 52px; }.cloud-near { scale: 1.05; }.sky-caustic { min-width: 320px; }.glass-ridges { right: -22%; left: -22%; }.ground-impact-site { width: 390px; }.walking-intro-track { height: 460svh; }.walking-intro { min-height: 560px; }.walking-intro::before { top: 3.5vh; left: 6vw; }.walking-intro::after { right: 6vw; bottom: 3.5vh; left: 6vw; }.intro-copy::after { top: 24vh; right: 6vw; left: 6vw; }.intro-hello, .intro-name { font-size: clamp(3rem, 14vw, 4.2rem); }.intro-role { font-size: clamp(2.5rem, 11vw, 3.2rem); }.intro-sun { top: 8%; right: -8%; opacity: .5; }.intro-cloud-two { display: none; }.intro-hill { width: 100vw; }.intro-hill-back { left: -38%; }.intro-hill-front { right: -35%; }.kiwi-walk-path { bottom: 22%; width: clamp(128px, 33vw, 165px); }.intro-scroll-cue { bottom: 9.5vh; }.intro-scroll-cue > small { font-size: .62rem; }.intro-contact { right: 6vw; bottom: 7vh; left: 6vw; grid-template-columns: 1fr; gap: 12px; }.intro-contact-primary { gap: 18px; }.intro-contact-primary > a { font-size: .72rem; }.intro-contact-links { gap: 11px 18px; justify-content: flex-start; flex-wrap: wrap; }.intro-contact-links a { font-size: .56rem; } }
-@media (prefers-reduced-motion: reduce) { .glass-cloud, .fall-streaks i, .fall-particles i, .foreground-rush span, .falling-egg-rig, .falling-egg, .egg-wake i, .air-ring, .sky-depth, .sky-caustic { animation-duration: 12s !important; }.intro-scroll-cue > i::before, .intro-scroll-cue > i b { animation: none; }.intro-scroll-cue { transition-duration: .2s; } }
+@media (prefers-reduced-motion: reduce) {
+  .fall-intro,
+  .glass-cloud,
+  .fall-streaks i,
+  .fall-particles i,
+  .foreground-rush span,
+  .falling-egg-rig,
+  .falling-egg,
+  .egg-wake i,
+  .air-ring,
+  .sky-depth,
+  .sky-caustic,
+  .intro-scroll-cue > i::before,
+  .intro-scroll-cue > i b { animation: none !important; }
+  .has-descended .egg-scroll-rig { animation-duration: .01ms !important; }
+  .is-landed .shell-crack { opacity: 1; stroke-dashoffset: 0; animation: none !important; }
+  .intro-scroll-cue { transition-duration: .2s; }
+}

@@ -365,6 +365,7 @@
 button.crop { appearance: none; padding: 0; border: 0; color: inherit; font: inherit; background: transparent; }
 .crop-transition-source { z-index: 3; cursor: pointer; transform: scaleY(max(.03, calc(var(--crop-grow) - var(--index) * .035))) scale(1); transform-origin: 50% 116%; will-change: transform; }
 .crop-transition-source::after { transform-origin: 50% 72%; }
+.crop-transition-source:disabled { cursor: default; }
 .crop-transition-source:focus-visible { outline: 3px solid #fff; outline-offset: 8px; filter: drop-shadow(0 0 8px rgba(56,160,128,.72)); }
 .career-aimpact.is-carrot-departing,
 .career-aimpact.is-carrot-return-cover,

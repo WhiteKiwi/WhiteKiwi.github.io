@@ -183,3 +183,4 @@
 - Route 53의 `portfolio.whitekiwi.link` CNAME은 `whitekiwi.github.io`를 가리키고, 배포 workflow도 `CNAME` 파일을 보존한다.
 - GitHub Pages 커스텀 도메인은 등록됐지만 2026-08-09 현재 전용 TLS 인증서 발급을 기다리고 있다. 발급 전 `*.github.io` 인증서 경고를 우회하지 않는다.
 - 2026-08-09 GitHub Pages DNS check가 성공한 뒤 `portfolio.whitekiwi.link` 전용 Let's Encrypt 인증서가 배포됐다. 실제 HTTPS 요청은 200을 반환하고 Pages API의 `https_enforced`도 활성화됐다.
+- 2026-08-09 리뷰에서 모션 감소 프롤로그가 오히려 12초로 늘어나는 CSS 우선순위 문제, 활성 전 당근 버튼의 키보드 포커스, 쓰기 권한 workflow의 변경 가능한 action 태그, EggLab WebGL의 계속되는 렌더 루프가 지적됐다. 네 항목 모두 실제 동작 또는 공급망 방어에 유효해 픽하며, 메인 접근성 문제를 우선하고 EggLab은 공개 보조 뷰의 저비용 보완으로 함께 처리한다.
