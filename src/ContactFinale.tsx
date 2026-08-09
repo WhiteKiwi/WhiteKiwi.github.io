@@ -174,6 +174,8 @@ export default function ContactFinale({ active }: { active: boolean }) {
         { text: 'Building useful products and dependable systems.', tone: 'muted' },
         { text: 'Seoul, Korea · KST', tone: 'muted' },
       ]
+    } else if (command === 'iloveyou') {
+      lines = [{ text: 'I love you too', tone: 'accent' }]
     } else if (command === 'open') {
       lines = [
         { text: 'usage: open <channel>', tone: 'accent' },
