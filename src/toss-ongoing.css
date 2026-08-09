@@ -120,7 +120,7 @@
   right: 4vw;
   left: 4vw;
   display: grid;
-  grid-template-columns: 1fr auto clamp(92px, 7vw, 118px);
+  grid-template-columns: 1fr auto 42px;
   align-items: center;
   gap: 28px;
   color: #6b7684;
@@ -128,7 +128,25 @@
   letter-spacing: .13em;
 }
 
-.toss-ongoing-meta > img { display: block; width: 100%; height: auto; }
+.toss-ongoing-meta strong {
+  display: grid;
+  width: 36px;
+  aspect-ratio: 1;
+  place-items: center;
+  color: #fff;
+  background: #0064ff;
+  border-radius: 50%;
+  font-size: .6rem;
+}
+
+.toss-ongoing-meta strong i {
+  position: absolute;
+  width: 36px;
+  aspect-ratio: 1;
+  border: 1px solid rgba(0, 100, 255, .28);
+  border-radius: 50%;
+  animation: toss-live-ring 2s cubic-bezier(.22, 1, .36, 1) infinite;
+}
 
 .toss-ongoing-word {
   position: absolute;
@@ -236,7 +254,7 @@
 .toss-orbit { position: absolute; display: block; border: 1px solid rgba(0, 100, 255, .11); border-radius: 50%; }
 .toss-orbit-one { top: -32vw; right: -23vw; width: 68vw; aspect-ratio: 1; transform: rotate(calc(var(--toss-progress) * 18deg)); }
 .toss-orbit-two { right: 7vw; bottom: -23vw; width: 46vw; aspect-ratio: 1; transform: rotate(calc(var(--toss-progress) * -24deg)); }
-.toss-blue-object { position: absolute; top: 14%; right: 13%; width: clamp(90px, 11vw, 175px); aspect-ratio: 1; background: radial-gradient(circle at 32% 24%, #7fbcff, #0064ff 54%, #0046bd 100%); border-radius: 43% 57% 62% 38% / 58% 42% 58% 42%; box-shadow: 0 28px 60px rgba(0, 100, 255, .22); transform: translate3d(0, calc(sin(var(--toss-progress) * 3.14159) * -24px), 0) rotate(calc(16deg + var(--toss-progress) * 28deg)); }
+.toss-blue-object { position: absolute; top: 12%; right: 10%; display: block; width: clamp(140px, 15vw, 240px); height: auto; transform: translate3d(0, calc(sin(var(--toss-progress) * 3.14159) * -12px), 0); }
 
 .toss-ongoing-exit {
   position: absolute;
@@ -266,11 +284,12 @@
 }
 
 @keyframes toss-live-dot { 50% { opacity: .28; transform: scale(.72); } }
+@keyframes toss-live-ring { to { opacity: 0; transform: scale(1.7); } }
 
 @media (max-width: 700px) {
   .toss-ongoing-track { height: 290svh; }
   .toss-ongoing-stage { min-height: 560px; }
-  .toss-ongoing-meta { top: 3.5vh; right: 6vw; left: 6vw; grid-template-columns: 1fr 78px; gap: 12px; }
+  .toss-ongoing-meta { top: 3.5vh; right: 6vw; left: 6vw; grid-template-columns: 1fr 36px; gap: 12px; }
   .toss-ongoing-meta > span:nth-child(2) { display: none; }
   .toss-ongoing-word { top: 20%; font-size: 38vw; }
   .toss-ongoing-copy { top: 14vh; left: 6vw; max-width: 90vw; }
@@ -278,7 +297,7 @@
   .toss-ongoing-copy h2 { font-size: clamp(3rem, 13.5vw, 4.8rem); line-height: .88; }
   .toss-ongoing-copy h2 strong { white-space: normal; }
   .toss-ongoing-copy p { margin-top: 20px; font-size: clamp(.9rem, 4vw, 1.05rem); }
-  .toss-blue-object { top: 10%; right: -8%; width: 34vw; opacity: .72; }
+  .toss-blue-object { top: 9%; right: 1%; width: 42vw; }
   .toss-status-card { right: 6vw; bottom: 12vh; width: auto; padding: 20px; border-radius: 22px; }
   .toss-status-card dl { margin: 18px 0; }
   .toss-status-card dl div { padding: 9px 0; }
@@ -295,6 +314,7 @@
   .toss-transition-overlay.is-revealing { transform: translate3d(0, -118%, 0); transition-duration: .02s; }
   .toss-transition-overlay.is-reverse-ready { transform: translate3d(0, -118%, 0); }
   .toss-transition-overlay.is-reverse-covering { transform: translate3d(0, 0, 0); transition-duration: .02s; }
+  .toss-ongoing-meta strong i,
   .toss-status-card header strong i,
   .toss-loading i { animation: none; }
   .toss-loading i { left: 0; width: 62%; }

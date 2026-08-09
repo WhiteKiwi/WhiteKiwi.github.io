@@ -292,13 +292,13 @@ export default function TossOngoing({ active }: { active: boolean }) {
         <div className="toss-ambient" aria-hidden="true">
           <i className="toss-orbit toss-orbit-one" />
           <i className="toss-orbit toss-orbit-two" />
-          <i className="toss-blue-object" />
+          <img className="toss-blue-object" src="/assets/brands/toss-logo-primary.png" alt="" />
         </div>
 
         <header className="toss-ongoing-meta">
-          <span>07 / VIVA REPUBLICA → TOSS INCOME</span>
+          <span>VIVA REPUBLICA → TOSS INCOME</span>
           <span>2021.11 — NOW</span>
-          <img src="/assets/brands/toss-logo-primary.png" alt="Toss" />
+          <strong><i aria-hidden="true" />07</strong>
         </header>
 
         <div className="toss-ongoing-word" aria-hidden="true">ONGOING</div>
