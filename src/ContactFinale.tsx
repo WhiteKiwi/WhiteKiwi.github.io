@@ -30,8 +30,7 @@ const resumeUrl = '/resume/'
 
 const commandList = [
   ['help', 'Show this list'],
-  ['whoami', 'Print who is behind this portfolio'],
-  ['fortune', 'Draw one line worth keeping'],
+  ['whoami', 'Print who is behind this portfolio, with a line worth keeping'],
   ['open resume', 'Open the readable resume page'],
   ['open github', 'Open the GitHub profile'],
   ['open blog', 'Open the blog'],
@@ -75,16 +74,6 @@ const kiwiArtNarrow = [
   '###########.',
 ]
 
-const kiwiArtTiny = [
-  '   -*##*:',
-  '  -###%##=-.',
-  '  -####%::-+*.',
-  ' .*#####-    -',
-  ':########',
-  '#########.',
-  '########*',
-]
-
 const kiwiFacts = [
   'name     Jihoon Jang / 장지훈',
   'role     Node.js Developer',
@@ -116,21 +105,25 @@ const buildWhoami = (): TerminalLine[] => {
   const narrow = window.innerWidth < 760
   const art = narrow ? kiwiArtNarrow : kiwiArtWide
   const artWidth = art.reduce((max, line) => Math.max(max, line.length), 0)
+  const bubble = buildBubble(narrow ? 30 : 64)
 
   if (narrow) {
     return [
       ...art.map((line) => ({ text: line, tone: 'accent' as const })),
       { text: '', tone: 'default' as const },
       ...kiwiFacts.map((fact) => ({ text: fact, tone: 'default' as const })),
+      { text: '', tone: 'default' as const },
+      ...bubble,
     ]
   }
 
   // 정보 블록을 아트 높이의 가운데에 맞춘다.
   const offset = Math.max(0, Math.floor((art.length - kiwiFacts.length) / 2))
-  return art.map((line, index) => {
+  const fetch = art.map((line, index) => {
     const fact = kiwiFacts[index - offset] ?? ''
     return { text: `${line.padEnd(artWidth)}   ${fact}`.trimEnd(), tone: 'default' as const }
   })
+  return [...fetch, { text: '', tone: 'default' as const }, ...bubble]
 }
 
 /** 실제 인용문 대신 이 포트폴리오의 목소리로 쓴 문장만 사용한다. */
@@ -159,20 +152,35 @@ const fortunes = [
   'Every abstraction leaks. Pick the one that leaks where you can see it.',
 ]
 
-const buildFortune = (): TerminalLine[] => {
+/** 칸 수 기준으로 줄을 나눈다. 한글은 두 칸이라 문자 수로 나누면 폭이 들쭉날쭉해진다. */
+const wrapCells = (text: string, max: number) => {
+  const words = text.split(' ')
+  const lines: string[] = []
+  let current = ''
+  words.forEach((word) => {
+    const candidate = current ? `${current} ${word}` : word
+    if (cellWidth(candidate) > max && current) {
+      lines.push(current)
+      current = word
+    } else {
+      current = candidate
+    }
+  })
+  if (current) lines.push(current)
+  return lines
+}
+
+/** 말풍선은 왼쪽 위의 키위가 말하는 것처럼 꼬리를 위로 올린다. */
+const buildBubble = (max: number): TerminalLine[] => {
   const quote = fortunes[Math.floor(Math.random() * fortunes.length)]
-  const width = cellWidth(quote)
-  // 세 줄의 칸 수가 모두 width + 4로 같아야 테두리가 맞는다.
-  const bubble = [
-    `.${'_'.repeat(width + 2)}.`,
-    `| ${padCells(quote, width)} |`,
-    `'${'-'.repeat(width + 2)}'`,
-  ]
+  const rows = wrapCells(quote, max)
+  const width = rows.reduce((longest, row) => Math.max(longest, cellWidth(row)), 0)
   return [
-    ...bubble.map((line) => ({ text: line, tone: 'default' as const })),
-    { text: '      \\', tone: 'muted' as const },
-    { text: '       \\', tone: 'muted' as const },
-    ...kiwiArtTiny.map((line) => ({ text: `        ${line}`, tone: 'accent' as const })),
+    { text: '     /', tone: 'muted' },
+    { text: '    /', tone: 'muted' },
+    { text: `.${'_'.repeat(width + 2)}.`, tone: 'default' },
+    ...rows.map((row) => ({ text: `| ${padCells(row, width)} |`, tone: 'accent' as const })),
+    { text: `'${'-'.repeat(width + 2)}'`, tone: 'default' },
   ]
 }
 
@@ -580,8 +588,6 @@ export default function ContactFinale({ active }: { active: boolean }) {
       ]
     } else if (command === 'whoami') {
       lines = buildWhoami()
-    } else if (command === 'fortune') {
-      lines = buildFortune()
     } else if (command === 'iloveyou') {
       lines = [{ text: 'I love you too', tone: 'accent' }]
     } else if (command === 'open') {
