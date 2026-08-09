@@ -89,6 +89,7 @@
 - 하단 직접 링크와 기능을 맞추기 위해 `open github`, `open blog`도 정상 명령에 포함한다. `open` 도움말에는 GitHub, Blog, LinkedIn, Instagram, Email 다섯 채널을 표시한다.
 - 2026-08-09 사용자는 `#00` 진입이 오프닝을 건너뛰는 버그를 확인했다. `#00`은 별도 ready 딥링크가 아니라 `/`와 똑같이 해시 없는 기본 오프닝으로 처리하고, Contact의 `RUN AGAIN`도 `/`로 연결한다.
 - Contact 터미널의 숨은 이스터에그로 `iloveyou` → `I love you too`를 추가한다. 발견하는 재미를 위해 help와 화면 명령 목록에는 표시하지 않는다.
+- 2026-08-09 Contact 헤드라인 위의 `$ say hello`는 문구를 지우고 `$`와 깜빡이는 커서만 남긴다. 파비콘과 Guidelines의 프롬프트 마크, OG title `$ whoami`와 같은 결로 읽히게 하는 것이 목적이다. 의미는 아래 `LET'S CONNECT.` 헤드라인이 가지므로 이 줄은 장식으로 처리한다.
 
 ## Motion direction
 
@@ -209,7 +210,7 @@
 
 - 2026-08-09 사용자가 Contact에 키위를 티 나지 않게 넣을 아이디어를 요청했다. 터미널이라는 소재를 살리는 방향으로 정리했다.
 - 채택: `whoami`의 neofetch 스타일 아스키 키위, 그리고 유휴 상태의 키위 산책. 산책 대기 시간은 테스트 편의를 위해 개발 환경에서만 10초로 줄인다.
-- 검토 중: `command not found`에 반응해 터미널 위 경계로 빼꼼 올라오는 키위. 기존 보행 스프라이트는 측면 전신이라 머리만 잘라 쓸 수 없어 별도 자산이 필요하다. 프롬프트는 `public/assets/characters/PROMPTS.md`에 기록했다.
+- 2026-08-09 사용자 요청으로 `command not found`에 반응해 터미널 위 경계로 빼꼼 올라오는 별도 키위 자산을 생성하기로 했다. 기존 보행 스프라이트는 측면 전신이라 머리만 잘라 쓸 수 없으며, `public/assets/characters/PROMPTS.md`의 전용 프롬프트와 수평 하단 단면을 따른다.
 
 ## Repository history
 

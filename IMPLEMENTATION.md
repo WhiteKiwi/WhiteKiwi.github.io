@@ -36,6 +36,7 @@ pnpm build
 - `public/favicon-*.png`, `public/favicon.ico`, `public/apple-touch-icon.png` — Graphite 팔레트의 `>_` 프롬프트 마크에서 파생한 브라우저·홈 화면 아이콘 세트
 - `public/og-image.png` — `$ whoami`, `whitekiwi`, 이름과 역할을 크림색 미니멀 타이포로 구성한 1200×630 소셜 공유 이미지
 - `src/labs/EggLab.tsx`, `src/labs/GlassLab.tsx`, `src/labs/BirdLab.tsx`와 각 CSS — 시안 비교를 위해 남긴 개발 전용 실험 페이지
+- `src/labs/PointerLab.tsx`, `src/labs/pointer-lab.css` — 포인터 반응 후보를 겹쳐 켜고 본문 가독성과 함께 비교하는 개발 전용 페이지
 - `src/labs/LabRouter.tsx` — `/labs/*` 경로를 실험 페이지로 연결하는 개발 전용 진입점
 - `src/PortfolioGuidelines.tsx`, `src/portfolio-guidelines.css` — 아이덴티티 원칙과 토큰을 보여주는 링크 전용 브랜드 가이드라인 페이지
 - `src/Resume.tsx`, `src/resume.css`, `src/resume-data.ts` — 인쇄까지 고려한 정리형 이력 페이지와 한국어·영문 콘텐츠
@@ -49,7 +50,7 @@ pnpm build
 - 공개 페이지는 Vite 멀티페이지 빌드로 각자 실제 HTML 파일을 만든다. `rollupOptions.input`에 `index.html`, `resume/index.html`, `guidelines/index.html`을 등록한다.
 - 두 HTML은 같은 `src/main.tsx`를 로드하고, `src/App.tsx`가 `window.location.pathname`으로 화면을 고른다. 끝 슬래시 유무는 정규화해 `/guidelines`와 `/guidelines/`를 같게 처리한다.
 - 각 HTML은 자신의 `<title>`, description, canonical과 Open Graph·Twitter 메타를 직접 가진다. 공유 미리보기와 검색 색인이 페이지마다 달라야 하고, 뒤늦게 실행되는 스크립트로는 이를 만들 수 없다.
-- 실험 페이지는 `/labs/eggs`, `/labs/glass`, `/labs/birds`에 두고 `import.meta.env.DEV`가 참일 때만 분기와 `lazy(() => import(...))`가 존재한다. 프로덕션 빌드에서는 조건이 상수 `false`로 접히면서 실험 번들이 산출물에서 사라진다.
+- 실험 페이지는 `/labs/eggs`, `/labs/glass`, `/labs/birds`, `/labs/pointer`에 두고 `import.meta.env.DEV`가 참일 때만 분기와 `lazy(() => import(...))`가 존재한다. 프로덕션 빌드에서는 조건이 상수 `false`로 접히면서 실험 번들이 산출물에서 사라진다.
 - `/labs/*`용 HTML 진입점은 빌드에 등록하지 않는다. 배포본에는 해당 파일이 없으므로 접근하면 GitHub Pages 404가 된다. 개발 서버에서는 Vite의 SPA fallback이 `index.html`을 돌려주므로 그대로 동작한다.
 - 쿼리 기반 `?view=` 분기는 사용하지 않는다. GA4 기본 보고서의 페이지 경로 dimension이 쿼리스트링을 제거해 모든 보조 뷰가 `/`에 합산되기 때문이다.
 

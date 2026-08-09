@@ -554,7 +554,8 @@ export default function ContactFinale({ active }: { active: boolean }) {
         </header>
 
         <div className="contact-finale-copy">
-          <p className="contact-command"><span>$</span> say hello<i aria-hidden="true" /></p>
+          {/* 문구 없이 프롬프트와 커서만 남긴 장식이다. 의미는 아래 헤드라인이 가진다. */}
+          <p className="contact-command" aria-hidden="true"><span>$</span><i /></p>
           <h2><span>LET&apos;S</span><strong>CONNECT.</strong></h2>
           <p>좋은 제품에 관한 흥미로운 이야기라면,<br />언제든 반갑습니다.</p>
         </div>

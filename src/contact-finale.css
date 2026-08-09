@@ -110,8 +110,8 @@
   letter-spacing: .04em;
 }
 
-.contact-command span { margin-right: 9px; color: #f6f0df; }
-.contact-command i { width: .62em; height: 1.1em; margin-left: 7px; background: #e8ad45; animation: contact-cursor 1s steps(1) infinite; }
+.contact-command span { color: #f6f0df; }
+.contact-command i { width: .62em; height: 1.1em; margin-left: 9px; background: #e8ad45; animation: contact-cursor 1s steps(1) infinite; }
 
 .contact-finale-copy h2 {
   margin: 0;

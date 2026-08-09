@@ -25,7 +25,7 @@
 - [ ] Contact 터미널의 `whoami` 아스키 키위 정렬을 실제 데스크톱·모바일 폭에서 확인
 - [ ] 유휴 30초 키위 산책의 등장 빈도와 발 위치가 입력 줄 경계와 맞는지 확인
 - [ ] Pretendard·Noto Serif KR 적용 후 기존 챕터의 한글 타이포가 의도대로 보이는지 확인
-- [ ] `command not found` 반응 키위 자산을 생성할지 결정
+- [ ] 생성한 `command not found` 빼꼼 키위의 표정·수평 하단 단면을 확인하고 터미널 반응에 적용
 
 ## Content gaps
 

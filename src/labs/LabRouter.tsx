@@ -4,6 +4,7 @@ const labs = {
   eggs: { Component: lazy(() => import('./EggLab')), fallback: 'egg-lab' },
   glass: { Component: lazy(() => import('./GlassLab')), fallback: 'glass-lab-page' },
   birds: { Component: lazy(() => import('./BirdLab')), fallback: 'bird-lab-page' },
+  pointer: { Component: lazy(() => import('./PointerLab')), fallback: 'pointer-lab' },
 } as const
 
 function LabIndex() {
