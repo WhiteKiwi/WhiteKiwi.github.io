@@ -21,11 +21,13 @@ type TerminalEntry = {
 }
 
 const TERMINAL_STORAGE_KEY = 'whitekiwi-contact-terminal-v1'
+const githubUrl = 'https://github.com/whitekiwi'
+const blogUrl = 'https://blog.whitekiwi.link'
 const linkedinUrl = 'https://www.linkedin.com/in/whitekiwi/'
 const instagramUrl = 'https://www.instagram.com/whitekiwi_'
 const emailUrl = 'mailto:jh145478@gmail.com'
 
-const availableCommands = ['help', 'whoami', 'open linkedin', 'open instagram', 'open email']
+const availableCommands = ['help', 'whoami', 'open github', 'open blog', 'open linkedin', 'open instagram', 'open email', 'clear']
 
 const loadTerminalEntries = (): TerminalEntry[] => {
   try {
@@ -54,7 +56,8 @@ export default function ContactFinale({ active }: { active: boolean }) {
 
   useEffect(() => {
     try {
-      window.sessionStorage.setItem(TERMINAL_STORAGE_KEY, JSON.stringify(entries.slice(-30)))
+      if (entries.length) window.sessionStorage.setItem(TERMINAL_STORAGE_KEY, JSON.stringify(entries.slice(-30)))
+      else window.sessionStorage.removeItem(TERMINAL_STORAGE_KEY)
     } catch {
       // The terminal still works when storage is unavailable.
     }
@@ -145,6 +148,18 @@ export default function ContactFinale({ active }: { active: boolean }) {
     const command = rawCommand.trim().toLowerCase().replace(/\s+/g, ' ')
     if (!command) return
 
+    if (command === 'clear') {
+      setEntries([])
+      setInput('')
+      setHistoryIndex(-1)
+      try {
+        window.sessionStorage.removeItem(TERMINAL_STORAGE_KEY)
+      } catch {
+        // Clearing the visible terminal still works when storage is unavailable.
+      }
+      return
+    }
+
     let lines: TerminalLine[]
     if (command === 'help') {
       lines = [
@@ -163,10 +178,20 @@ export default function ContactFinale({ active }: { active: boolean }) {
       lines = [
         { text: 'usage: open <channel>', tone: 'accent' },
         { text: 'available channels:', tone: 'muted' },
+        { text: '  github', tone: 'default' },
+        { text: '  blog', tone: 'default' },
         { text: '  linkedin', tone: 'default' },
         { text: '  instagram', tone: 'default' },
         { text: '  email', tone: 'default' },
       ]
+    } else if (command === 'open github') {
+      const opened = window.open(githubUrl, '_blank')
+      if (opened) opened.opener = null
+      lines = [{ text: opened ? 'Opening GitHub in a new tab…' : `Popup blocked. Open manually: ${githubUrl}`, tone: opened ? 'success' : 'error' }]
+    } else if (command === 'open blog') {
+      const opened = window.open(blogUrl, '_blank')
+      if (opened) opened.opener = null
+      lines = [{ text: opened ? 'Opening Blog in a new tab…' : `Popup blocked. Open manually: ${blogUrl}`, tone: opened ? 'success' : 'error' }]
     } else if (command === 'open linkedin') {
       const opened = window.open(linkedinUrl, '_blank')
       if (opened) opened.opener = null
@@ -254,7 +279,7 @@ export default function ContactFinale({ active }: { active: boolean }) {
         <div className="contact-finale-copy">
           <p className="contact-command"><span>$</span> say hello<i aria-hidden="true" /></p>
           <h2><span>LET&apos;S</span><strong>CONNECT.</strong></h2>
-          <p>좋은 제품과 단단한 시스템에 관한 이야기라면,<br />언제든 반갑습니다.</p>
+          <p>좋은 제품에 관한 흥미로운 이야기라면,<br />언제든 반갑습니다.</p>
         </div>
 
         <section className={`contact-terminal ${bootReady ? 'is-ready' : ''}`} aria-label="대화형 연락처 터미널">
@@ -321,8 +346,8 @@ export default function ContactFinale({ active }: { active: boolean }) {
           </div>
           <div className="contact-link-list">
             <a className="contact-email-compact" href={emailUrl}>Email <span aria-hidden="true">↗</span></a>
-            <a href="https://github.com/whitekiwi" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
-            <a href="https://blog.whitekiwi.link" target="_blank" rel="noreferrer">Blog <span aria-hidden="true">↗</span></a>
+            <a href={githubUrl} target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+            <a href={blogUrl} target="_blank" rel="noreferrer">Blog <span aria-hidden="true">↗</span></a>
             <a href={linkedinUrl} target="_blank" rel="noreferrer">LinkedIn <span aria-hidden="true">↗</span></a>
             <a href={instagramUrl} target="_blank" rel="noreferrer">Instagram <span aria-hidden="true">↗</span></a>
           </div>
