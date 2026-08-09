@@ -17,12 +17,23 @@ function OpeningTitle() {
   )
 }
 
-function FallingEgg({ onLanded }: { onLanded: () => void }) {
+function FallingEgg({
+  interactive,
+  onActivate,
+  onLanded,
+}: {
+  interactive: boolean
+  onActivate: () => void
+  onLanded: () => void
+}) {
   return (
-    <div
+    <button
       className="egg-scroll-rig"
-      role="img"
-      aria-label="유리 하늘에서 유리 지면으로 떨어져 금이 가는 흰색 유리 알"
+      type="button"
+      aria-hidden={!interactive}
+      aria-label={interactive ? '01 소개 장면으로 이동' : undefined}
+      disabled={!interactive}
+      onClick={onActivate}
       onAnimationEnd={(event) => {
         if (event.animationName === 'egg-camera-arrival') onLanded()
       }}
@@ -42,7 +53,8 @@ function FallingEgg({ onLanded }: { onLanded: () => void }) {
         <span className="air-ring air-ring-one" />
         <span className="air-ring air-ring-two" />
       </div>
-    </div>
+      {interactive && <span className="egg-continue-cue">CLICK TO CONTINUE</span>}
+    </button>
   )
 }
 
@@ -135,7 +147,7 @@ export default function FallIntro() {
   useEffect(() => {
     if (phase !== 'opening') return
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const openingTimer = window.setTimeout(() => setPhase('idle'), reducedMotion ? 220 : 4000)
+    const openingTimer = window.setTimeout(() => setPhase('idle'), reducedMotion ? 220 : 4800)
     return () => window.clearTimeout(openingTimer)
   }, [phase])
 
@@ -296,6 +308,12 @@ export default function FallIntro() {
 
   const hasDescended = phase === 'descending' || phase === 'landed' || phase === 'ready'
   const hasLanded = phase === 'landed' || phase === 'ready'
+  const goToIntroduction = () => {
+    introTrackRef.current?.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      block: 'start',
+    })
+  }
 
   return (
     <main className={`fall-intro-scroll ${phase === 'opening' ? 'is-opening' : ''} ${hasDescended ? 'has-descended' : ''} ${hasLanded ? 'is-landed' : ''} ${phase === 'ready' ? 'is-scroll-ready' : ''}`}>
@@ -329,7 +347,11 @@ export default function FallIntro() {
         </div>
 
         <GlassGround />
-        <FallingEgg onLanded={() => setPhase('landed')} />
+        <FallingEgg
+          interactive={phase === 'ready'}
+          onActivate={goToIntroduction}
+          onLanded={() => setPhase('landed')}
+        />
         <div className="fall-vignette" aria-hidden="true" />
       </section>
       <WalkingIntroduction trackRef={introTrackRef} />
