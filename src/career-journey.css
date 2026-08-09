@@ -379,6 +379,10 @@ button.crop { appearance: none; padding: 0; border: 0; color: inherit; font: inh
 .carrot-transition-overlay.is-covered { opacity: 1; clip-path: circle(160vmax at var(--portal-x) var(--portal-y)); visibility: visible; transform: translate3d(0,0,0); transition: none; }
 .carrot-transition-overlay.is-revealing { opacity: 1; clip-path: circle(160vmax at var(--portal-x) var(--portal-y)); visibility: visible; transform: translate3d(calc(-100% - 2px),0,0); transition: transform .52s cubic-bezier(.76,0,.24,1); }
 .carrot-transition-overlay.is-revealing::after { opacity: 1; transition: opacity .08s ease; }
+.carrot-transition-overlay.is-reverse-ready { opacity: 1; clip-path: circle(160vmax at var(--portal-x) var(--portal-y)); visibility: visible; transform: translate3d(calc(-100% - 2px),0,0); transition: none; }
+.carrot-transition-overlay.is-reverse-covering { opacity: 1; clip-path: circle(160vmax at var(--portal-x) var(--portal-y)); visibility: visible; transform: translate3d(0,0,0); transition: transform .52s cubic-bezier(.76,0,.24,1); }
+.carrot-transition-overlay.is-reverse-covering::after { opacity: 1; transition: opacity .08s ease; }
+.carrot-transition-overlay.is-reverse-revealing { opacity: 1; clip-path: circle(0 at var(--portal-x) var(--portal-y)); visibility: visible; transform: translate3d(0,0,0); transition: clip-path .46s cubic-bezier(.76,0,.24,1); }
 
 .carrot-action-guide { position: absolute; z-index: 24; bottom: 39%; left: 66.3%; display: grid; opacity: var(--carrot-guide-opacity); color: #246c5a; pointer-events: none; filter: drop-shadow(0 7px 15px rgba(23,74,60,.12)); transform: translateX(-50%); transition: opacity .24s ease, transform .35s cubic-bezier(.16,1,.3,1); }
 .carrot-action-guide span { font: 750 .62rem 'DM Mono', monospace; letter-spacing: .13em; }
@@ -518,5 +522,7 @@ button.crop { appearance: none; padding: 0; border: 0; color: inherit; font: inh
   .crop { transition: none; }
   .career-aimpact.is-carrot-departing .aimpact-stage,
   .carrot-transition-overlay.is-covering,
-  .carrot-transition-overlay.is-revealing { transition-duration: .01ms; }
+  .carrot-transition-overlay.is-revealing,
+  .carrot-transition-overlay.is-reverse-covering,
+  .carrot-transition-overlay.is-reverse-revealing { transition-duration: .01ms; }
 }

@@ -142,7 +142,7 @@ function AimpactChapter({ trackRef }: { trackRef: RefObject<HTMLElement | null> 
           ))}
         </div>
         <div className="carrot-action-guide" id="carrot-action-guide">
-          <span>CLICK THE CARROT</span><small>당근을 눌러 다음 장면으로</small><i aria-hidden="true" />
+          <span>SCROLL OR CLICK</span><small>스크롤하거나 당근을 눌러주세요</small><i aria-hidden="true" />
         </div>
         <ol className="aimpact-notes">
           {aimpactNotes.map(([number, title, body], index) => (
@@ -219,10 +219,13 @@ export default function CareerJourney({ active }: { active: boolean }) {
       Math.min(reveal(progress, enterStart, enterEnd), 1 - reveal(progress, exitStart, exitEnd))
     )
     let scrollingUp = false
+    let scrollingDown = false
     let lastPageY = window.scrollY
     let chapterTransitionLocked = false
     let chapterTransitionTimer = 0
     let chapterTransitionFrame = 0
+    const portalGateProgress = .74
+    let triggerForwardTransition = () => {}
     let triggerReverseTransition = () => {}
 
     const updateTrack = (track: HTMLElement, index: number) => {
@@ -270,6 +273,9 @@ export default function CareerJourney({ active }: { active: boolean }) {
         track.style.setProperty('--farmer-opacity', String(visibility(progress, .11, .22, .78, .88)))
         track.style.setProperty('--farm-sun-y', `${progress * 8}vh`)
         track.style.setProperty('--carrot-guide-opacity', String(visibility(progress, .68, .74, .96, .995)))
+        if (scrollingDown && progress >= portalGateProgress && rect.top <= 1 && rect.bottom > 0 && !chapterTransitionLocked) {
+          triggerForwardTransition()
+        }
       } else {
         track.style.setProperty('--map-x', `${(progress - .5) * -10}vw`)
         track.style.setProperty('--map-y', `${(progress - .5) * 8}vh`)
@@ -290,6 +296,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
       animationFrame = 0
       const nextPageY = window.scrollY
       scrollingUp = nextPageY < lastPageY - 1
+      scrollingDown = nextPageY > lastPageY + 1
       lastPageY = nextPageY
       trackRefs.forEach((ref, index) => {
         if (ref.current) updateTrack(ref.current, index)
@@ -402,9 +409,14 @@ export default function CareerJourney({ active }: { active: boolean }) {
     const scrollToTrackProgress = (track: HTMLElement, progress: number) => {
       const trackTop = window.scrollY + track.getBoundingClientRect().top
       const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
+      const documentRoot = document.documentElement
+      const previousScrollBehavior = documentRoot.style.scrollBehavior
+      documentRoot.style.scrollBehavior = 'auto'
       window.scrollTo(0, trackTop + distance * progress)
+      documentRoot.style.scrollBehavior = previousScrollBehavior
       lastPageY = window.scrollY
       scrollingUp = false
+      scrollingDown = false
       trackRefs.forEach((ref, index) => {
         if (ref.current) updateTrack(ref.current, index)
       })
@@ -420,7 +432,15 @@ export default function CareerJourney({ active }: { active: boolean }) {
         chapterTransitionFrame = window.requestAnimationFrame(callback)
       })
     }
-    const curtainStates = ['is-ready', 'is-covering', 'is-covered', 'is-revealing']
+    const curtainStates = [
+      'is-ready',
+      'is-covering',
+      'is-covered',
+      'is-revealing',
+      'is-reverse-ready',
+      'is-reverse-covering',
+      'is-reverse-revealing',
+    ]
     const setCurtainState = (state?: string) => {
       transitionOverlay?.classList.remove(...curtainStates)
       if (state) transitionOverlay?.classList.add(state)
@@ -437,7 +457,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
     const startForwardTransition = () => {
       if (chapterTransitionLocked || !aimpactTrack || !daangnTrack) return
       const progress = Number.parseFloat(aimpactTrack.style.getPropertyValue('--chapter-progress'))
-      if (!Number.isFinite(progress) || progress < .64) return
+      if (!Number.isFinite(progress)) return
 
       resetChapterTransitionClasses()
       updatePortalOrigin()
@@ -460,28 +480,29 @@ export default function CareerJourney({ active }: { active: boolean }) {
         }, portalCoverDuration)
       })
     }
+    triggerForwardTransition = startForwardTransition
     triggerReverseTransition = () => {
       if (chapterTransitionLocked || !aimpactTrack || !daangnTrack) return
       resetChapterTransitionClasses()
       chapterTransitionLocked = true
-      setCurtainState('is-ready')
+      setCurtainState('is-reverse-ready')
       onNextPaint(() => {
-        setCurtainState('is-covering')
+        setCurtainState('is-reverse-covering')
         chapterTransitionTimer = window.setTimeout(() => {
           setCurtainState('is-covered')
           scrollToTrackProgress(aimpactTrack, .66)
+          updatePortalOrigin()
           chapterTransitionTimer = window.setTimeout(() => {
             onNextPaint(() => {
-              setCurtainState('is-revealing')
-              chapterTransitionTimer = window.setTimeout(finishChapterTransition, portalRevealDuration)
+              setCurtainState('is-reverse-revealing')
+              chapterTransitionTimer = window.setTimeout(finishChapterTransition, portalCoverDuration)
             })
           }, portalHoldDuration)
-        }, portalCoverDuration)
+        }, portalRevealDuration)
       })
     }
 
     const scrollKeys = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '])
-    const portalGateProgress = .74
     const aimpactWouldCrossPortalGate = (downwardDelta: number) => {
       if (!aimpactTrack) return false
       const progress = Number.parseFloat(aimpactTrack.style.getPropertyValue('--chapter-progress'))
@@ -489,9 +510,6 @@ export default function CareerJourney({ active }: { active: boolean }) {
       const distance = Math.max(aimpactTrack.offsetHeight - window.innerHeight, 1)
       const projectedProgress = progress + Math.max(downwardDelta, 0) / distance
       return Number.isFinite(progress) && projectedProgress >= portalGateProgress && rect.top <= 1 && rect.bottom > 0
-    }
-    const holdAtAimpactPortalGate = () => {
-      if (aimpactTrack) scrollToTrackProgress(aimpactTrack, portalGateProgress)
     }
     const daangnWouldCrossPortalGate = (upwardDelta: number) => {
       if (!daangnTrack) return false
@@ -508,7 +526,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
       }
       if (event.deltaY > 0 && aimpactWouldCrossPortalGate(event.deltaY)) {
         event.preventDefault()
-        holdAtAimpactPortalGate()
+        triggerForwardTransition()
         return
       }
       if (event.deltaY < 0 && daangnWouldCrossPortalGate(-event.deltaY)) {
@@ -529,7 +547,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
       const downwardDelta = touchStartY !== null && currentY !== undefined ? touchStartY - currentY : 0
       if (downwardDelta > 8 && aimpactWouldCrossPortalGate(downwardDelta)) {
         event.preventDefault()
-        holdAtAimpactPortalGate()
+        triggerForwardTransition()
         return
       }
       const upwardDelta = touchStartY !== null && currentY !== undefined ? currentY - touchStartY : 0
@@ -554,7 +572,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
             : 0
       if (forwardKeyDelta > 0 && aimpactWouldCrossPortalGate(forwardKeyDelta)) {
         event.preventDefault()
-        holdAtAimpactPortalGate()
+        triggerForwardTransition()
         return
       }
       const reverseKeyDelta = event.key === 'Home'
