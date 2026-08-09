@@ -69,13 +69,19 @@
 .toss-entry-curtain span { top: calc(11% + 9vmin); right: calc(8% + 9vmin); width: 20vmin; aspect-ratio: 1; }
 
 .toss-transition-overlay {
+  --toss-ring-top: 20%;
+  --toss-ring-right: 8%;
+  --toss-ring-size: 38vmin;
+  --toss-ring-radius: 19vmin;
+  --toss-ring-center-x: calc(100% - var(--toss-ring-right) - var(--toss-ring-radius));
+  --toss-ring-center-y: calc(var(--toss-ring-top) + var(--toss-ring-radius));
   position: fixed;
   z-index: 1100;
   inset: -8% -6%;
   overflow: hidden;
   visibility: hidden;
   background: #0064ff;
-  clip-path: circle(0 at 80% 26%);
+  clip-path: circle(0 at var(--toss-ring-center-x) var(--toss-ring-center-y));
   transform: translate3d(0, 0, 0) rotate(0deg);
   transform-origin: center bottom;
   pointer-events: none;
@@ -95,23 +101,23 @@
 .toss-transition-overlay i,
 .toss-transition-overlay span {
   position: absolute;
-  top: 20%;
-  right: 8%;
+  top: var(--toss-ring-top);
+  right: var(--toss-ring-right);
   display: block;
   aspect-ratio: 1;
   border: 1px solid rgba(255, 255, 255, .18);
   border-radius: 50%;
 }
 
-.toss-transition-overlay i { width: 38vmin; }
-.toss-transition-overlay span { top: calc(20% + 9vmin); right: calc(8% + 9vmin); width: 20vmin; }
-.toss-transition-overlay.is-ready { visibility: visible; clip-path: circle(0 at 80% 26%); transition: none; }
-.toss-transition-overlay.is-covering { visibility: visible; clip-path: circle(160vmax at 80% 26%); transition: clip-path .48s cubic-bezier(.76, 0, .24, 1); }
-.toss-transition-overlay.is-covered { visibility: visible; clip-path: circle(160vmax at 80% 26%); transition: none; }
-.toss-transition-overlay.is-revealing { visibility: visible; clip-path: circle(160vmax at 80% 26%); transform: translate3d(0, -118%, 0) rotate(-1.6deg); transition: transform .56s cubic-bezier(.76, 0, .24, 1); }
-.toss-transition-overlay.is-reverse-ready { visibility: visible; clip-path: circle(160vmax at 80% 26%); transform: translate3d(0, -118%, 0) rotate(-1.6deg); transition: none; }
-.toss-transition-overlay.is-reverse-covering { visibility: visible; clip-path: circle(160vmax at 80% 26%); transform: translate3d(0, 0, 0) rotate(0deg); transition: transform .56s cubic-bezier(.76, 0, .24, 1); }
-.toss-transition-overlay.is-reverse-revealing { visibility: visible; clip-path: circle(0 at 80% 26%); transform: translate3d(0, 0, 0) rotate(0deg); transition: clip-path .48s cubic-bezier(.76, 0, .24, 1); }
+.toss-transition-overlay i { width: var(--toss-ring-size); }
+.toss-transition-overlay span { top: calc(var(--toss-ring-top) + 9vmin); right: calc(var(--toss-ring-right) + 9vmin); width: 20vmin; }
+.toss-transition-overlay.is-ready { visibility: visible; clip-path: circle(0 at var(--toss-ring-center-x) var(--toss-ring-center-y)); transition: none; }
+.toss-transition-overlay.is-covering { visibility: visible; clip-path: circle(160vmax at var(--toss-ring-center-x) var(--toss-ring-center-y)); transition: clip-path .48s cubic-bezier(.76, 0, .24, 1); }
+.toss-transition-overlay.is-covered { visibility: visible; clip-path: circle(160vmax at var(--toss-ring-center-x) var(--toss-ring-center-y)); transition: none; }
+.toss-transition-overlay.is-revealing { visibility: visible; clip-path: circle(160vmax at var(--toss-ring-center-x) var(--toss-ring-center-y)); transform: translate3d(0, -118%, 0) rotate(-1.6deg); transition: transform .56s cubic-bezier(.76, 0, .24, 1); }
+.toss-transition-overlay.is-reverse-ready { visibility: visible; clip-path: circle(160vmax at var(--toss-ring-center-x) var(--toss-ring-center-y)); transform: translate3d(0, -118%, 0) rotate(-1.6deg); transition: none; }
+.toss-transition-overlay.is-reverse-covering { visibility: visible; clip-path: circle(160vmax at var(--toss-ring-center-x) var(--toss-ring-center-y)); transform: translate3d(0, 0, 0) rotate(0deg); transition: transform .56s cubic-bezier(.76, 0, .24, 1); }
+.toss-transition-overlay.is-reverse-revealing { visibility: visible; clip-path: circle(0 at var(--toss-ring-center-x) var(--toss-ring-center-y)); transform: translate3d(0, 0, 0) rotate(0deg); transition: clip-path .48s cubic-bezier(.76, 0, .24, 1); }
 
 .toss-ongoing-meta {
   position: absolute;

@@ -26,6 +26,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
     let transitionTimer = 0
     let settleTimer = 0
     let transitionLocked = false
+    let transitionSettling = false
     let lastPageY = window.scrollY
     let touchStartY: number | null = null
     let triggerForwardTransition = () => {}
@@ -129,22 +130,30 @@ export default function TossOngoing({ active }: { active: boolean }) {
       documentRoot.style.scrollBehavior = previousScrollBehavior
       lastPageY = window.scrollY
     }
+    const releaseAfterQuiet = () => {
+      if (!transitionSettling) return
+      if (settleTimer) window.clearTimeout(settleTimer)
+      settleTimer = window.setTimeout(() => {
+        lastPageY = window.scrollY
+        touchStartY = null
+        transitionLocked = false
+        transitionSettling = false
+        releaseTransition()
+        settleTimer = 0
+      }, 280)
+    }
     const finishTransition = () => {
       setOverlayState()
       lastPageY = window.scrollY
       touchStartY = null
       if (reducedMotion) {
         transitionLocked = false
+        transitionSettling = false
         releaseTransition()
         return
       }
-      settleTimer = window.setTimeout(() => {
-        lastPageY = window.scrollY
-        touchStartY = null
-        transitionLocked = false
-        releaseTransition()
-        settleTimer = 0
-      }, 280)
+      transitionSettling = true
+      releaseAfterQuiet()
     }
     const coverDuration = reducedMotion ? 20 : 480
     const holdDuration = reducedMotion ? 0 : 55
@@ -152,6 +161,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
     triggerForwardTransition = () => {
       if (transitionLocked || transitionOwnedElsewhere() || !daangnTrack || !transitionOverlay || !trackRef.current) return
       transitionLocked = true
+      transitionSettling = false
       claimTransition()
       setOverlayState('is-ready')
       onNextPaint(() => {
@@ -171,6 +181,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
     triggerReverseTransition = () => {
       if (transitionLocked || transitionOwnedElsewhere() || !daangnTrack || !transitionOverlay || !trackRef.current) return
       transitionLocked = true
+      transitionSettling = false
       claimTransition()
       setOverlayState('is-reverse-ready')
       onNextPaint(() => {
@@ -207,6 +218,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
     }
     const onTransitionWheel = (event: WheelEvent) => {
       if (transitionLocked || transitionOwnedElsewhere()) {
+        if (transitionLocked && transitionSettling) releaseAfterQuiet()
         event.preventDefault()
         return
       }
@@ -225,6 +237,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
     }
     const onTransitionTouchMove = (event: TouchEvent) => {
       if (transitionLocked || transitionOwnedElsewhere()) {
+        if (transitionLocked && transitionSettling) releaseAfterQuiet()
         event.preventDefault()
         return
       }
@@ -247,6 +260,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
       const target = event.target as HTMLElement | null
       if (target?.matches('input, textarea, select, [contenteditable="true"]')) return
       if (transitionLocked || transitionOwnedElsewhere()) {
+        if (transitionLocked && transitionSettling) releaseAfterQuiet()
         event.preventDefault()
         return
       }
