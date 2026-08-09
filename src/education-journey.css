@@ -108,6 +108,12 @@
   font-weight: 720;
   line-height: .9;
   letter-spacing: -.08em;
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
+
+.education-transition > strong > span {
+  white-space: nowrap;
 }
 
 .education-transition > i {
@@ -766,7 +772,8 @@
   .education-stage { min-height: 560px; }
   .education-meta { top: 3.5vh; right: 6vw; left: 6vw; }
   .education-transition { padding: 0 8vw 16vh; }
-  .education-transition > strong { max-width: 75%; font-size: clamp(3.2rem, 16vw, 5.2rem); }
+  .education-transition > strong { max-width: none; font-size: clamp(3.2rem, 16vw, 5.2rem); }
+  .education-transition > strong > span { display: block; }
   .education-transition > i { right: 5vw; bottom: 11vh; }
   .education-campus { right: -42vw; }
   .education-sun { top: 8%; right: 22%; opacity: .72; }

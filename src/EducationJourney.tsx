@@ -189,7 +189,10 @@ export default function EducationJourney({ active }: { active: boolean }) {
 
         <div className="education-transition" aria-hidden="true">
           <span>CHAPTER 02 · SPRING 2017</span>
-          <strong>봄의 교정으로</strong>
+          <strong>
+            <span>봄의</span>{' '}
+            <span>교정으로</span>
+          </strong>
           <i />
         </div>
         <div className="education-transition-gust" aria-hidden="true">
