@@ -17,17 +17,30 @@ const smoothstep = (value: number) => value * value * (3 - 2 * value)
 
 export default function TossOngoing({ active }: { active: boolean }) {
   const trackRef = useRef<HTMLElement>(null)
+  const forwardOverlayRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!active) return
     let animationFrame = 0
+    let transitionFrame = 0
+    let transitionTimer = 0
+    let transitionLocked = false
+    let lastPageY = window.scrollY
+    let triggerForwardTransition = () => {}
+    const daangnTrack = document.querySelector<HTMLElement>('.career-daangn')
+    const forwardOverlay = forwardOverlayRef.current
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const forwardGateProgress = .82
 
     const update = () => {
       animationFrame = 0
+      const nextPageY = window.scrollY
+      const scrollingDown = nextPageY > lastPageY + 1
+      lastPageY = nextPageY
       const track = trackRef.current
       if (!track) return
       const rect = track.getBoundingClientRect()
-      if (rect.bottom < -window.innerHeight || rect.top > window.innerHeight * 2) return
+      if (rect.bottom < -window.innerHeight || rect.top > window.innerHeight * 3) return
 
       const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
       const progress = clamp(-rect.top / distance)
@@ -43,19 +56,142 @@ export default function TossOngoing({ active }: { active: boolean }) {
       track.style.setProperty('--toss-card-y', `${(1 - cardIn) * 54 - exit * 18}px`)
       track.style.setProperty('--toss-exit', String(exit))
       track.style.setProperty('--toss-entry-y', `${entry * -118}%`)
+
+      if (scrollingDown && daangnTrack && !transitionLocked) {
+        const daangnProgress = Number.parseFloat(daangnTrack.style.getPropertyValue('--chapter-progress'))
+        const daangnRect = daangnTrack.getBoundingClientRect()
+        if (Number.isFinite(daangnProgress) && daangnProgress >= forwardGateProgress && daangnRect.top <= 1 && daangnRect.bottom > 0) {
+          triggerForwardTransition()
+        }
+      }
     }
 
     const requestUpdate = () => {
       if (!animationFrame) animationFrame = window.requestAnimationFrame(update)
     }
 
+    const overlayStates = ['is-ready', 'is-covering', 'is-covered', 'is-revealing']
+    const setOverlayState = (state?: string) => {
+      forwardOverlay?.classList.remove(...overlayStates)
+      if (state) forwardOverlay?.classList.add(state)
+    }
+    const onNextPaint = (callback: () => void) => {
+      transitionFrame = window.requestAnimationFrame(() => {
+        transitionFrame = window.requestAnimationFrame(callback)
+      })
+    }
+    const scrollToToss = () => {
+      const track = trackRef.current
+      if (!track) return
+      const trackTop = window.scrollY + track.getBoundingClientRect().top
+      const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
+      const documentRoot = document.documentElement
+      const previousScrollBehavior = documentRoot.style.scrollBehavior
+      documentRoot.style.scrollBehavior = 'auto'
+      window.scrollTo(0, trackTop + distance * .18)
+      documentRoot.style.scrollBehavior = previousScrollBehavior
+      lastPageY = window.scrollY
+      update()
+    }
+    const finishForwardTransition = () => {
+      setOverlayState()
+      transitionLocked = false
+      lastPageY = window.scrollY
+    }
+    const coverDuration = reducedMotion ? 20 : 480
+    const holdDuration = reducedMotion ? 0 : 55
+    const revealDuration = reducedMotion ? 20 : 560
+    triggerForwardTransition = () => {
+      if (transitionLocked || !daangnTrack || !forwardOverlay || !trackRef.current) return
+      transitionLocked = true
+      setOverlayState('is-ready')
+      onNextPaint(() => {
+        setOverlayState('is-covering')
+        transitionTimer = window.setTimeout(() => {
+          setOverlayState('is-covered')
+          scrollToToss()
+          transitionTimer = window.setTimeout(() => {
+            onNextPaint(() => {
+              setOverlayState('is-revealing')
+              transitionTimer = window.setTimeout(finishForwardTransition, revealDuration)
+            })
+          }, holdDuration)
+        }, coverDuration)
+      })
+    }
+
+    const daangnWouldCrossForwardGate = (downwardDelta: number) => {
+      if (!daangnTrack) return false
+      const progress = Number.parseFloat(daangnTrack.style.getPropertyValue('--chapter-progress'))
+      const rect = daangnTrack.getBoundingClientRect()
+      const distance = Math.max(daangnTrack.offsetHeight - window.innerHeight, 1)
+      const projectedProgress = progress + Math.max(downwardDelta, 0) / distance
+      return Number.isFinite(progress) && projectedProgress >= forwardGateProgress && rect.top <= 1 && rect.bottom > 0
+    }
+    const onTransitionWheel = (event: WheelEvent) => {
+      if (transitionLocked) {
+        event.preventDefault()
+        return
+      }
+      if (event.deltaY > 0 && daangnWouldCrossForwardGate(event.deltaY)) {
+        event.preventDefault()
+        triggerForwardTransition()
+      }
+    }
+    let touchStartY: number | null = null
+    const onTransitionTouchStart = (event: TouchEvent) => {
+      touchStartY = event.touches[0]?.clientY ?? null
+    }
+    const onTransitionTouchMove = (event: TouchEvent) => {
+      if (transitionLocked) {
+        event.preventDefault()
+        return
+      }
+      const currentY = event.touches[0]?.clientY
+      const downwardDelta = touchStartY !== null && currentY !== undefined ? touchStartY - currentY : 0
+      if (downwardDelta > 8 && daangnWouldCrossForwardGate(downwardDelta)) {
+        event.preventDefault()
+        triggerForwardTransition()
+      }
+    }
+    const scrollKeys = new Set(['ArrowDown', 'PageDown', 'End', ' '])
+    const onTransitionKeyDown = (event: KeyboardEvent) => {
+      if (!scrollKeys.has(event.key)) return
+      const target = event.target as HTMLElement | null
+      if (target?.matches('input, textarea, select, [contenteditable="true"]')) return
+      if (transitionLocked) {
+        event.preventDefault()
+        return
+      }
+      const downwardDelta = event.key === 'End'
+        ? Number.POSITIVE_INFINITY
+        : event.key === 'PageDown' || event.key === ' '
+          ? window.innerHeight
+          : 120
+      if (daangnWouldCrossForwardGate(downwardDelta)) {
+        event.preventDefault()
+        triggerForwardTransition()
+      }
+    }
+
     update()
     window.addEventListener('scroll', requestUpdate, { passive: true })
     window.addEventListener('resize', requestUpdate)
+    window.addEventListener('wheel', onTransitionWheel, { passive: false })
+    window.addEventListener('touchstart', onTransitionTouchStart, { passive: true })
+    window.addEventListener('touchmove', onTransitionTouchMove, { passive: false })
+    window.addEventListener('keydown', onTransitionKeyDown)
     return () => {
       if (animationFrame) window.cancelAnimationFrame(animationFrame)
+      if (transitionFrame) window.cancelAnimationFrame(transitionFrame)
+      if (transitionTimer) window.clearTimeout(transitionTimer)
+      setOverlayState()
       window.removeEventListener('scroll', requestUpdate)
       window.removeEventListener('resize', requestUpdate)
+      window.removeEventListener('wheel', onTransitionWheel)
+      window.removeEventListener('touchstart', onTransitionTouchStart)
+      window.removeEventListener('touchmove', onTransitionTouchMove)
+      window.removeEventListener('keydown', onTransitionKeyDown)
     }
   }, [active])
 
@@ -116,6 +252,7 @@ export default function TossOngoing({ active }: { active: boolean }) {
           <small>SCROLL TO CONTACT</small>
         </div>
       </div>
+      <div className="toss-forward-overlay" ref={forwardOverlayRef} aria-hidden="true"><i /><span /></div>
     </section>
   )
 }

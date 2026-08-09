@@ -68,6 +68,48 @@
 .toss-entry-curtain i { top: 11%; right: 8%; width: 38vmin; aspect-ratio: 1; }
 .toss-entry-curtain span { top: calc(11% + 9vmin); right: calc(8% + 9vmin); width: 20vmin; aspect-ratio: 1; }
 
+.toss-forward-overlay {
+  position: fixed;
+  z-index: 1100;
+  inset: -8% -6%;
+  overflow: hidden;
+  visibility: hidden;
+  background: #0064ff;
+  clip-path: circle(0 at 80% 26%);
+  transform: translate3d(0, 0, 0) rotate(0deg);
+  transform-origin: center bottom;
+  pointer-events: none;
+  will-change: clip-path, transform;
+}
+
+.toss-forward-overlay::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 16%;
+  background: linear-gradient(to top, rgba(0, 55, 155, .16), transparent);
+}
+
+.toss-forward-overlay i,
+.toss-forward-overlay span {
+  position: absolute;
+  top: 20%;
+  right: 8%;
+  display: block;
+  aspect-ratio: 1;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 50%;
+}
+
+.toss-forward-overlay i { width: 38vmin; }
+.toss-forward-overlay span { top: calc(20% + 9vmin); right: calc(8% + 9vmin); width: 20vmin; }
+.toss-forward-overlay.is-ready { visibility: visible; clip-path: circle(0 at 80% 26%); transition: none; }
+.toss-forward-overlay.is-covering { visibility: visible; clip-path: circle(160vmax at 80% 26%); transition: clip-path .48s cubic-bezier(.76, 0, .24, 1); }
+.toss-forward-overlay.is-covered { visibility: visible; clip-path: circle(160vmax at 80% 26%); transition: none; }
+.toss-forward-overlay.is-revealing { visibility: visible; clip-path: circle(160vmax at 80% 26%); transform: translate3d(0, -118%, 0) rotate(-1.6deg); transition: transform .56s cubic-bezier(.76, 0, .24, 1); }
+
 .toss-ongoing-meta {
   position: absolute;
   z-index: 20;
@@ -264,6 +306,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .toss-entry-curtain { transform: translate3d(0, var(--toss-entry-y), 0); }
+  .toss-forward-overlay.is-covering { transition-duration: .02s; }
+  .toss-forward-overlay.is-revealing { transform: translate3d(0, -118%, 0); transition-duration: .02s; }
   .toss-ongoing-meta strong i,
   .toss-status-card header strong i,
   .toss-loading i { animation: none; }

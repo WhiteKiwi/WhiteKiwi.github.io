@@ -55,7 +55,7 @@ pnpm build
 - 진행률은 컴포넌트 내부에서 현재 보이는 트랙만 갱신하고, 큰 헤드라인·상태 카드·Contact 출구의 조립에만 사용한다.
 - 공식 색상인 Toss Blue `#0064FF`, Toss Gray `#202632`와 흰색을 사용하고 로고 대신 타이포와 제품 상태 UI로 정체성을 만든다.
 - 로딩 바와 live dot은 반복 ambient motion으로 현재진행형을 표현한다. 모션 감소 환경에서는 반복을 멈추고 정적인 진행 상태로 대체한다.
-- 06 후반의 텍스트형 `next-journey`는 제거한다. 지도 우상단에서 Toss Blue 원형 레이어를 확대해 viewport를 완전히 덮고, 07 초입의 동일한 파란 curtain을 위로 이동시켜 흰 무대를 reveal한다. 두 트랙의 경계 프레임을 같은 단색으로 맞춰 양방향 스크롤에서도 이음새를 숨긴다.
+- 06 후반의 텍스트형 `next-journey`는 제거한다. 하향 wheel·touch·스크롤 키가 임계 progress를 넘으려 하면 입력을 소비하고, fixed Toss Blue 원형 cover를 시간 기반으로 끝까지 재생한다. 완전히 가린 프레임에서 07의 curtain이 사라진 대표 progress로 즉시 이동한 뒤 fixed layer를 위로 퇴장시킨다. 상향 이동은 잠그거나 점프하지 않고 07 curtain과 06 원형의 기존 scroll-linked 값을 그대로 되감는다.
 - `#07`, `#07-toss`, `#07-ongoing`은 현재진행형 장면의 대표 상태로 이동한다.
 
 ### Contact finale
