@@ -185,6 +185,12 @@
 - Google tag의 기본 `config` 호출로 page view만 적용하고, 커스텀 이벤트와 사용자 식별은 이후 별도 요청 전까지 추가하지 않는다.
 - 2026-08-09 사용자가 `?view=` 구조로 GA에서 페이지가 구분되는지 물었고, 확인 결과 구분되지 않았다. 이유는 두 가지다. GA4 기본 보고서의 페이지 경로 dimension은 쿼리스트링을 제거하므로 `/?view=guidelines`가 `/`에 합산된다. 그리고 Google tag는 `<head>`에서 동기 실행돼 React 마운트 전에 `page_view`를 보내므로, `useEffect`에서 바꾸던 `document.title`도 반영되지 않아 제목으로도 구분할 수 없었다. 원본 URL은 `page_location`에 남아 있어 탐색 분석으로 파는 것은 가능했지만, 기본 화면에서 보이지 않는 구조는 유지하지 않기로 했다.
 
+## Chapter colour decisions
+
+- 2026-08-09 사용자 지시로 04 FETCHING 장면은 기존 버건디·브라스 톤을 그대로 두고, Guidelines의 챕터 색상표와 이력서만 실제 브랜드색으로 맞췄다. 장면을 다시 짜는 비용이 얻는 것보다 크다고 판단했다.
+- 그래서 Guidelines의 CHAPTER COLORS는 "장면이 쓰는 색"이 아니라 "회사 브랜드에서 가져온 식별색"으로 설명을 바꿨다. 값만 바꾸고 문장을 그대로 두면 문서가 장면에 대해 틀린 주장을 하게 된다. 각 항목에 출처 이름도 함께 표시한다.
+- Whiteblock은 `#17194B`(TAKEIT Navy), Fetching은 `#000000`(FETCHING Black)이다. Education·Aimpact·Daangn은 원래부터 실제 브랜드색이라 그대로 둔다.
+
 ## Routing decisions
 
 - 2026-08-09 `#contact` 딥링크가 당근 구간에서 멈추는 문제를 사용자가 보고했다. 원인은 `window.scrollTo`의 `behavior: 'auto'`가 즉시 이동이 아니라 CSS `scroll-behavior`를 따른다는 점이었다. `styles.css`의 전역 `smooth` 때문에 4만 픽셀짜리 애니메이션이 시작되고 중간 챕터의 전환 트리거에 걸려 멈췄다. 이동 직전에만 `auto`로 바꾸는 방식으로 고쳤고 사용자가 동작을 확인했다.

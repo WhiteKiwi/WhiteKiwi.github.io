@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- lastmod는 손으로 관리하면 금방 틀려지므로 넣지 않는다. 오래된 lastmod는 없는 것보다 나쁘다. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://portfolio.whitekiwi.link/</loc>
+  </url>
+  <url>
+    <loc>https://portfolio.whitekiwi.link/resume/</loc>
+  </url>
+  <url>
+    <loc>https://portfolio.whitekiwi.link/guidelines/</loc>
+  </url>
+</urlset>

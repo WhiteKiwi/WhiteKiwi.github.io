@@ -25,12 +25,16 @@ const colors = [
   { name: 'Kiwi Green', hex: '#79945A', role: 'Living detail', tone: 'green' },
 ] as const
 
+/**
+ * 각 회사·학교의 실제 브랜드에서 가져온 식별색이다.
+ * 장면은 이 색에서 파생한 더 넓은 팔레트를 쓰므로 여기 값과 1:1로 일치하지 않는다.
+ */
 const chapterColors = [
-  ['Education', '#007DC3'],
-  ['Whiteblock', '#F17C58'],
-  ['Fetching', '#511F2D'],
-  ['Aimpact', '#38A080'],
-  ['Daangn', '#FF6F0F'],
+  ['Education', '#007DC3', 'CNSA Blue'],
+  ['Whiteblock', '#17194B', 'TAKEIT Navy'],
+  ['Fetching', '#000000', 'FETCHING Black'],
+  ['Aimpact', '#38A080', 'Arrange Mint'],
+  ['Daangn', '#FF6F0F', 'Daangn Orange'],
 ] as const
 
 function PromptMark({ compact = false }: { compact?: boolean }) {
@@ -256,10 +260,10 @@ function PortfolioGuidelines() {
           </div>
 
           <div className="guidelines-chapter-colors">
-            <div><span>CHAPTER COLORS</span><p>스토리가 새로운 세계로 이동할 때만 색의 주도권을 넘긴다.</p></div>
+            <div><span>CHAPTER COLORS</span><p>각 챕터의 식별색은 그 회사의 실제 브랜드에서 가져온다. 스토리가 새로운 세계로 이동할 때만 색의 주도권을 넘기며, 장면은 이 색에서 파생한 더 넓은 팔레트를 쓴다.</p></div>
             <ul>
-              {chapterColors.map(([name, hex]) => (
-                <li key={name}><i style={{ backgroundColor: hex }} /><span>{name}</span><code>{hex}</code></li>
+              {chapterColors.map(([name, hex, source]) => (
+                <li key={name}><i style={{ backgroundColor: hex }} /><span>{name}</span><small>{source}</small><code>{hex}</code></li>
               ))}
             </ul>
           </div>

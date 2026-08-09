@@ -57,6 +57,8 @@
 - [ ] 스크롤 계산을 재사용 가능한 chapter hook/component로 분리
 - [ ] 이미지 크기와 포맷 최적화, preload 정책 결정
 - [ ] 기본 구조화 데이터 추가
+- [ ] Search Console에 sitemap 제출하고 세 페이지가 실제로 색인되는지 확인
+- [ ] 클라이언트 렌더 페이지의 색인이 부실하면 프리렌더 도입을 검토
 
 ## Resume page
 

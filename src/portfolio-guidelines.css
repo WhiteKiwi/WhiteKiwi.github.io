@@ -680,7 +680,7 @@
 
 .guidelines-chapter-colors li {
   display: grid;
-  grid-template-columns: 20px 1fr auto;
+  grid-template-columns: 20px 1fr auto auto;
   gap: 18px;
   align-items: center;
   padding: 15px 0;
@@ -694,10 +694,19 @@
   border-radius: 50%;
 }
 
+.guidelines-chapter-colors li small {
+  color: rgba(244, 240, 231, .45);
+  font: 400 .62rem 'DM Mono', monospace;
+  letter-spacing: .03em;
+}
+
 .guidelines-chapter-colors li code {
   color: rgba(244, 240, 231, .45);
   font: 400 .62rem 'DM Mono', monospace;
 }
+
+/* 검정 점은 어두운 배경에 묻히므로 테두리로 형태를 남긴다. */
+.guidelines-chapter-colors li i { box-shadow: 0 0 0 1px rgba(244, 240, 231, .28); }
 
 .guidelines-copy-status {
   position: absolute;
@@ -1437,6 +1446,9 @@
   .guidelines-chapter-colors {
     grid-template-columns: 1fr;
   }
+
+  .guidelines-chapter-colors li { grid-template-columns: 20px 1fr auto; }
+  .guidelines-chapter-colors li small { display: none; }
 
   .guidelines-type-display > p {
     font-size: 22vw;

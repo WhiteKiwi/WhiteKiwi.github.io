@@ -257,6 +257,13 @@ pnpm build
 - `og:image`와 `twitter:image`는 절대 URL의 `/og-image.png`를 가리키며, 1200×630 PNG 크기와 대체 텍스트를 함께 명시한다.
 - 일반 description과 Open Graph·Twitter Card description은 `Scroll through the work and journey of Jihoon Jang, a Node.js developer.`로 통일한다.
 
+### Crawling
+
+- `public/robots.txt`는 전체 크롤을 허용하고 sitemap 위치를 알린다.
+- `public/sitemap.xml`은 공개 세 주소만 나열한다. `/labs/*`는 배포본에 파일 자체가 없어 차단할 대상이 아니다.
+- sitemap에 `lastmod`는 넣지 않는다. 손으로 관리하면 금방 틀려지고, 오래된 `lastmod`는 없는 것보다 나쁜 신호다.
+- 세 페이지 모두 React가 클라이언트에서 렌더한다. 검색 엔진이 JS를 실행해야 본문을 볼 수 있으므로, 색인이 실제로 잡히는지는 배포 후 Search Console로 확인한다.
+
 ## Analytics
 
 - GA4 측정 ID `G-BD6TDB13LR`의 Google tag를 공개 HTML 진입점마다 `<head>`에서 비동기로 로드한다.
