@@ -398,7 +398,7 @@ export default function CareerJourney({ active }: { active: boolean }) {
 
     const portalCoverDuration = reducedMotion ? 20 : 460
     const portalHoldDuration = reducedMotion ? 0 : 70
-    const portalRevealDuration = reducedMotion ? 20 : 420
+    const portalRevealDuration = reducedMotion ? 20 : 520
     const scrollToTrackProgress = (track: HTMLElement, progress: number) => {
       const trackTop = window.scrollY + track.getBoundingClientRect().top
       const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
