@@ -214,7 +214,7 @@ export default function EggLab() {
     <main className="egg-lab">
       <header className="lab-header">
         <a href="/" className="lab-wordmark">whitekiwi®</a>
-        <span>EGG DESIGN STUDY · 2026</span>
+        <span>EGG DESIGN STUDY</span>
         <a href="/" className="lab-close">CLOSE ×</a>
       </header>
 

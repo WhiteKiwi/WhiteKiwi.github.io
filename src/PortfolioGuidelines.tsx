@@ -13,6 +13,9 @@ const sections = [
   ['08', 'Social'],
 ] as const
 
+/** 문서를 실제로 손볼 때 함께 갱신한다. 이 한 곳만 고치면 목차와 푸터가 같이 바뀐다. */
+const lastUpdated = '2026.08.09'
+
 const colors = [
   { name: 'Graphite', hex: '#171717', role: 'Primary ink', tone: 'dark' },
   { name: 'Warm Ivory', hex: '#F4F0E7', role: 'Primary canvas', tone: 'light' },
@@ -109,7 +112,7 @@ function PortfolioGuidelines() {
           ))}
         </nav>
 
-        <p className="guidelines-version">LIVING DOCUMENT<br />01 / 2026.08</p>
+        <p className="guidelines-version">LIVING DOCUMENT<br />01 / {lastUpdated.slice(0, 7)}</p>
       </aside>
 
       <div className="guidelines-content">
@@ -401,7 +404,7 @@ function PortfolioGuidelines() {
         <footer className="guidelines-footer">
           <div><PromptMark compact /><span>whitekiwi / Portfolio Guidelines</span></div>
           <p>Build the system.<br /><strong>Keep the wonder.</strong></p>
-          <div className="guidelines-footer-meta"><span>LAST UPDATED / 2026.08.09</span><a href="/">VIEW PORTFOLIO ↗</a></div>
+          <div className="guidelines-footer-meta"><span>LAST UPDATED / {lastUpdated}</span><a href="/">VIEW PORTFOLIO ↗</a></div>
         </footer>
       </div>
     </main>

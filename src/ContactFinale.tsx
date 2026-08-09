@@ -656,7 +656,7 @@ export default function ContactFinale({ active }: { active: boolean }) {
         </nav>
 
         <div className="contact-finale-bottom">
-          <p>THANKS FOR SCROLLING <span aria-hidden="true">✦</span> PORTFOLIO 2026</p>
+          <p>THANKS FOR SCROLLING <span aria-hidden="true">✦</span> PORTFOLIO</p>
           <div>
             <a href="/resume/">RESUME <span aria-hidden="true">↗</span></a>
             <a href="/guidelines/">PORTFOLIO GUIDELINES <span aria-hidden="true">↗</span></a>

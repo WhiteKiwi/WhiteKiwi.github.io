@@ -46,7 +46,7 @@ function OpeningTitle() {
         <ellipse className="opening-world-o" cx="510" cy="145" rx="27" ry="38" />
         <text className="opening-stroke opening-stroke-right" x="550" y="185">rld</text>
       </svg>
-      <span className="opening-signature">A PORTFOLIO BY WHITEKIWI · 2026</span>
+      <span className="opening-signature">A PORTFOLIO BY WHITEKIWI</span>
     </div>
   )
 }
