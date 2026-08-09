@@ -118,7 +118,7 @@ function AimpactChapter({ trackRef }: { trackRef: RefObject<HTMLElement | null> 
   return (
     <section className="career-track career-aimpact" ref={trackRef} aria-label="에이임팩트 경력">
       <div className="career-stage aimpact-stage">
-        <ChapterMeta number="05" company="AIMPACT · ARRANGE" period="2021.02—2021.05" />
+        <ChapterMeta number="05" company="AIMPACT" period="2021.02—2021.05" />
         <div className="seed-packet" aria-hidden="true">
           <span>ARRANGE</span><strong>BETTER<br />GROUND</strong><i>SEEDS / 2021</i>
         </div>
@@ -167,6 +167,9 @@ function DaangnChapter({ trackRef }: { trackRef: RefObject<HTMLElement | null> }
       <div className="career-stage daangn-stage">
         <ChapterMeta number="06" company="DAANGN" period="2021.05—2021.08" />
         <div className="carrot-portal crop crop-1" style={{ '--index': 4 } as IndexedStyle} aria-hidden="true"><i /><b /><em /></div>
+        <div className="carrot-transition-roads" aria-hidden="true">
+          <i className="map-road road-a" /><i className="map-road road-b" /><i className="map-road road-c" />
+        </div>
         <div className="neighborhood-map" aria-hidden="true">
           <i className="map-road road-a" /><i className="map-road road-b" /><i className="map-road road-c" />
           {Array.from({ length: 8 }, (_, index) => <span className={`map-house house-${index + 1}`} key={index}><i /></span>)}
@@ -393,13 +396,29 @@ export default function CareerJourney({ active }: { active: boolean }) {
       settleFarmBreeze()
     }
 
-    const transitionDuration = reducedMotion ? 20 : 460
+    const pluckDuration = reducedMotion ? 0 : 90
+    const transitionDuration = reducedMotion ? 20 : 430
     const revealDuration = reducedMotion ? 20 : 410
     const scrollToTrackProgress = (track: HTMLElement, progress: number) => {
       const trackTop = window.scrollY + track.getBoundingClientRect().top
       const distance = Math.max(track.offsetHeight - window.innerHeight, 1)
       window.scrollTo(0, trackTop + distance * progress)
       lastPageY = window.scrollY
+    }
+    const updateCarrotCoverScale = () => {
+      if (!aimpactTrack || !daangnTrack) return
+      const compact = window.innerWidth <= 700
+      const cropWidth = Math.min(66, Math.max(38, window.innerWidth * .04))
+      const cropHeight = Math.min(180, Math.max(110, window.innerHeight * .17))
+      const rootWidth = cropWidth * .42
+      const rootHeight = cropHeight * .35 * .86
+      const rootCenterX = window.innerWidth * (compact ? .73 : .663)
+      const rootCenterY = window.innerHeight * (compact ? .86 : .85)
+      const horizontalScale = Math.max(rootCenterX, window.innerWidth - rootCenterX) * 2 / rootWidth
+      const verticalScale = Math.max(rootCenterY, window.innerHeight - rootCenterY) * 2 / rootHeight
+      const coverScale = Math.ceil(Math.max(horizontalScale, verticalScale) * 1.12)
+      aimpactTrack.style.setProperty('--carrot-cover-scale', String(coverScale))
+      daangnTrack.style.setProperty('--carrot-cover-scale', String(coverScale))
     }
     const onNextPaint = (callback: () => void) => {
       chapterTransitionFrame = window.requestAnimationFrame(() => {
@@ -415,24 +434,29 @@ export default function CareerJourney({ active }: { active: boolean }) {
       const progress = Number.parseFloat(aimpactTrack.style.getPropertyValue('--chapter-progress'))
       if (!Number.isFinite(progress) || progress < .64) return
 
+      updateCarrotCoverScale()
       chapterTransitionLocked = true
       carrotButton?.blur()
       aimpactTrack.classList.add('is-carrot-departing')
       chapterTransitionTimer = window.setTimeout(() => {
-        daangnTrack.classList.add('is-carrot-forward-cover')
-        scrollToTrackProgress(daangnTrack, .035)
-        aimpactTrack.classList.remove('is-carrot-departing')
-        onNextPaint(() => {
-          daangnTrack.classList.add('is-carrot-forward-reveal')
-          chapterTransitionTimer = window.setTimeout(() => {
-            daangnTrack.classList.remove('is-carrot-forward-cover', 'is-carrot-forward-reveal')
-            finishChapterTransition()
-          }, revealDuration)
-        })
-      }, transitionDuration)
+        aimpactTrack.classList.add('is-carrot-root-expanding')
+        chapterTransitionTimer = window.setTimeout(() => {
+          daangnTrack.classList.add('is-carrot-forward-cover')
+          scrollToTrackProgress(daangnTrack, .035)
+          aimpactTrack.classList.remove('is-carrot-departing', 'is-carrot-root-expanding')
+          onNextPaint(() => {
+            daangnTrack.classList.add('is-carrot-forward-reveal')
+            chapterTransitionTimer = window.setTimeout(() => {
+              daangnTrack.classList.remove('is-carrot-forward-cover', 'is-carrot-forward-reveal')
+              finishChapterTransition()
+            }, revealDuration)
+          })
+        }, transitionDuration)
+      }, pluckDuration)
     }
     triggerReverseTransition = () => {
       if (chapterTransitionLocked || !aimpactTrack || !daangnTrack) return
+      updateCarrotCoverScale()
       chapterTransitionLocked = true
       daangnTrack.classList.add('is-carrot-reverse-ready')
       onNextPaint(() => {
