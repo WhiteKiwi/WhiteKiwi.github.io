@@ -130,6 +130,14 @@
 - 선택 원본은 생성 결과 `exec-33acd6ac-88f1-4cc4-bf4f-1a10934b65af`이며, 실제 배포에는 1200×630 PNG로 맞춰 사용한다.
 - title은 `$ whoami`, description은 `Scroll through the work and journey of Jihoon Jang, a Node.js developer.`로 확정해 브라우저·Open Graph·Twitter Card에 일관되게 사용한다.
 
+## Portfolio Guidelines direction
+
+- 2026-08-09 사용자는 일반적인 브랜드 가이드처럼 포트폴리오의 색, 마크와 콘셉트를 정리한 `Portfolio Guidelines` 페이지를 요청했다.
+- 현재 메인 포트폴리오에는 진입점을 만들지 않고 `?view=guidelines` 직접 링크로만 접근한다. 메인에서 연결할 위치와 방식은 이후 사용자가 정한다.
+- 공식 레퍼런스로 [Vercel Geist·Brand](https://vercel.com/geist/brands)에서 토큰과 타이포의 계층, [Linear Brand](https://linear.app/brand)에서 넉넉한 여백과 간결한 마크 규칙, [Spotify Design](https://developer.spotify.com/documentation/design)에서 최소 크기·안전 여백과 do/don't 예시 구조를 참고한다. 외형을 복제하지 않고 `whitekiwi`의 Graphite·Ivory·Amber 프롬프트 정체성과 여정형 모션 원칙으로 번역한다.
+- 페이지의 핵심 인상은 `technical depth`, `playful precision`, `editorial clarity`, `motion with intent` 네 문장으로 정리한다.
+- 가이드라인은 완성 선언이 아니라 계속 갱신되는 `living document`로 다루며 현재 버전은 `01 / 2026.08`로 표시한다.
+
 ## Repository history
 
 - 기존 Gatsby 소스의 보존 브랜치: `archive/20260808`

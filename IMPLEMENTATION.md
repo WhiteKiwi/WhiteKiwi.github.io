@@ -32,9 +32,19 @@ pnpm build
 - `public/favicon-*.png`, `public/favicon.ico`, `public/apple-touch-icon.png` — Graphite 팔레트의 `>_` 프롬프트 마크에서 파생한 브라우저·홈 화면 아이콘 세트
 - `public/og-image.png` — `$ whoami`, `whitekiwi`, 이름과 역할을 크림색 미니멀 타이포로 구성한 1200×630 소셜 공유 이미지
 - `src/EggLab.tsx`, `src/GlassLab.tsx`, `src/BirdLab.tsx` — 시안 비교를 위해 남긴 실험 페이지
-- `src/App.tsx` — 메인과 `?view=eggs|glass|birds|journey` 실험 뷰 진입점
+- `src/PortfolioGuidelines.tsx`, `src/portfolio-guidelines.css` — 아이덴티티 원칙과 토큰을 보여주는 링크 전용 브랜드 가이드라인 페이지
+- `src/App.tsx` — 메인과 `?view=eggs|glass|birds|journey|guidelines` 보조 뷰 진입점
 
 ## Interaction model
+
+### Portfolio Guidelines document
+
+- `?view=guidelines` query에서만 lazy-load하며 메인 포트폴리오에는 링크를 추가하지 않는다.
+- 넓은 화면에서는 고정 목차와 스크롤 문서를 나란히 두고, 모바일에서는 목차를 상단 가로 스크롤로 전환한다.
+- 섹션 anchor를 사용해 아이덴티티, 마크, 색상, 타이포, 보이스, 모션, 일러스트와 소셜 자산으로 바로 이동한다.
+- 색상 swatch는 실제 버튼으로 구현해 hex 값을 clipboard에 복사하고, 성공 여부를 텍스트 상태로 알린다.
+- 기존 favicon과 OG 이미지를 문서 안의 실제 배포 예시로 재사용하고 별도의 무거운 이미지 자산은 추가하지 않는다.
+- 문서 진입 시 브라우저 title과 theme color를 가이드라인 문맥에 맞게 바꾸고, 다른 뷰로 이탈하면 원래 값을 복원한다.
 
 ### Egg state machine
 

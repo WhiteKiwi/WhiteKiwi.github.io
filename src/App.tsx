@@ -4,6 +4,7 @@ const EggLab = lazy(() => import('./EggLab'))
 const GlassLab = lazy(() => import('./GlassLab'))
 const BirdLab = lazy(() => import('./BirdLab'))
 const FallIntro = lazy(() => import('./FallIntro'))
+const PortfolioGuidelines = lazy(() => import('./PortfolioGuidelines'))
 
 type JourneyStage = 'egg' | 'cracked' | 'hatched' | 'riding' | 'whiteblock'
 
@@ -135,6 +136,7 @@ function App() {
   if (view === 'glass') return <Suspense fallback={<main className="glass-lab-page" />}><GlassLab /></Suspense>
   if (view === 'birds') return <Suspense fallback={<main className="bird-lab-page" />}><BirdLab /></Suspense>
   if (view === 'journey') return <JourneyApp />
+  if (view === 'guidelines') return <Suspense fallback={<main className="guidelines-loading" />}><PortfolioGuidelines /></Suspense>
   return <Suspense fallback={<main className="fall-intro" />}><FallIntro /></Suspense>
 }
 
