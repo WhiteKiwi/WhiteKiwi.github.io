@@ -104,7 +104,7 @@ export default function GlassLab() {
       <header className="glass-lab-header">
         <a href="/" className="glass-wordmark">whitekiwi®</a>
         <span>GLASS LIFE · MATERIAL STUDY</span>
-        <a href="/?view=eggs">BACK TO ALL EGGS ↗</a>
+        <a href="/labs/eggs">BACK TO ALL EGGS ↗</a>
       </header>
 
       <section className="glass-lab-intro">
@@ -125,7 +125,7 @@ export default function GlassLab() {
 
       <footer className="glass-lab-footer">
         <span>NEXT STEP</span>
-        <p>Milk Glass를 골랐습니다. 이제 <a href="/?view=birds">키위새 디자인을 고르러 갑니다 ↗</a></p>
+        <p>Milk Glass를 골랐습니다. 이제 <a href="/labs/birds">키위새 디자인을 고르러 갑니다 ↗</a></p>
       </footer>
     </main>
   )

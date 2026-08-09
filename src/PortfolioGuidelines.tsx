@@ -51,17 +51,15 @@ function SectionLabel({ number, children }: { number: string; children: string }
 function PortfolioGuidelines() {
   const [copied, setCopied] = useState<string | null>(null)
 
+  // title은 guidelines/index.html이 직접 선언한다. GA page view가 마운트 전에 전송되기 때문이다.
   useEffect(() => {
-    const previousTitle = document.title
     const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
     const previousTheme = themeColor?.content
 
-    document.title = 'Portfolio Guidelines — whitekiwi'
     document.body.classList.add('guidelines-is-open')
     themeColor?.setAttribute('content', '#171717')
 
     return () => {
-      document.title = previousTitle
       document.body.classList.remove('guidelines-is-open')
       if (themeColor && previousTheme) themeColor.setAttribute('content', previousTheme)
     }

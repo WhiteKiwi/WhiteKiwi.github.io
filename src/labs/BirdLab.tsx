@@ -46,7 +46,7 @@ export default function BirdLab() {
       <header className="bird-lab-header">
         <a href="/" className="bird-wordmark">whitekiwi®</a>
         <span>CHARACTER STUDY · REFERENCE ROUND</span>
-        <a href="/?view=glass">BACK TO THE EGG ↗</a>
+        <a href="/labs/glass">BACK TO THE EGG ↗</a>
       </header>
 
       <section className="bird-lab-intro">

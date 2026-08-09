@@ -229,7 +229,7 @@ export default function EggLab() {
           <article className={`concept-card ${concept.className}`} key={concept.id}>
             <div className="concept-meta">
               <span>{concept.id}</span>
-              <span>{concept.kind}{concept.className === 'concept-glass' && <a href="/?view=glass">VIEW 6 STUDIES ↗</a>}</span>
+              <span>{concept.kind}{concept.className === 'concept-glass' && <a href="/labs/glass">VIEW 6 STUDIES ↗</a>}</span>
             </div>
             <div className="concept-visual">{concept.visual}</div>
             <div className="concept-copy">

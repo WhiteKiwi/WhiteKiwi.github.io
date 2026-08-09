@@ -49,11 +49,18 @@
 ## Technical gaps
 
 - [ ] 배포 후 GA4 실시간 보고서에서 `portfolio.whitekiwi.link` page view 유입 확인
+- [ ] 배포 후 GA4 기본 보고서에서 `/`와 `/guidelines/`가 서로 다른 페이지로 잡히는지 확인
+- [ ] 배포 후 `/labs/eggs`가 실제로 404를 반환하는지 확인
 - [ ] ESLint와 자동 테스트 스크립트 추가
 - [ ] 스크롤 계산을 재사용 가능한 chapter hook/component로 분리
-- [ ] 실험용 EggLab 번들의 500 kB 초과 경고 해소 또는 실험 뷰를 배포에서 제외
 - [ ] 이미지 크기와 포맷 최적화, preload 정책 결정
 - [ ] 기본 구조화 데이터 추가
+
+## Resume page
+
+- [ ] 정리형 이력 페이지를 `/resume/`에 추가한다. 담을 항목, 밀도와 메인 여정과의 역할 분담을 먼저 SPEC에 정의한다
+- [ ] `/resume/` 전용 title, description, canonical과 공유 미리보기 이미지를 정한다
+- [ ] Contact 피날레 하단에 `RESUME` 진입점을 추가한다
 
 ## Known intentional differences
 

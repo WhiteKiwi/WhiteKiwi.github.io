@@ -578,7 +578,7 @@ export default function ContactFinale({ active }: { active: boolean }) {
         <div className="contact-finale-bottom">
           <p>THANKS FOR SCROLLING <span aria-hidden="true">✦</span> PORTFOLIO 2026</p>
           <div>
-            <a href="/?view=guidelines">PORTFOLIO GUIDELINES <span aria-hidden="true">↗</span></a>
+            <a href="/guidelines/">PORTFOLIO GUIDELINES <span aria-hidden="true">↗</span></a>
             <a href="/">RUN AGAIN <span aria-hidden="true">↺</span></a>
           </div>
         </div>

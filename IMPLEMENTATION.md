@@ -34,9 +34,21 @@ pnpm build
 - `public/assets/characters/kiwi-*.png` — 배달부·패션 큐레이터·농부·동네 탐험가로 변주한 투명 배경 캐릭터
 - `public/favicon-*.png`, `public/favicon.ico`, `public/apple-touch-icon.png` — Graphite 팔레트의 `>_` 프롬프트 마크에서 파생한 브라우저·홈 화면 아이콘 세트
 - `public/og-image.png` — `$ whoami`, `whitekiwi`, 이름과 역할을 크림색 미니멀 타이포로 구성한 1200×630 소셜 공유 이미지
-- `src/EggLab.tsx`, `src/GlassLab.tsx`, `src/BirdLab.tsx` — 시안 비교를 위해 남긴 실험 페이지
+- `src/labs/EggLab.tsx`, `src/labs/GlassLab.tsx`, `src/labs/BirdLab.tsx`와 각 CSS — 시안 비교를 위해 남긴 개발 전용 실험 페이지
+- `src/labs/LabRouter.tsx` — `/labs/*` 경로를 실험 페이지로 연결하는 개발 전용 진입점
 - `src/PortfolioGuidelines.tsx`, `src/portfolio-guidelines.css` — 아이덴티티 원칙과 토큰을 보여주는 링크 전용 브랜드 가이드라인 페이지
-- `src/App.tsx` — 메인과 `?view=eggs|glass|birds|journey|guidelines` 보조 뷰 진입점
+- `index.html` — 메인 여정 `/`의 HTML 진입점
+- `guidelines/index.html` — `/guidelines/`의 HTML 진입점
+- `src/App.tsx` — `window.location.pathname` 기준 진입점 분기
+
+## Routing and entry points
+
+- 공개 페이지는 Vite 멀티페이지 빌드로 각자 실제 HTML 파일을 만든다. `rollupOptions.input`에 `index.html`과 `guidelines/index.html`을 등록한다.
+- 두 HTML은 같은 `src/main.tsx`를 로드하고, `src/App.tsx`가 `window.location.pathname`으로 화면을 고른다. 끝 슬래시 유무는 정규화해 `/guidelines`와 `/guidelines/`를 같게 처리한다.
+- 각 HTML은 자신의 `<title>`, description, canonical과 Open Graph·Twitter 메타를 직접 가진다. 공유 미리보기와 검색 색인이 페이지마다 달라야 하고, 뒤늦게 실행되는 스크립트로는 이를 만들 수 없다.
+- 실험 페이지는 `/labs/eggs`, `/labs/glass`, `/labs/birds`에 두고 `import.meta.env.DEV`가 참일 때만 분기와 `lazy(() => import(...))`가 존재한다. 프로덕션 빌드에서는 조건이 상수 `false`로 접히면서 실험 번들이 산출물에서 사라진다.
+- `/labs/*`용 HTML 진입점은 빌드에 등록하지 않는다. 배포본에는 해당 파일이 없으므로 접근하면 GitHub Pages 404가 된다. 개발 서버에서는 Vite의 SPA fallback이 `index.html`을 돌려주므로 그대로 동작한다.
+- 쿼리 기반 `?view=` 분기는 사용하지 않는다. GA4 기본 보고서의 페이지 경로 dimension이 쿼리스트링을 제거해 모든 보조 뷰가 `/`에 합산되기 때문이다.
 
 ## Interaction model
 
@@ -77,17 +89,17 @@ pnpm build
 - GitHub, Blog, LinkedIn과 Instagram은 사용자 submit 이벤트 안에서 새 탭으로 열고 email은 `mailto:`로 연결한다. 화면의 명령 힌트 버튼도 같은 실행 경로를 직접 호출한다.
 - 터미널이 viewport의 절반 이상 들어오면 Contact 자동 조립과 함께 부팅 행을 순차적으로 보여준다. 강제 포커스로 모바일 키보드를 열지는 않으며 stage나 input을 직접 선택하면 입력할 수 있다.
 - 터미널 아래에는 Introduction과 같은 순서의 Email·GitHub·Blog·LinkedIn·Instagram 실제 앵커를 두고, 재시작은 `/`로 이동해 오프닝을 처음부터 실행한다.
-- 하단의 `Portfolio Guidelines` 링크는 `?view=guidelines`로 이동하며 이것이 메인 여정의 유일한 Guidelines 진입점이다.
+- 하단의 `Portfolio Guidelines` 링크는 `/guidelines/`로 이동하며 이것이 메인 여정의 유일한 Guidelines 진입점이다.
 - 모바일에서는 헤드라인과 터미널을 세로로 재배치하고 히스토리 영역에 독립적인 세로 스크롤을 허용한다. 모션 감소 환경에서는 포인터 추적, 자동 타이핑 지연과 반복 커서 모션을 끈다.
 
 ### Portfolio Guidelines document
 
-- `?view=guidelines` query에서만 lazy-load하며 메인 포트폴리오에서는 Contact 피날레 하단 링크 하나만 제공한다.
+- `/guidelines/` 경로에서만 lazy-load하며 메인 포트폴리오에서는 Contact 피날레 하단 링크 하나만 제공한다.
 - 넓은 화면에서는 고정 목차와 스크롤 문서를 나란히 두고, 모바일에서는 목차를 상단 가로 스크롤로 전환한다.
 - 섹션 anchor를 사용해 아이덴티티, 마크, 색상, 타이포, 보이스, 모션, 일러스트와 소셜 자산으로 바로 이동한다.
 - 색상 swatch는 실제 버튼으로 구현해 hex 값을 clipboard에 복사하고, 성공 여부를 텍스트 상태로 알린다.
 - 기존 favicon과 OG 이미지를 문서 안의 실제 배포 예시로 재사용하고 별도의 무거운 이미지 자산은 추가하지 않는다.
-- 문서 진입 시 브라우저 title과 theme color를 가이드라인 문맥에 맞게 바꾸고, 다른 뷰로 이탈하면 원래 값을 복원한다.
+- title은 `guidelines/index.html`이 직접 선언하므로 컴포넌트에서 다시 설정하지 않는다. theme color만 가이드라인 문맥에 맞게 바꾸고 이탈 시 복원한다.
 
 ### Egg state machine
 
@@ -207,15 +219,16 @@ pnpm build
 
 ## Search and social metadata
 
-- 브라우저 title과 Open Graph·Twitter Card title은 OG 이미지의 명령어 모티프와 같은 `$ whoami`를 사용한다.
-- canonical URL과 `og:url`은 HTTPS custom domain인 `https://portfolio.whitekiwi.link/`를 기준으로 한다.
+- 메인 여정의 브라우저 title과 Open Graph·Twitter Card title은 OG 이미지의 명령어 모티프와 같은 `$ whoami`를 사용한다.
+- canonical URL과 `og:url`은 HTTPS custom domain을 기준으로 하되 각 HTML이 자신의 주소를 선언한다. 메인은 `https://portfolio.whitekiwi.link/`, 가이드라인은 `https://portfolio.whitekiwi.link/guidelines/`다.
 - `og:image`와 `twitter:image`는 절대 URL의 `/og-image.png`를 가리키며, 1200×630 PNG 크기와 대체 텍스트를 함께 명시한다.
 - 일반 description과 Open Graph·Twitter Card description은 `Scroll through the work and journey of Jihoon Jang, a Node.js developer.`로 통일한다.
 
 ## Analytics
 
-- GA4 측정 ID `G-BD6TDB13LR`의 Google tag를 `index.html` `<head>`에서 비동기로 로드한다.
-- Vite의 모든 query view가 같은 HTML 진입점을 사용하므로 메인과 `?view=guidelines`를 포함한 보조 뷰에 기본 `page_view`가 적용된다.
+- GA4 측정 ID `G-BD6TDB13LR`의 Google tag를 공개 HTML 진입점마다 `<head>`에서 비동기로 로드한다.
+- 공개 페이지가 서로 다른 경로를 가지므로 GA4 기본 `page_view`의 페이지 경로만으로 `/`와 `/guidelines/`가 구분된다.
+- `page_view`는 `<head>`의 tag가 실행되는 시점에 전송되므로 페이지 제목은 정적 HTML의 `<title>`에서 와야 한다. 마운트 이후 `document.title`을 바꾸는 방식은 GA에 반영되지 않는다.
 - 현재 별도 consent UI, 사용자 ID와 커스텀 이벤트는 구현하지 않는다. 추가 수집이 필요하면 이벤트 명세와 개인정보 안내 범위를 먼저 정한다.
 
 ## Build and deployment
@@ -223,7 +236,8 @@ pnpm build
 - 소스 브랜치: `develop`
 - 배포 브랜치: `master`
 - `develop` push 시 pnpm lockfile 기준으로 설치하고 `pnpm build`를 실행한다.
-- Vite 산출물인 `dist/`만 `master`에 게시한다.
+- Vite 산출물인 `dist/`만 `master`에 게시한다. `dist/index.html`과 `dist/guidelines/index.html`이 게시 대상이며 실험 페이지 HTML은 생성되지 않는다.
+- `base`는 상대 경로 `./`를 유지한다. 중첩된 `guidelines/index.html`에서도 asset 참조가 자신의 위치를 기준으로 계산된다.
 - `master`는 생성물 전용이므로 직접 수정하지 않는다.
 - `.github/workflows/auto-publish.yml`에서 checkout·mise·Pages 배포 action을 검증한 commit SHA로 고정하고, 사람이 읽을 수 있는 버전은 주석으로 남긴다.
 - 고정된 `peaceiris/actions-gh-pages` action이 `dist/`를 orphan `master`로 게시하고 `.nojekyll`을 생성한다.
