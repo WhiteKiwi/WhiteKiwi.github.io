@@ -210,7 +210,7 @@
 
 - 2026-08-09 사용자가 Contact에 키위를 티 나지 않게 넣을 아이디어를 요청했다. 터미널이라는 소재를 살리는 방향으로 정리했다.
 - 채택: `whoami`의 neofetch 스타일 아스키 키위, 그리고 유휴 상태의 키위 산책. 산책 대기 시간은 테스트 편의를 위해 개발 환경에서만 10초로 줄인다.
-- 2026-08-09 사용자 요청으로 `command not found`에 반응해 터미널 위 경계로 빼꼼 올라오는 별도 키위 자산을 생성하기로 했다. 기존 보행 스프라이트는 측면 전신이라 머리만 잘라 쓸 수 없으며, `public/assets/characters/PROMPTS.md`의 전용 프롬프트와 수평 하단 단면을 따른다.
+- 2026-08-09 사용자 요청으로 `command not found`에 반응해 터미널 위 경계로 빼꼼 올라오는 투명 PNG `public/assets/characters/kiwi-peek.png`를 생성했다. 기존 보행 스프라이트는 측면 전신이라 머리만 잘라 쓸 수 없으며, `public/assets/characters/PROMPTS.md`의 전용 프롬프트와 수평 하단 단면을 따른다. 사용자 확인 전까지 터미널 반응에는 적용하지 않는다.
 
 ## Repository history
 

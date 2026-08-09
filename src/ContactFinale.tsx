@@ -87,6 +87,7 @@ export default function ContactFinale({ active }: { active: boolean }) {
   const [bootCommand, setBootCommand] = useState('')
   const [bootReady, setBootReady] = useState(false)
   const [isStrolling, setIsStrolling] = useState(false)
+  const [peekKey, setPeekKey] = useState(0)
 
   const commandHistory = useMemo(() => entries.map((entry) => entry.command).filter(Boolean), [entries])
 
@@ -496,6 +497,8 @@ export default function ContactFinale({ active }: { active: boolean }) {
         { text: `zsh: command not found: ${command}`, tone: 'error' },
         { text: 'Type `help` to see the commands available here.', tone: 'muted' },
       ]
+      // 오답일 때만 키위가 위 경계로 빼꼼 올라온다. key를 바꿔 매번 다시 재생한다.
+      setPeekKey((current) => current + 1)
     }
 
     nextEntryIdRef.current += 1
@@ -555,7 +558,7 @@ export default function ContactFinale({ active }: { active: boolean }) {
 
         <div className="contact-finale-copy">
           {/* 문구 없이 프롬프트와 커서만 남긴 장식이다. 의미는 아래 헤드라인이 가진다. */}
-          <p className="contact-command" aria-hidden="true"><span>$</span><i /></p>
+          <p className="contact-command" aria-hidden="true"><span>&gt;</span><i /></p>
           <h2><span>LET&apos;S</span><strong>CONNECT.</strong></h2>
           <p>좋은 제품에 관한 흥미로운 이야기라면,<br />언제든 반갑습니다.</p>
         </div>
@@ -589,6 +592,12 @@ export default function ContactFinale({ active }: { active: boolean }) {
               </div>
             ))}
           </div>
+
+          {peekKey > 0 && (
+            <div className="contact-kiwi-peek" key={peekKey} aria-hidden="true">
+              <img src="/assets/characters/kiwi-peek.png" alt="" />
+            </div>
+          )}
 
           {isStrolling && (
             <div

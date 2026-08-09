@@ -4,8 +4,8 @@
   --canvas: #f4f0e7;
   --amber: #d89a1d;
   --rule: rgba(23, 23, 23, .13);
-  --glow-x: 68vw;
-  --glow-y: 22vh;
+  --px: 68vw;
+  --py: 32vh;
 
   position: relative;
   min-height: 100vh;
@@ -16,33 +16,34 @@
   isolation: isolate;
 }
 
-.resume-glow {
-  position: fixed;
-  z-index: -2;
-  top: var(--glow-y);
-  left: var(--glow-x);
-  width: min(58vw, 720px);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(216, 154, 29, .17) 0, rgba(216, 154, 29, .05) 40%, transparent 72%);
-  filter: blur(46px);
-  transform: translate(-50%, -50%);
-  /* 본문 가독성이 우선이라 옅게 두고, 잔상이 길게 남도록 느리게 따라온다. */
-  transition: top 1.9s cubic-bezier(.16, 1, .3, 1), left 1.9s cubic-bezier(.16, 1, .3, 1);
-  pointer-events: none;
-}
-
+/* 본문 위에 아무것도 얹지 않고 배경 그리드만 커서 주변에서 드러낸다. */
 .resume-grid {
   position: fixed;
   z-index: -1;
   inset: 0;
-  opacity: .5;
+  opacity: .34;
   background-image:
-    linear-gradient(rgba(23, 23, 23, .045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(23, 23, 23, .045) 1px, transparent 1px);
-  background-size: 78px 78px;
-  mask-image: radial-gradient(circle at 50% 30%, #000 0, transparent 72%);
+    linear-gradient(rgba(23, 23, 23, .5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 23, 23, .5) 1px, transparent 1px);
+  background-size: 62px 62px;
+  mask-image: radial-gradient(circle 250px at var(--px) var(--py), #000 0, rgba(0, 0, 0, .34) 46%, transparent 74%);
   pointer-events: none;
+}
+
+/* 워드마크로 켜는 숨은 트레일. */
+.resume-trail { position: fixed; z-index: 6; inset: 0; pointer-events: none; }
+
+.resume-trail i {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(12px - var(--i) * .42px);
+  aspect-ratio: 1;
+  margin: calc((12px - var(--i) * .42px) / -2);
+  border-radius: 50%;
+  background: var(--amber);
+  opacity: calc((1 - var(--i) / var(--total)) * .46);
+  will-change: transform;
 }
 
 .resume-mark {
@@ -81,11 +82,19 @@
 
 .resume-rail-home {
   display: flex;
+  padding: 0;
   align-items: center;
   gap: 8px;
+  color: inherit;
+  border: 0;
+  background: transparent;
   font: 800 1.02rem Manrope, 'Pretendard Variable', Pretendard, sans-serif;
   letter-spacing: -.05em;
+  cursor: pointer;
+  justify-self: start;
 }
+
+.resume-rail-home.is-on span { color: var(--amber); }
 
 .resume-rail nav {
   display: flex;
@@ -518,7 +527,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .resume-glow { transition: none; }
+  .resume-trail { display: none; }
   .resume-mark i { animation: none; }
   [data-reveal='out'] { opacity: 1; transform: none; }
 }
@@ -531,8 +540,8 @@
   /* 진입 연출 상태를 되돌리지 않으면 아직 보지 않은 섹션이 빈 칸으로 인쇄된다. */
   [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
 
-  .resume-glow,
   .resume-grid,
+  .resume-trail,
   .resume-rail,
   .resume-outro-link { display: none !important; }
 

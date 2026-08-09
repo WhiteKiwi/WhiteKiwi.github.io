@@ -14,9 +14,10 @@ import {
   type Lang,
 } from './resume-data'
 
-type GlowStyle = CSSProperties & { '--glow-x'?: string; '--glow-y'?: string }
+type PointerStyle = CSSProperties & { '--px'?: string; '--py'?: string }
 
 const STORAGE_KEY = 'whitekiwi-resume-lang'
+const TRAIL_LENGTH = 18
 
 function readLang(): Lang {
   try {
@@ -103,9 +104,12 @@ const NAV = [
 
 function Resume() {
   const [lang, setLang] = useState<Lang>('ko')
+  const [trail, setTrail] = useState(false)
   const scope = useReveal()
   const active = useActiveSection(NAV.map((item) => item.id))
   const stage = useRef<HTMLDivElement>(null)
+  const trailRef = useRef<HTMLDivElement>(null)
+  const pointer = useRef({ x: -9999, y: -9999 })
 
   useEffect(() => setLang(readLang()), [])
 
@@ -118,20 +122,43 @@ function Resume() {
     }
   }, [lang])
 
-  // 포인터 좌표만 커스텀 속성으로 넘기고 잔상은 CSS transition이 만든다.
+  // 좌표만 커스텀 속성으로 넘기고 배경 그리드를 드러내는 일은 CSS mask가 한다.
   useEffect(() => {
     const el = stage.current
     if (!el) return
 
     const onPointerMove = (event: PointerEvent) => {
       if (event.pointerType === 'touch') return
-      el.style.setProperty('--glow-x', `${event.clientX}px`)
-      el.style.setProperty('--glow-y', `${event.clientY}px`)
+      pointer.current = { x: event.clientX, y: event.clientY }
+      el.style.setProperty('--px', `${event.clientX}px`)
+      el.style.setProperty('--py', `${event.clientY}px`)
     }
 
     window.addEventListener('pointermove', onPointerMove, { passive: true })
     return () => window.removeEventListener('pointermove', onPointerMove)
   }, [])
+
+  // 워드마크로 켜는 숨은 트레일. 앞 점은 커서를, 뒤 점은 바로 앞 점을 쫓아 지연이 누적된다.
+  useEffect(() => {
+    if (!trail) return
+
+    const dots = Array.from(trailRef.current?.children ?? []) as HTMLElement[]
+    const path = dots.map(() => ({ ...pointer.current }))
+    let frame = 0
+
+    const tick = () => {
+      for (let i = 0; i < path.length; i += 1) {
+        const target = i === 0 ? pointer.current : path[i - 1]
+        path[i].x += (target.x - path[i].x) * .34
+        path[i].y += (target.y - path[i].y) * .34
+        dots[i].style.transform = `translate3d(${path[i].x}px, ${path[i].y}px, 0)`
+      }
+      frame = window.requestAnimationFrame(tick)
+    }
+
+    frame = window.requestAnimationFrame(tick)
+    return () => window.cancelAnimationFrame(frame)
+  }, [trail])
 
   const t = useCallback((entry: Record<Lang, string>) => entry[lang], [lang])
 
@@ -147,16 +174,28 @@ function Resume() {
     <div
       className="resume"
       ref={stage}
-      style={{ '--glow-x': '68vw', '--glow-y': '22vh' } as GlowStyle}
+      style={{ '--px': '68vw', '--py': '32vh' } as PointerStyle}
     >
-      <div className="resume-glow" aria-hidden="true" />
       <div className="resume-grid" aria-hidden="true" />
+      {trail && (
+        <div className="resume-trail" ref={trailRef} aria-hidden="true">
+          {Array.from({ length: TRAIL_LENGTH }, (_, i) => (
+            <i key={i} style={{ '--i': i, '--total': TRAIL_LENGTH } as CSSProperties} />
+          ))}
+        </div>
+      )}
 
       <aside className="resume-rail">
-        <a className="resume-rail-home" href="/">
+        {/* 숨은 토글이라 라벨로 설명하지 않는다. 메인 여정으로 가는 길은 하단에 따로 있다. */}
+        <button
+          type="button"
+          className={`resume-rail-home${trail ? ' is-on' : ''}`}
+          onClick={() => setTrail((current) => !current)}
+          aria-pressed={trail}
+        >
           <PromptMark />
           <span>whitekiwi</span>
-        </a>
+        </button>
 
         <nav aria-label={t(ui.resume)}>
           {NAV.map((item) => (

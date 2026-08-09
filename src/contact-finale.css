@@ -404,3 +404,34 @@
 
 @media (max-width: 720px) { .contact-kiwi-stroll { display: none; } }
 @media (prefers-reduced-motion: reduce) { .contact-kiwi-stroll { display: none; } }
+
+/* ── peek ─────────────────────────────────────────────── */
+/* `command not found`일 때만 상단 테두리 위로 빼꼼 올라왔다 내려간다. */
+
+.contact-kiwi-peek {
+  position: absolute;
+  /* 로그(z-index 2)보다 뒤에 둬서 글자를 가리지 않고 실루엣처럼 비친다. */
+  z-index: 1;
+  top: 42px;
+  left: 62%;
+  width: clamp(52px, 6.6vw, 82px);
+  overflow: hidden;
+  pointer-events: none;
+  animation: contact-kiwi-peek 2.7s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+.contact-kiwi-peek img {
+  display: block;
+  width: 100%;
+  height: auto;
+  opacity: .62;
+}
+
+@keyframes contact-kiwi-peek {
+  0% { transform: translateY(100%); }
+  18%, 62% { transform: translateY(6%); }
+  100% { transform: translateY(100%); }
+}
+
+@media (max-width: 720px) { .contact-kiwi-peek { display: none; } }
+@media (prefers-reduced-motion: reduce) { .contact-kiwi-peek { display: none; } }

@@ -87,6 +87,7 @@ pnpm build
 - Contact는 한 viewport 높이의 정적 stage로 바꾸고 스크롤 위치와 `--contact-progress` 계산을 분리한다. viewport에 충분히 진입하면 requestAnimationFrame 기반 ease-out 시퀀스로 약 1.9초 동안 progress를 0→1로 진행한다.
 - 07→Contact 하향 입력이 Toss 후반 임계 progress를 넘으려 하면 입력을 소비하고 Contact 시작점까지 약 650ms 동안 자동 스크롤한다. Contact 초입의 상향 입력은 같은 방식으로 07의 대표 progress로 돌아가며, 이동 중 추가 wheel·touch·스크롤 키를 잠근다.
 - 포인터 입력이 가능한 환경에서는 자동 조립과 별개로 배경의 앰버 글로우만 느리게 따라오게 한다.
+- 헤드라인 위의 프롬프트 줄은 문구 없이 `>`와 깜빡이는 커서만 둔다. 파비콘·Guidelines의 프롬프트 마크와 같은 기호다. 의미는 헤드라인이 가지므로 접근성 트리에서는 제외한다.
 - 터미널은 제어된 text input과 submit form으로 구현한다. 공개 명령은 `help`, `whoami`, `open github`, `open blog`, `open linkedin`, `open instagram`, `open email`, `clear`이며 `open instargram`은 사용자 입력 호환 alias로 처리한다.
 - 숨은 `iloveyou` 분기는 `I love you too` 한 줄을 반환하지만 공개 명령 배열에는 넣지 않아 help 출력과 shortcut 렌더에서 제외한다.
 - `cd`로 시작하는 입력은 `permission denied`, 그 밖의 미지원 입력은 `command not found` 결과를 추가한다. 명령과 출력은 시간순 entry로 렌더하고 `sessionStorage`에 저장하며 위·아래 화살표로 입력 명령 history를 탐색한다.
@@ -97,6 +98,7 @@ pnpm build
 - 터미널 아래에는 Introduction과 같은 순서의 Email·GitHub·Blog·LinkedIn·Instagram 실제 앵커를 두고, 재시작은 `/`로 이동해 오프닝을 처음부터 실행한다.
 - 하단에는 `RESUME`, `PORTFOLIO GUIDELINES`, `RUN AGAIN` 세 링크를 둔다. 각각 `/resume/`, `/guidelines/`, `/`로 이동하며 이것이 메인 여정의 유일한 진입점이다.
 - `whoami`는 neofetch처럼 아스키 키위를 왼쪽 고정 폭 열에, 정보를 오른쪽에 배치한다. 한글 전각 문자는 마지막 열에만 들어가 아스키 정렬을 흔들지 않는다.
+- `command not found`일 때만 키위가 타이틀 바 아래에서 빼꼼 올라왔다 내려간다. 로그보다 뒤에 그려 글자를 가리지 않는다. 같은 오답이 반복돼도 다시 재생되도록 key를 바꿔 다시 마운트한다.
 - 터미널이 준비된 뒤 일정 시간 입력이 없으면 키위 보행 스프라이트가 입력 줄 위 경계를 한 번 걸어 지나간다. 대기 시간은 개발 환경에서 10초, 배포에서 30초다. 입력·포인터 조작이 있으면 대기를 다시 시작하고, 모션 감소 환경과 좁은 화면에서는 실행하지 않는다.
 - 모바일에서는 헤드라인과 터미널을 세로로 재배치하고 히스토리 영역에 독립적인 세로 스크롤을 허용한다. 모션 감소 환경에서는 포인터 추적, 자동 타이핑 지연과 반복 커서 모션을 끈다.
 
@@ -114,7 +116,8 @@ pnpm build
 - `src/Resume.tsx`와 `src/resume.css`, 내용은 `src/resume-data.ts`에 한국어·영문을 같은 구조로 나란히 둔다. 컴포넌트는 언어 키만 바꿔 같은 레이아웃을 렌더한다.
 - 언어 상태는 `localStorage`에 저장하고 `<html lang>`을 함께 바꾼다. 초기 언어는 저장값이 없으면 한국어다.
 - 진입 연출은 `IntersectionObserver`로 섹션이 보일 때 한 번만 실행하고, 이후 상태를 되돌리지 않는다. 스크롤 progress로 계속 보간하지 않으므로 읽는 도중 문장이 다시 사라지지 않는다.
-- 포인터 반응은 Contact 피날레와 같은 방식으로 `--glow-x`, `--glow-y` 커스텀 속성만 갱신하고 CSS가 나머지를 처리한다. 좌표 갱신에 긴 easing transition을 걸어 잔상처럼 따라오게 한다. `pointerType === 'touch'`는 무시한다.
+- 포인터 반응은 본문 위에 무엇도 얹지 않는 스포트라이트 방식이다. `--px`, `--py` 커스텀 속성만 갱신하고 배경 그리드의 `mask-image`가 커서 주변만 드러낸다. `pointerType === 'touch'`는 무시하고 초기 좌표를 유지한다.
+- 좌측 상단 워드마크는 숨은 토글이다. 누르면 커서 트레일이 켜진다. 앞 점은 커서를, 뒤 점은 바로 앞 점을 쫓아 지연이 누적된다. 메인 여정으로 가는 링크는 문서 하단에 따로 있으므로 워드마크는 이동에 쓰지 않는다.
 - 좌측 타임라인 레일은 현재 보이는 회사에 표시를 옮긴다. 레일 자체는 인쇄에서 제거한다.
 - 경력 길이와 회사별 재직 기간, 상단 갱신 스탬프는 고정 문자열이 아니라 조회 시점에 계산한다. 총 경력은 회사 구간을 월 단위로 합집합해 세므로 공백기는 빠지고 겹치는 달은 한 번만 센다.
 - 경력·학력·수상은 모두 시간 역순으로 나열한다.
