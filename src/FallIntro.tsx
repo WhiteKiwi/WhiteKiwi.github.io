@@ -6,6 +6,22 @@ import ContactFinale from './ContactFinale'
 import './fall-intro.css'
 
 type JourneyPhase = 'opening' | 'idle' | 'descending' | 'landed' | 'ready'
+type SkyPhase = 'night' | 'predawn' | 'dawn' | 'day' | 'dusk'
+
+const skyPhases: SkyPhase[] = ['night', 'predawn', 'dawn', 'day', 'dusk']
+const isSkyPhase = (value: string | null): value is SkyPhase => skyPhases.includes(value as SkyPhase)
+
+// 프롤로그 하늘만 방문 시각을 따른다. 새벽은 노을이 아니라 해 뜨기 전의 푸른 하늘이라 별도 구간으로 둔다.
+const resolveSkyPhase = (): SkyPhase => {
+  const forced = new URLSearchParams(window.location.search).get('sky')
+  if (isSkyPhase(forced)) return forced
+  const hour = new Date().getHours()
+  if (hour >= 4 && hour < 6) return 'predawn'
+  if (hour >= 6 && hour < 8) return 'dawn'
+  if (hour >= 8 && hour < 17) return 'day'
+  if (hour >= 17 && hour < 20) return 'dusk'
+  return 'night'
+}
 
 const chapterDeepLinks: Record<string, { selector: string; progress: number }> = {
   '#01': { selector: '.walking-intro-track', progress: .16 },
@@ -195,6 +211,7 @@ export default function FallIntro() {
     if (normalizeInitialPrologueHash()) return 'opening'
     return getChapterDeepLink() ? 'ready' : 'opening'
   })
+  const [skyPhase] = useState<SkyPhase>(resolveSkyPhase)
   const [showIntroScrollCue, setShowIntroScrollCue] = useState(false)
   const introTrackRef = useRef<HTMLElement>(null)
   const introCueTimerRef = useRef<number | null>(null)
@@ -205,6 +222,13 @@ export default function FallIntro() {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     setPhase((current) => current === 'idle' ? (reducedMotion ? 'landed' : 'descending') : current)
   }
+
+  // 프롤로그 잠금 중 body 배경도 같은 하늘을 쓰도록 팔레트를 문서 루트에도 올린다.
+  // 이 effect가 스크롤 잠금 effect보다 먼저 선언돼 있어야 `var(--sky-lock)`이 첫 적용부터 해석된다.
+  useEffect(() => {
+    document.documentElement.dataset.sky = skyPhase
+    return () => { delete document.documentElement.dataset.sky }
+  }, [skyPhase])
 
   useEffect(() => {
     if (phase !== 'opening') return
@@ -229,7 +253,7 @@ export default function FallIntro() {
     html.style.overscrollBehavior = 'none'
     body.style.overflow = 'hidden'
     body.style.overscrollBehavior = 'none'
-    body.style.background = '#8ec4eb'
+    body.style.background = 'var(--sky-lock)'
     return () => {
       html.style.overflow = previous.htmlOverflow
       html.style.overscrollBehavior = previous.htmlOverscroll
@@ -480,7 +504,7 @@ export default function FallIntro() {
   }
 
   return (
-    <main className={`fall-intro-scroll ${phase === 'opening' ? 'is-opening' : ''} ${phase === 'idle' ? 'is-idle' : ''} ${hasDescended ? 'has-descended' : ''} ${hasLanded ? 'is-landed' : ''} ${phase === 'ready' ? 'is-scroll-ready' : ''}`}>
+    <main data-sky={skyPhase} className={`fall-intro-scroll ${phase === 'opening' ? 'is-opening' : ''} ${phase === 'idle' ? 'is-idle' : ''} ${hasDescended ? 'has-descended' : ''} ${hasLanded ? 'is-landed' : ''} ${phase === 'ready' ? 'is-scroll-ready' : ''}`}>
       <section className="fall-intro">
         {phase === 'opening' && <OpeningTitle />}
         <div className="sky-depth sky-depth-back" aria-hidden="true" />
