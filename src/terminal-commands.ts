@@ -591,34 +591,65 @@ const runLs = (args: string, narrow: boolean): CommandResult => {
  * 대신 화면을 다루는 연출은 하나도 빠뜨리지 않는다. 이 층은 여기 말고는 발견할 단서가 없다.
  * 명령이 늘면 이 목록도 같이 늘려야 한다. 새 명령을 넣고 여기를 잊으면 아무도 못 찾는다.
  */
+const secretGroups: Array<{ title: string; items: Array<[string, string]> }> = [
+  {
+    title: 'READ',
+    items: [
+      ['git log', 'the career as commits'],
+      ['man kiwi', 'the manual for the bird'],
+      ['whitekiwi', 'why this name'],
+      ['why nodejs', 'an honest answer'],
+      ['ping', 'is anyone out there'],
+      ['uptime', 'how long this has run'],
+    ],
+  },
+  {
+    title: 'KIWI',
+    items: [
+      ['kiwi', 'let it walk through here'],
+      ['kiwisay <text>', 'make the kiwi talk'],
+    ],
+  },
+  {
+    title: 'LOUD',
+    items: [
+      ['lightning', '⚡'],
+      ['boom', 'do not run this in a call'],
+      ['gravity', 'it was off the whole time'],
+      ['earthquake', 'hold on'],
+      ['flip', 'do a barrel roll'],
+      ['matrix', 'wake up, visitor'],
+      ['hack', 'not a real intrusion'],
+      ['sl', 'a typo you will make'],
+    ],
+  },
+  {
+    title: 'ASK',
+    items: [
+      ['coffee', 'wrong kind of shell'],
+      ['iloveyou', 'go on, then'],
+    ],
+  },
+  {
+    title: 'LOCKED',
+    items: [
+      ['beer', 'permission denied, for now'],
+      ['make me a sandwich', 'xkcd 149'],
+    ],
+  },
+]
+
+/** 열 맞춤은 손으로 세지 않는다. `make me a sandwich`가 18칸이라 이름 열을 거기 맞춘다. */
+const SECRET_NAME_COLUMN = 18
+
 const secrets: TerminalLine[] = [
   muted('# not in `help`. that is the point.'),
   plain(''),
-  accent('READ'),
-  fixed('  git log         the career as a commit history'),
-  fixed('  man kiwi        the manual for the bird'),
-  fixed('  whitekiwi       why this name'),
-  fixed('  why nodejs      an honest answer'),
-  fixed('  ping            is anyone out there'),
-  fixed('  uptime          how long this has been running'),
-  plain(''),
-  accent('KIWI'),
-  fixed('  kiwi            let it walk through here'),
-  fixed('  kiwisay <text>  make the kiwi say something'),
-  plain(''),
-  accent('LOUD'),
-  fixed('  lightning       ⚡'),
-  fixed('  boom            do not run this in a meeting'),
-  fixed('  gravity         it was off this whole time'),
-  fixed('  earthquake      hold on'),
-  fixed('  flip            do a barrel roll'),
-  fixed('  matrix          wake up, visitor'),
-  fixed('  hack            not a real intrusion'),
-  fixed('  sl              a typo you will make eventually'),
-  plain(''),
-  accent('LOCKED'),
-  fixed('  beer            permission denied. for now.'),
-  plain(''),
+  ...secretGroups.flatMap(({ title, items }) => [
+    accent(title),
+    ...items.map(([name, note]) => fixed(`  ${name.padEnd(SECRET_NAME_COLUMN)}  ${note}`)),
+    plain(''),
+  ]),
   muted('there are still a few more. shells are like that.'),
 ]
 
@@ -743,7 +774,13 @@ export const runCommand = (command: string, ctx: CommandContext): CommandResult 
   switch (command) {
     case 'help': return { lines: buildHelp() }
     case 'whoami': return { lines: buildWhoami(narrow) }
-    case 'iloveyou': return { lines: [accent('I love you too')] }
+    case 'iloveyou':
+      return {
+        lines: [
+          accent('I love you too'),
+          muted('(the kiwi is blushing. ascii does not carry that.)'),
+        ],
+      }
     case 'history': return { lines: buildHistory(history) }
     case 'pwd': return { lines: [plain('/portfolio/whitekiwi/contact')] }
     case 'ls': return runLs('', narrow)
