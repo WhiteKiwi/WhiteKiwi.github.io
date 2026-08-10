@@ -1,0 +1,47 @@
+/* `/terminal/` — Contact 피날레의 터미널 창 하나만 남긴 전체화면 페이지.
+   창과 빼꼼 키위, 화면 연출은 전부 contact-finale.css의 규칙을 그대로 쓰고
+   여기서는 위치 변수와 페이지 자체의 기하만 바꾼다. */
+
+.terminal-page {
+  /* 진입 조립이 없다. 게이트를 열어 둔 채 시작한다. */
+  --contact-progress: 1;
+  --glow-x: 62vw;
+  --glow-y: 30vh;
+  /* 빼꼼 키위가 이 변수들로 창의 좌상단을 따라간다. contact-finale.css와 같은 계약이다. */
+  --terminal-top: clamp(34px, 7vh, 76px);
+  --terminal-right: clamp(16px, 3.4vw, 46px);
+  /* 100vw를 쓰지 않는다. 이 값은 창의 width와 빼꼼 키위의 left 양쪽에서 쓰이는데,
+     두 곳 모두 백분율이 같은 컨테이닝 블록(무대 폭)으로 풀린다. */
+  --terminal-width: calc(100% - var(--terminal-right) * 2);
+  --terminal-bottom: clamp(16px, 3.4vh, 40px);
+  position: relative;
+  display: block;
+  height: 100svh;
+  /* 흔들림·회전 연출이 스크롤바를 만들지 않아야 한다.
+     `hidden`이 아니라 `clip`인 이유는 스크롤 컨테이너를 만들지 않기 위해서다. */
+  overflow: clip;
+  color: #f6f0df;
+  background: #171918;
+}
+
+.terminal-page-stage { min-height: 0; }
+
+/* 창 위쪽 여백이 아래보다 넓다. 창 뒤에서 올라오는 빼꼼 키위가 설 자리이자,
+   창이 화면에 얹혀 있는 것처럼 보이게 하는 여백이다. */
+.terminal-page .contact-terminal {
+  height: auto;
+  min-height: 0;
+  bottom: var(--terminal-bottom);
+  /* 진입 transform이 필요 없다. 노랑 버튼의 튕김은 animation이라 이 값보다 우선한다. */
+  transform: none;
+}
+
+@media (max-width: 700px) {
+  .terminal-page {
+    --terminal-top: clamp(22px, 5vh, 44px);
+    --terminal-right: 12px;
+    --terminal-bottom: 12px;
+  }
+
+  .terminal-page .contact-terminal { height: auto; min-height: 0; border-radius: 12px; transform: none; }
+}

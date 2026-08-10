@@ -11,6 +11,7 @@ export default defineConfig({
         main: 'index.html',
         resume: 'resume/index.html',
         guidelines: 'guidelines/index.html',
+        terminal: 'terminal/index.html',
       },
     },
   },

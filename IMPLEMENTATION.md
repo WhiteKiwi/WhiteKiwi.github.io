@@ -29,7 +29,11 @@ pnpm build
 - `src/career-journey.css` — 배달 도로, 명품 쇼윈도, 성장하는 농장, 동네 지도와 회사별 반응형 모션
 - `src/TossOngoing.tsx`, `src/toss-ongoing.css` — 07 Toss·Toss Income을 상세 콘텐츠 전까지 현재진행형 상태로 보여주는 독립 트랙
 - `public/assets/brands/toss-symbol-primary.png` — 공식 브랜드 리소스의 Toss 심벌을 화면 표시 크기에 맞게 축소한 무변형 래스터 자산
-- `src/ContactFinale.tsx`, `src/contact-finale.css` — 현재 여정 끝의 실제 터미널형 Contact 피날레와 스크롤·포인터 반응
+- `src/ContactFinale.tsx`, `src/contact-finale.css` — 현재 여정 끝의 Contact 피날레 무대와 스크롤·포인터 반응. 터미널 창 자체는 `TerminalWindow`에 있다
+- `src/TerminalWindow.tsx` — Contact 피날레와 `/terminal/`이 함께 쓰는 터미널 창. 부팅·입력·히스토리·저장·화면 연출·빼꼼 키위·창 버튼을 모두 갖는다
+- `src/terminal-window.css` — 공유 컴포넌트와 함께 생긴 창 버튼과 창 튕김 규칙. 창의 레이아웃·로그·연출 규칙은 여전히 `contact-finale.css`에 있고, `TerminalWindow`가 두 파일을 모두 import해 의존을 드러낸다
+- `src/TerminalPage.tsx`, `src/terminal-page.css` — 터미널 창 하나만 두는 `/terminal/` 전체화면 페이지
+- `src/terminal-commands.ts` — 터미널의 명령 정의와 출력 생성. 렌더·상태는 컴포넌트가 갖고 이 모듈은 "입력 문자열 → 출력 줄"만 책임진다
 - `public/assets/characters/kiwi-walk-cycle.png` — 3-C를 기준으로 만든 4프레임 보행 스프라이트
 - `public/assets/characters/kiwi-graduate-walk-cycle.png` — 기본 보행 실루엣과 프레임 간격을 유지하면서 학사모를 일체화한 Education 전용 4프레임 스프라이트
 - `public/assets/characters/kiwi-*.png` — 배달부·패션 큐레이터·농부·동네 탐험가로 변주한 투명 배경 캐릭터
@@ -43,12 +47,13 @@ pnpm build
 - `index.html` — 메인 여정 `/`의 HTML 진입점
 - `resume/index.html` — `/resume/`의 HTML 진입점
 - `guidelines/index.html` — `/guidelines/`의 HTML 진입점
+- `terminal/index.html` — `/terminal/`의 HTML 진입점
 - `src/App.tsx` — `window.location.pathname` 기준 진입점 분기
 
 ## Routing and entry points
 
-- 공개 페이지는 Vite 멀티페이지 빌드로 각자 실제 HTML 파일을 만든다. `rollupOptions.input`에 `index.html`, `resume/index.html`, `guidelines/index.html`을 등록한다.
-- 두 HTML은 같은 `src/main.tsx`를 로드하고, `src/App.tsx`가 `window.location.pathname`으로 화면을 고른다. 끝 슬래시 유무는 정규화해 `/guidelines`와 `/guidelines/`를 같게 처리한다.
+- 공개 페이지는 Vite 멀티페이지 빌드로 각자 실제 HTML 파일을 만든다. `rollupOptions.input`에 `index.html`, `resume/index.html`, `guidelines/index.html`, `terminal/index.html`을 등록한다.
+- 네 HTML은 같은 `src/main.tsx`를 로드하고, `src/App.tsx`가 `window.location.pathname`으로 화면을 고른다. 끝 슬래시 유무는 정규화해 `/guidelines`와 `/guidelines/`를 같게 처리한다.
 - 각 HTML은 자신의 `<title>`, description, canonical과 Open Graph·Twitter 메타를 직접 가진다. 공유 미리보기와 검색 색인이 페이지마다 달라야 하고, 뒤늦게 실행되는 스크립트로는 이를 만들 수 없다.
 - 실험 페이지는 `/labs/eggs`, `/labs/glass`, `/labs/birds`, `/labs/pointer`에 두고 `import.meta.env.DEV`가 참일 때만 분기와 `lazy(() => import(...))`가 존재한다. 프로덕션 빌드에서는 조건이 상수 `false`로 접히면서 실험 번들이 산출물에서 사라진다.
 - `/labs/*`용 HTML 진입점은 빌드에 등록하지 않는다. 배포본에는 해당 파일이 없으므로 접근하면 GitHub Pages 404가 된다. 개발 서버에서는 Vite의 SPA fallback이 `index.html`을 돌려주므로 그대로 동작한다.
@@ -91,15 +96,45 @@ pnpm build
 - 터미널 안에서 시작한 wheel·touch 제스처는 장면 전환을 만들지 않는다. 터미널은 자체 세로 스크롤과 가로 스크롤을 가진 위젯이라, 히스토리를 위로 끌거나 명령 힌트를 옆으로 넘기는 동작이 Contact↔07 전환으로 소비되면 조작 자체가 불가능해진다. 스크롤 가능한 영역에는 `overscroll-behavior: contain`으로 페이지 연쇄 스크롤도 막는다.
 - 터미널 밖의 touch 제스처도 세로 성분이 가로 성분보다 클 때만 전환으로 인정한다.
 - 터미널은 제어된 text input과 submit form으로 구현한다. 공개 명령은 `help`, `whoami`, `open resume`, `open github`, `open blog`, `open linkedin`, `open instagram`, `open email`, `clear`이며 `open instargram`은 사용자 입력 호환 alias로 처리한다.
-- 숨은 `iloveyou` 분기는 `I love you too` 한 줄을 반환하지만 공개 명령 배열에는 넣지 않아 help 출력과 shortcut 렌더에서 제외한다.
-- `cd`로 시작하는 입력은 `permission denied`, 그 밖의 미지원 입력은 `command not found` 결과를 추가한다. 명령과 출력은 시간순 entry로 렌더하고 `sessionStorage`에 저장하며 위·아래 화살표로 입력 명령 history를 탐색한다.
-- `clear`는 entry state, 입력 탐색 위치와 `sessionStorage`를 한 번에 초기화하고, 명령 자체도 비워진 로그에 남기지 않는다.
+- 명령 해석은 `src/terminal-commands.ts`의 `runCommand` 하나가 담당한다. 컴포넌트는 입력을 trim·소문자·공백 정규화한 뒤 넘기고 `{ lines, effect?, notFound? }`를 돌려받는다. 이 모듈은 `window.open`과 `location.href` 외에는 DOM이나 React 상태를 건드리지 않는다.
+- 공개 명령 목록 `commandList`가 help 출력과 화면 shortcut 버튼을 함께 만든다. 숨은 명령은 이 배열에 없으므로 두 곳 모두에서 자동으로 빠진다. `iloveyou`, `git log`, `sudo`, `boom`, `lightning` 같은 분기는 `runCommand` 안에만 존재한다.
+- `cat .secrets`는 숨은 명령의 일부만 나열한다. 전부 노출하면 발견의 재미가 사라지고, 하나도 남기지 않으면 아무도 두 번째를 찾지 못한다. `iloveyou`처럼 개인적인 명령은 이 목록에서도 뺀다.
+- `git log`의 커밋 해시는 고정 상수다. 난수로 만들면 호출할 때마다 달라져 `sessionStorage`에 남은 과거 출력과 어긋난다. 커밋 메시지는 저장소의 `{type}: {message}` 규칙을 그대로 따른다.
+- 아스키 격자가 필요한 출력은 `cellWidth`·`padCells`로 칸 수를 맞추고 좁은 화면용 축약형을 따로 만든다. `git log`는 좁은 화면에서 해시와 날짜 열을 버리고, `ls`는 열 수를 4에서 2로 줄인다. `hack`의 상태 열처럼 점으로 채우는 정렬도 손으로 세지 않고 계산한다. 손으로 세면 한두 칸씩 어긋난다.
+- 인자와 옵션도 셸처럼 처리한다. `ls`는 `-a`와 `-l`을 독립으로 해석하고 글자 단위로 읽다가 처음 만난 모르는 옵션에서 `illegal option`을 낸다. `ls -a`에서만 `.secrets`가 드러나 발견의 단서가 된다.
+- 인자를 받지 않는 명령은 `NO_ARG_COMMANDS`에 모아 두고, 뒤에 무언가 붙으면 `command not found` 대신 `illegal option` 또는 `too many arguments`를 낸다. 실제 셸은 명령을 찾은 뒤 인자를 파싱하다가 실패하므로 그 순서를 흉내 내야 명령을 모른다는 뜻으로 읽히지 않는다.
+
+#### Frame animation
+
+- `runCommand`가 `frames`를 돌려주면 컴포넌트가 entry 하나의 내용을 프레임마다 통째로 교체한다. 줄을 덧붙이는 `hack`도 "누적 프레임"으로 표현해 한 가지 방식만 쓴다.
+- 프레임 entry는 줄 등장 애니메이션을 끈다(`is-instant`). 프레임마다 줄 내용이 바뀌면 React가 매번 새 노드로 갈아끼워 등장 모션이 계속 재생된다.
+- `kiwi`처럼 아트가 이동하는 애니메이션은 모든 프레임의 줄 수를 같게 유지한다. 다르면 재생 중 로그 높이가 출렁인다. 한 칸 위아래 bob은 앞뒤 빈 줄의 위치를 바꿔 만든다.
+- 재생 중에는 `sessionStorage` 저장과 smooth 스크롤을 건너뛴다. 매 프레임 저장하면 낭비고, 매 프레임 시작된 smooth 스크롤은 서로를 끊는다. 마지막 프레임에서는 이미 타이머가 꺼져 있어 정상적으로 저장된다.
+- 새 명령과 `clear`가 재생 중인 프레임을 그 자리에서 멈춘다. 모션 감소 환경에서는 프레임을 건너뛰고 마지막 프레임만 보여준다.
+
+#### sudo
+
+- `sudo <command>`는 실제 셸처럼 비밀번호를 묻는다. 컴포넌트가 입력줄을 `type="password"`로 바꾸고, 통과하면 보류했던 명령을 일반 실행과 같은 경로로 처리한다. 화면 연출이나 프레임 애니메이션도 그대로 이어진다.
+- 예외 없이 모든 `sudo <command>`가 묻는다. 실제 sudo의 credential cache를 흉내 내면 두 번째부터 프롬프트가 사라져 이 명령의 핵심 장면이 한 번만 보인다.
+- 통과 후 재실행할 때 `root: true`를 함께 넘긴다. 이것이 빠지면 권한이 필요한 척하는 명령이 통과 직후에도 스스로 거절해, 비밀번호가 틀린 것처럼 보인다.
+- 비밀번호 결과 entry는 명령 자리가 비어 있고 렌더에서도 프롬프트 줄을 생략한다. 실제 sudo는 입력을 되비추지 않는다. 마스크 문자를 명령 자리에 넣으면 셸이 그것을 실행한 것처럼 읽힌다.
+- `beer`는 권한이 필요한 척하는 명령이다. 그냥 실행하면 `permission denied`를 내고, 그 오류 자체가 `sudo`를 발견하게 하는 단서가 된다. `make me a sandwich`도 같은 방식으로 root일 때만 통한다.
+- 비밀번호는 프롬프트에서 함께 알려준다. 가려진 입력창만 띄우면 습관적으로 실제 비밀번호를 입력하는 사람이 생긴다. 알려줘도 농담은 유지된다. 재미는 셸이 진짜처럼 굴다가 실토하는 데 있다.
+- 입력값은 어디에도 남기지 않는다. entry의 명령 자리에는 입력 길이와 무관한 고정 길이 마스크만 넣고 명령 history에도 추가하지 않는다. 비밀번호 관리자가 실제 자격증명을 채우지 않도록 `autoComplete="off"`와 `data-1p-ignore`·`data-lpignore`를 함께 둔다.
+- 비밀번호 입력 중에는 위·아래 화살표 history 탐색을 막는다. 과거 명령이 입력줄에 들어온 채 제출되면 그것이 비밀번호로 판정된다.
+- 탈출 경로는 `Esc`, `clear`, 화면 바로가기 버튼 세 가지다. 세 번 틀리면 실제 `sudo`처럼 스스로 끝난다.
+- 한 번 인증하면 실제 sudo의 credential cache처럼 이후 `sudo`는 바로 통과시킨다.
+- `cd`로 시작하는 입력은 `permission denied`, 그 밖의 미지원 입력은 `command not found` 결과를 추가한다. 명령과 출력은 시간순 entry로 렌더한다.
+- 화면에 남기는 출력과 위·아래 화살표가 훑는 명령 history는 상한과 저장소를 분리한다. 셸도 스크롤백과 history를 따로 센다. 출력 entry는 격자 아스키까지 들어 있어 30개로 제한하고, 명령 문자열은 가벼우므로 100개까지 남긴다. 화면에서 밀려난 명령도 화살표로는 계속 꺼낼 수 있다.
+- history 키가 없는 탭은 이전 버전에서 열린 것이다. 남아 있는 출력 entry의 명령으로 history를 되살려 화살표가 갑자기 비어 보이지 않게 한다.
+- `clear`는 entry state, 명령 history, 입력 탐색 위치와 두 `sessionStorage` 키를 한 번에 초기화하고, 명령 자체도 비워진 로그에 남기지 않는다.
+- 숨은 `history`는 실제 셸처럼 보관 중인 명령을 전부, 방금 친 `history`까지 포함해 출력한다. 상한은 저장 단계에서만 건다.
 - `open`만 입력하면 오류 대신 `usage: open <channel>`과 허용 채널을 보여주며, 미지원 `open <channel>`은 일반 명령 오류와 구분한 `unknown channel` 안내를 반환한다.
 - GitHub, Blog, LinkedIn과 Instagram은 사용자 submit 이벤트 안에서 새 탭으로 열고 email은 `mailto:`로 연결한다. 화면의 명령 힌트 버튼도 같은 실행 경로를 직접 호출한다.
 - 터미널이 viewport의 절반 이상 들어오면 Contact 자동 조립과 함께 부팅 행을 순차적으로 보여준다. 강제 포커스로 모바일 키보드를 열지는 않으며 stage나 input을 직접 선택하면 입력할 수 있다.
 - 터미널 아래에는 Introduction과 같은 순서의 Email·GitHub·Blog·LinkedIn·Instagram 실제 앵커를 두고, 재시작은 `/`로 이동해 오프닝을 처음부터 실행한다.
 - 하단에는 `RESUME`, `PORTFOLIO GUIDELINES`, `RUN AGAIN` 세 링크를 둔다. 각각 `/resume/`, `/guidelines/`, `/`로 이동하며 이것이 메인 여정의 유일한 진입점이다.
-- `whoami`는 neofetch처럼 아스키 키위를 왼쪽 고정 폭 열에, 정보를 오른쪽에 배치한다. 한글 전각 문자는 마지막 열에만 들어가 아스키 정렬을 흔들지 않는다.
+- `whoami`와 숨은 `kiwisay`는 같은 말하는 키위 패널을 쓴다. 넓은 화면은 아스키 키위를 왼쪽 고정 폭 열에, 말풍선을 오른쪽에 두고, 좁은 화면은 말풍선을 위에 쌓고 꼬리를 내린다. 두 명령의 차이는 말풍선 문장과 그 아래 정보 블록의 유무뿐이다. `whoami`는 neofetch처럼 정보를 붙이고 `kiwisay`는 말풍선만 남긴다. 한글 전각 문자는 마지막 열에만 들어가 아스키 정렬을 흔들지 않는다.
 - `whoami`의 오른쪽 열은 말풍선이 위, 정보가 아래다. 아트의 부리가 오른쪽을 향해 말풍선을 가리키므로 넓은 화면에서는 꼬리를 그리지 않는다. 아트가 오른쪽 열보다 길므로 오른쪽 열을 세로 가운데에 맞춘다. 문장이 몇 줄로 감기든 아래가 비어 보이지 않는다. 좁은 화면에서는 두 열이 안 되므로 말풍선을 위에 쌓고 꼬리를 아래로 내린다.
 - 아스키 키위는 손으로 그리지 않고 저장소의 키위 일러스트를 알파와 밝기 기준으로 변환한 것이다. 실제 캐릭터에서 나온 실루엣이라 손으로 그린 것보다 키위로 읽힌다.
 - 760px 미만에서는 두 열이 들어가지 않으므로 더 좁은 아트를 위에 쌓고 정보를 아래에 둔다. 프롬프트 줄이 이미 `visitor@portfolio %`를 보여주므로 출력에 같은 문자열을 반복하지 않는다.
@@ -113,6 +148,46 @@ pnpm build
 - 빼꼼 키위는 재생 중에만 DOM에 존재하고 애니메이션이 끝나면 제거한다. 상시 존재하면 06↔07↔Contact 전환에서 터미널이 진입 transform으로 비켜나거나 아직 나타나지 않은 프레임에 가려줄 창이 없어 그대로 드러난다. 같은 이유로 터미널과 같은 `--contact-progress` 진입 게이트를 opacity에 공유한다.
 - 터미널이 준비된 뒤 일정 시간 입력이 없으면 키위 보행 스프라이트가 입력 줄 위 경계를 한 번 걸어 지나간다. 대기 시간은 개발 환경에서 10초, 배포에서 30초다. 입력·포인터 조작이 있으면 대기를 다시 시작하고, 모션 감소 환경과 좁은 화면에서는 실행하지 않는다.
 - 모바일에서는 헤드라인과 터미널을 세로로 재배치하고 히스토리 영역에 독립적인 세로 스크롤을 허용한다. 모션 감소 환경에서는 포인터 추적, 자동 타이핑 지연과 반복 커서 모션을 끈다.
+
+#### Screen effects
+
+숨은 `boom`, `lightning`이 쓰는 연출이다. 출력 줄만 만드는 다른 명령과 달리 화면 자체를 다루므로 별도 규칙을 따른다.
+
+- 이펙트 레이어는 `createPortal`로 `document.body`에 붙인다. 무대 안에 두면 `.contact-finale-stage`의 `overflow`에 잘리고, 흔들림 때문에 무대에 걸리는 transform이 fixed 자손의 containing block을 바꾼다.
+- 흔들림은 `.contact-finale-stage`에만 건다. `body`나 `html`에 transform을 걸면 05→06 당근 커튼과 06↔07 Toss 전환막의 fixed containing block이 viewport에서 그 요소로 바뀌어 두 전환이 모두 깨진다. Google `askew`류의 흔한 구현을 그대로 가져올 수 없는 이유다.
+- 흔들리는 동안 무대가 트랙 밖으로 나가므로 `.contact-finale-track`을 `overflow: clip`으로 자른다. `hidden`이 아닌 이유는 스크롤 컨테이너를 만들지 않기 위해서다. `hidden`이면 넘친 만큼 트랙이 스크롤 가능해지고 터미널 입력 포커스에서 브라우저가 그 안을 스크롤한다. 트랙 배경이 무대와 같은 색이라 잘린 가장자리에 틈이 보이지 않는다.
+- 레이어는 항상 `pointer-events: none`이다. 이 레이어가 wheel의 `event.target`이 되면 `insideTerminal` 예외를 통과하지 못해 재생 중 위로 스크롤한 사용자가 07로 튕겨난다.
+- 재생 중에는 `effectLockRef`로 `wheel`·`touchmove`·스크롤 키를 소비한다. 기존 전환 소유권(`dataset.portfolioTransition`)을 재사용하지 않는다. 새 값을 쓰면 Contact 자신의 snap이 영구히 막히고, `'contact'`를 쓰면 이펙트와 무관한 시점에 소유권이 풀린다. 터미널 안에서 시작한 제스처는 잠금 중에도 그대로 통과시켜 로그 스크롤을 막지 않는다. 종료 후 250ms 무입력이 지나야 잠금을 푼다.
+- 재생 여부는 entry에 담지 않는다. entry는 `sessionStorage`에 직렬화되므로 함께 저장하면 새로고침 때 지난 연출이 되살아난다. `runCommand`는 이펙트 이름만 돌려주고 컴포넌트가 실행한다.
+- 같은 명령을 연속 입력해도 다시 재생되도록 재생 횟수를 remount key로 쓴다. 종료는 CSS 애니메이션 길이와 맞춘 단일 타이머가 담당한다.
+- `gravity`는 실제 요소를 복제하지 않고 원본에 transform만 걸었다가 되돌린다. 복제하면 화면 밖 사본이 포커스를 가져가고 되돌리기도 어렵다. 낙하 거리는 요소마다 다르므로 시작 시 무대 바닥까지의 거리를 재서 CSS 변수로 넣는다. 이때 이전 연출이 남긴 인라인 값을 먼저 걷어야 한다. 이미 내려간 요소를 다시 재면 거리가 0이 된다. `.contact-marquee`는 진행률 기반 가로 transform을 이미 갖고 있어 덮어쓰면 가로로 튀므로 대상에서 뺀다.
+- `earthquake`는 boom과 달리 충격 한 번이 아니라 커졌다 잦아드는 흔들림이다. 진폭 곡선을 CSS로 곱할 방법이 없어 keyframe마다 직접 적는다. 무대만 흔들면 사진 한 장이 움직이는 것처럼 보이므로 터미널 창에 더 빠른 덜그럭거림을 겹친다. 지속형이 아니라 스스로 끝나는 길이로 둔다. 무한히 흔들면 입력 잠금을 무한정 유지하게 된다.
+- `flip`은 무대를 등배로 한 바퀴 돌린다. 회전으로 드러나는 모서리가 트랙 배경과 같은 색이라 틈으로 보이지 않기 때문이다. Google `do a barrel roll`이 필요로 하는 큰 배율이 여기서는 필요 없다. 중간의 약한 확대는 모서리 노출을 더 줄이면서 카메라가 밀고 들어오는 느낌을 준다.
+- `boom`은 흔들림, 충격파 링 두 겹, 헤드라인 글자 낙하로 구성한다. 로그 전체를 글자로 분해하면 span이 수백 개가 되고 로그 스크롤 위치까지 깨지므로 헤드라인만 대상으로 한다. 글자를 `inline-block`으로 쪼개면 글자 사이에 줄바꿈 기회가 생겨 `CONNECT.`가 접히므로 헤드라인 두 낱말에 `white-space: nowrap`을 둔다. 700px 이하에서는 헤드라인이 터미널 바로 위라 떨어지는 글자가 창을 덮으므로 흔들림만 남긴다.
+- 충격파 링은 `scale`이 아니라 폭을 키운다. `scale`은 테두리 두께까지 함께 늘려 링이 뭉개진다. 확대가 너무 빠르거나 크면 첫 100ms 만에 화면 밖으로 나가 보이지 않는다.
+- `lightning`의 번쩍임은 1.1초 동안 두 번이다. WCAG 2.3.1의 초당 3회 기준을 넘지 않는다.
+- 모션 감소 환경에서는 레이어를 마운트하지 않고 같은 명령의 텍스트 결과만 남긴다. CSS에도 같은 차단을 한 겹 더 둔다.
+
+#### Window buttons
+
+- 좌상단 세 점은 장식 `<i>`가 아니라 실제 컨트롤이다. 초록은 페이지를 이동하므로 진짜 `<a>`, 빨강과 노랑은 `<button>`이다. 앵커여야 새 탭 열기와 링크 미리보기가 브라우저 기본 동작으로 동작한다.
+- 세 버튼은 hover·focus에서만 macOS처럼 `×`, `−`, `⤢` 글자가 떠오른다. 평소에는 색점만 보이므로 기존 화면 인상이 바뀌지 않는다.
+- 초록은 Contact에서 `/terminal/`로, `/terminal/`에서 `/#contact`로 간다. 같은 버튼이 전체화면을 켜고 끈다.
+- 빨강은 `close`를 일반 명령과 같은 경로로 실행한다. 별도 분기를 만들지 않아 버튼을 누르든 직접 치든 결과가 같고, 히스토리에도 똑같이 남는다. `close`와 `exit`는 나갈 곳이 없다고 답하는 숨은 명령이다.
+- 노랑은 로그에 아무것도 남기지 않고 창만 잠깐 작아졌다 튕겨 돌아온다. 창을 실제로 접으면 그동안 터미널을 쓸 수 없고, 접힌 상태를 되돌릴 두 번째 규칙이 필요해진다. 애니메이션이 끝나면 상태를 지워 다음 클릭에서 다시 재생한다.
+- 모션 감소 환경에서는 튕김을 생략한다. 빨강의 텍스트 응답은 그대로 남는다.
+
+### Terminal window and the /terminal page
+
+- 터미널 창은 `src/TerminalWindow.tsx` 하나다. Contact 피날레와 `/terminal/`이 같은 컴포넌트를 렌더하므로 명령·부팅·히스토리·저장·화면 연출·빼꼼 키위가 두 화면에서 갈라지지 않는다.
+- 컴포넌트는 fragment를 돌려준다. 빼꼼 키위는 창보다 낮은 z-index로 창 뒤에 숨어야 하므로 창의 자식이 될 수 없고, 무대의 형제로 나와야 한다.
+- 무대별로 다른 것은 props로만 받는다. 부팅 시작 신호(`booted`), 이펙트가 걸릴 무대(`stageRef`), gravity가 떨어뜨릴 선택자 목록, 초록 버튼의 목적지, 타이틀바 문구다. 이펙트 재생 상태는 `onEffectChange`로 올려 보내고, 무대 class 합성과 입력 잠금은 각 호스트가 자기 방식으로 처리한다. Contact는 헤드라인 글자 낙하와 `effectLockRef`를 여기서 붙이고, `/terminal/`은 스크롤이 없어 잠금 자체가 필요 없다.
+- `sessionStorage` 키는 두 화면이 공유한다. 같은 탭에서 전체화면으로 이동하면 방금까지의 출력과 명령 히스토리가 그대로 이어진다. 새 세션이 아니라 같은 셸의 다른 창이라는 SPEC의 규칙이 이 공유에서 나온다.
+- `/terminal/`은 `--contact-progress: 1`로 고정해 진입 조립을 건너뛴다. 창 위치는 Contact와 같은 `--terminal-top/right/width` 변수로 잡되 값만 화면 가장자리에 맞춘다. 덕분에 빼꼼 키위의 좌표 계산과 반응형 규칙을 그대로 재사용한다.
+- 창을 화면에 꽉 채우지 않고 위쪽에 더 넓은 여백을 둔다. 여백이 없으면 창 뒤에서 올라오는 빼꼼 키위가 설 자리가 없고, 맥 창처럼 보이던 둥근 모서리와 그림자도 사라진다.
+- `/terminal/`에는 스크롤 트랙이 없다. 페이지 자체를 한 viewport로 고정하고 `overflow: clip`으로 자른다. 흔들림·회전 연출이 스크롤바를 만들지 않아야 하기 때문이다.
+- gravity의 낙하 거리는 무대 바닥까지 재는 것이 기본이지만, 창이 화면을 거의 채우는 `/terminal/`에서는 잴 거리가 없어 움직이지 않는다. 대상별로 고정 낙하 거리를 넘길 수 있게 두고 이 페이지에서는 화면 아래로 떨어졌다 돌아오게 한다.
+- 페이지는 마운트 즉시 부팅한다. Contact처럼 `IntersectionObserver`로 기다릴 이유가 없다.
 
 ### Portfolio Guidelines document
 
@@ -285,9 +360,9 @@ pnpm build
 ### Crawling
 
 - `public/robots.txt`는 전체 크롤을 허용하고 sitemap 위치를 알린다.
-- `public/sitemap.xml`은 공개 세 주소만 나열한다. `/labs/*`는 배포본에 파일 자체가 없어 차단할 대상이 아니다.
+- `public/sitemap.xml`은 공개 네 주소만 나열한다. `/labs/*`는 배포본에 파일 자체가 없어 차단할 대상이 아니다.
 - sitemap에 `lastmod`는 넣지 않는다. 손으로 관리하면 금방 틀려지고, 오래된 `lastmod`는 없는 것보다 나쁜 신호다.
-- 세 페이지 모두 React가 클라이언트에서 렌더한다. 검색 엔진이 JS를 실행해야 본문을 볼 수 있으므로, 색인이 실제로 잡히는지는 배포 후 Search Console로 확인한다.
+- 네 페이지 모두 React가 클라이언트에서 렌더한다. 검색 엔진이 JS를 실행해야 본문을 볼 수 있으므로, 색인이 실제로 잡히는지는 배포 후 Search Console로 확인한다.
 
 ## Analytics
 
@@ -301,7 +376,7 @@ pnpm build
 - 소스 브랜치: `develop`
 - 배포 브랜치: `master`
 - `develop` push 시 pnpm lockfile 기준으로 설치하고 `pnpm build`를 실행한다.
-- Vite 산출물인 `dist/`만 `master`에 게시한다. `dist/index.html`과 `dist/guidelines/index.html`이 게시 대상이며 실험 페이지 HTML은 생성되지 않는다.
+- Vite 산출물인 `dist/`만 `master`에 게시한다. `dist/index.html`, `dist/resume/index.html`, `dist/guidelines/index.html`, `dist/terminal/index.html`이 게시 대상이며 실험 페이지 HTML은 생성되지 않는다.
 - `base`는 상대 경로 `./`를 유지한다. 중첩된 `guidelines/index.html`에서도 asset 참조가 자신의 위치를 기준으로 계산된다.
 - `master`는 생성물 전용이므로 직접 수정하지 않는다.
 - `.github/workflows/auto-publish.yml`에서 checkout·mise·Pages 배포 action을 검증한 commit SHA로 고정하고, 사람이 읽을 수 있는 버전은 주석으로 남긴다.

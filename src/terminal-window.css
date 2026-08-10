@@ -1,0 +1,63 @@
+/* 터미널 창의 좌상단 세 버튼과 창 자체의 반응.
+   창의 나머지 레이아웃과 화면 연출은 contact-finale.css에 있다. */
+
+.contact-terminal-lights {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* 초록만 앵커, 나머지 둘은 버튼이라 요소 선택자 대신 자식 전체를 잡는다. */
+.contact-terminal-lights > * {
+  display: grid;
+  width: 11px;
+  height: 11px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  background: #e35d53;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .14);
+  cursor: pointer;
+  transition: filter .2s ease;
+}
+
+.contact-terminal-lights .is-minimize { background: #e8ad45; }
+.contact-terminal-lights .is-zoom { background: #73b36b; }
+
+/* macOS처럼 타이틀바에 포인터가 올라올 때만 기호가 떠오른다.
+   평소에는 색점만 보이므로 기존 화면 인상이 바뀌지 않는다. */
+.contact-terminal-lights > *::before {
+  color: rgba(0, 0, 0, .62);
+  font: 700 8px/1 'DM Mono', monospace;
+  opacity: 0;
+  transition: opacity .18s ease;
+}
+
+.contact-terminal-lights .is-close::before { content: '×'; font-size: 10px; }
+.contact-terminal-lights .is-minimize::before { content: '−'; }
+.contact-terminal-lights .is-zoom::before { content: '⤢'; font-family: system-ui, sans-serif; font-size: 9px; }
+
+.contact-terminal-bar:hover .contact-terminal-lights > *::before,
+.contact-terminal-lights > *:focus-visible::before { opacity: 1; }
+.contact-terminal-lights > *:hover { filter: brightness(1.12); }
+.contact-terminal-lights > *:focus-visible { outline: 2px solid rgba(246, 240, 223, .55); outline-offset: 2px; }
+
+/* 노랑 버튼. 창을 실제로 접으면 그동안 터미널을 쓸 수 없고 되돌릴 두 번째 규칙이 필요해진다.
+   상태를 남기지 않고 잠깐 작아졌다 튕겨 돌아오기만 한다. */
+.contact-terminal.is-nudging {
+  transform-origin: center;
+  animation: terminal-window-nudge .5s cubic-bezier(.34, 1.5, .5, 1) both;
+}
+
+@keyframes terminal-window-nudge {
+  0% { transform: scale(1); }
+  34% { transform: scale(.94); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-terminal.is-nudging { animation: none; }
+  .contact-terminal-lights > *,
+  .contact-terminal-lights > *::before { transition: none; }
+}

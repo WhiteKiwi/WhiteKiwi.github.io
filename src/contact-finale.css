@@ -8,6 +8,12 @@
   --terminal-width: min(57vw, 920px);
   position: relative;
   height: max(100svh, 620px);
+  /* boom이 무대를 흔들 때 무대가 트랙 밖으로 삐져나가지 않게 자른다.
+     트랙 배경이 무대와 같은 색이라 흔들려도 가장자리에 틈이 보이지 않는다.
+     `hidden`이 아니라 `clip`인 이유는 스크롤 컨테이너를 만들지 않기 위해서다.
+     `hidden`이면 흔들리는 동안 생긴 overflow만큼 트랙이 스크롤 가능해지고,
+     터미널 입력에 포커스가 갈 때 브라우저가 그 안을 몇 px 스크롤해버린다. */
+  overflow: clip;
   color: #f6f0df;
   background: #171918;
 }
@@ -125,8 +131,10 @@
   letter-spacing: -.1em;
 }
 
+/* boom이 글자를 inline-block으로 쪼개면 글자 사이에 줄바꿈 기회가 생겨
+   `CONNECT.`가 `CONNEC` / `T.`로 접힌다. 두 낱말 모두 공백이 없어 평소에는 영향이 없다. */
 .contact-finale-copy h2 span,
-.contact-finale-copy h2 strong { display: block; }
+.contact-finale-copy h2 strong { display: block; white-space: nowrap; }
 .contact-finale-copy h2 strong { color: #e8ad45; font-weight: 800; }
 .contact-finale-copy > p:last-child { margin: 28px 0 0; color: rgba(246, 240, 223, .64); font-size: clamp(.76rem, .95vw, .96rem); font-weight: 540; line-height: 1.7; letter-spacing: -.025em; }
 
@@ -163,6 +171,15 @@
   pointer-events: none;
 }
 
+/* 네 영역 모두 행을 명시한다. 자동 배치에 맡기면 코드 레인 캔버스처럼 행을 지정한 자식이
+   하나만 끼어들어도 나머지가 한 칸씩 밀린다. 그러면 로그가 `auto` 행으로 내려가 히스토리
+   높이만큼 커지고, 캔버스가 있던 `1fr` 행은 0으로 짜부라져 아무것도 보이지 않는다. */
+.contact-terminal-bar { grid-row: 1; }
+.contact-terminal-log { grid-row: 2; }
+.contact-terminal-form { grid-row: 3; }
+.contact-terminal-shortcuts { grid-row: 4; }
+.contact-terminal > * { grid-column: 1; }
+
 .contact-terminal-bar {
   position: relative;
   z-index: 11;
@@ -177,10 +194,7 @@
   letter-spacing: .04em;
 }
 
-.contact-terminal-bar > span { display: flex; gap: 7px; }
-.contact-terminal-bar > span i { display: block; width: 9px; aspect-ratio: 1; border-radius: 50%; background: #e35d53; }
-.contact-terminal-bar > span i:nth-child(2) { background: #e8ad45; }
-.contact-terminal-bar > span i:nth-child(3) { background: #73b36b; }
+/* 좌상단 세 점은 실제 버튼이다. 모양과 동작은 terminal-window.css에 있다. */
 .contact-terminal-bar strong { font-weight: 500; }
 .contact-terminal-bar small { justify-self: end; color: rgba(231, 233, 227, .34); font: inherit; }
 
@@ -221,6 +235,24 @@
 .terminal-entry-output > span { color: #e7e9e3; white-space: pre-wrap; word-break: break-word; animation: terminal-line-in .32s cubic-bezier(.22, 1, .36, 1) both; animation-delay: var(--line-delay); }
 /* DM Mono에는 한글이 없어 한글만 다른 글꼴로 떨어지고, 그 폭이 라틴의 1.44배라 아스키 격자가 깨진다.
    Nanum Gothic Coding은 한글이 라틴의 정확히 2배라 격자가 맞는다. */
+/* 코드 레인. 터미널 그리드의 로그 행에 그대로 겹쳐 로그만 잠식한다.
+   grid-row를 명시하지 않으면 새 행이 생겨 터미널 레이아웃이 무너진다. */
+.terminal-matrix {
+  z-index: 4;
+  display: block;
+  width: 100%;
+  height: 100%;
+  grid-row: 2;
+  grid-column: 1;
+  background: rgba(10, 12, 11, .92);
+  pointer-events: none;
+  animation: terminal-matrix-in .5s ease both;
+}
+
+@keyframes terminal-matrix-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* 프레임 애니메이션은 매 프레임 줄 내용이 바뀐다. 등장 모션을 켜두면 계속 다시 재생된다. */
+.terminal-entry.is-instant .terminal-entry-output > span { animation: none; }
 .terminal-entry-output .is-grid { font-family: 'Nanum Gothic Coding', monospace; }
 .terminal-entry-output .is-muted { color: rgba(231, 233, 227, .44); }
 .terminal-entry-output .is-accent { color: #e8ad45; }
@@ -445,3 +477,228 @@
 /* 700px 이하에서는 LET'S CONNECT. 헤드라인이 터미널 바로 위를 차지해 겹친다. */
 @media (max-width: 700px) { .contact-kiwi-peek { display: none; } }
 @media (prefers-reduced-motion: reduce) { .contact-kiwi-peek { display: none; } }
+
+/* ── screen effects ───────────────────────────────────── */
+/* 숨은 `boom`, `lightning`이 쓰는 연출. 짧게 재생하고 원래 상태로 되돌아온다. */
+
+/* 무대에 걸리는 transform은 무대를 fixed 자손의 containing block으로 만든다.
+   이펙트 레이어를 body로 portal한 이유가 이것이다. 무대 안에 fixed를 새로 두지 않는다. */
+.contact-finale-stage.is-booming { animation: contact-boom-shake .92s cubic-bezier(.36, .07, .19, .97) both; }
+
+@keyframes contact-boom-shake {
+  0% { transform: translate3d(0, 0, 0); }
+  6% { transform: translate3d(-13px, 9px, 0); }
+  12% { transform: translate3d(11px, -8px, 0); }
+  19% { transform: translate3d(-9px, -6px, 0); }
+  27% { transform: translate3d(8px, 7px, 0); }
+  36% { transform: translate3d(-6px, 4px, 0); }
+  46% { transform: translate3d(5px, -4px, 0); }
+  57% { transform: translate3d(-3px, -3px, 0); }
+  69% { transform: translate3d(3px, 2px, 0); }
+  82% { transform: translate3d(-2px, 1px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+.contact-finale-copy h2 i { display: inline-block; font-style: normal; }
+
+.is-booming .contact-finale-copy h2 i {
+  animation: contact-boom-drop 1.5s cubic-bezier(.45, .02, .82, .3) both;
+  animation-delay: calc(180ms + var(--i) * 42ms);
+}
+
+@keyframes contact-boom-drop {
+  0% { opacity: 1; transform: translate3d(0, 0, 0) rotate(0); }
+  14% { opacity: 1; transform: translate3d(0, -16px, 0) rotate(calc(var(--r) * 7deg)); }
+  100% { opacity: 0; transform: translate3d(calc(var(--r) * 26px), 58vh, 0) rotate(calc(var(--r) * 88deg)); }
+}
+
+/* 글자가 떨어져 사라진 뒤 헤드라인이 통째로 다시 들어온다. */
+.contact-finale-copy h2.is-returning { animation: contact-headline-return .62s cubic-bezier(.22, 1, .36, 1) both; }
+
+@keyframes contact-headline-return {
+  from { opacity: 0; transform: translateY(10px); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+
+.terminal-fx {
+  position: fixed;
+  z-index: 90;
+  inset: 0;
+  overflow: hidden;
+  /* 이 레이어가 wheel의 event.target이 되면 터미널 제스처 예외를 통과하지 못한다. */
+  pointer-events: none;
+}
+
+.terminal-fx-flash { position: absolute; inset: 0; opacity: 0; background: #fff; }
+
+/* 번쩍임은 1.1초 동안 두 번이다. WCAG 2.3.1의 초당 3회 기준을 넘지 않는다. */
+.is-lightning .terminal-fx-flash { animation: terminal-fx-lightning 1.1s linear both; }
+
+@keyframes terminal-fx-lightning {
+  0% { opacity: 0; }
+  4% { opacity: .82; }
+  10% { opacity: .1; }
+  16% { opacity: .58; }
+  24% { opacity: .05; }
+  100% { opacity: 0; }
+}
+
+.is-boom .terminal-fx-flash {
+  background: radial-gradient(circle at var(--fx-x) var(--fx-y), #fff 0, rgba(255, 214, 150, .92) 20%, rgba(232, 173, 69, 0) 58%);
+  animation: terminal-fx-boom-flash .52s ease-out both;
+}
+
+@keyframes terminal-fx-boom-flash {
+  0% { opacity: 0; }
+  8% { opacity: .9; }
+  100% { opacity: 0; }
+}
+
+.terminal-fx-bolt {
+  position: absolute;
+  top: 0;
+  left: var(--fx-x);
+  width: min(34vw, 300px);
+  height: 64vh;
+  transform: translateX(-50%);
+}
+
+.terminal-fx-bolt path {
+  --dash: 460;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-dasharray: var(--dash);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 10px rgba(232, 173, 69, .95));
+  animation: terminal-fx-bolt-draw .95s cubic-bezier(.2, .8, .3, 1) both;
+}
+
+.terminal-fx-bolt path.is-branch { --dash: 220; stroke-width: 2; animation-delay: .07s; }
+
+@keyframes terminal-fx-bolt-draw {
+  0% { opacity: 1; stroke-dashoffset: var(--dash); }
+  22% { opacity: 1; stroke-dashoffset: 0; }
+  58% { opacity: .8; stroke-dashoffset: 0; }
+  100% { opacity: 0; stroke-dashoffset: 0; }
+}
+
+/* scale 대신 폭을 키운다. scale은 테두리 두께까지 함께 늘려 링이 뭉개진다. */
+.terminal-fx-ring {
+  position: absolute;
+  top: var(--fx-y);
+  left: var(--fx-x);
+  width: 0;
+  aspect-ratio: 1;
+  border: 2px solid rgba(255, 236, 200, .95);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  /* 이보다 빠르거나 크면 링이 첫 100ms 만에 화면 밖으로 나가 보이지 않는다. */
+  animation: terminal-fx-ring 1s cubic-bezier(.12, .6, .3, 1) both;
+}
+
+.terminal-fx-ring.is-late { border-color: rgba(232, 173, 69, .68); animation-delay: .14s; }
+
+@keyframes terminal-fx-ring {
+  0% { width: 0; opacity: 0; }
+  8% { opacity: 1; }
+  100% { width: 150vmax; opacity: 0; }
+}
+
+/* ── gravity ──────────────────────────────────────────── */
+/* 실제 요소를 복제하지 않고 원본에 transform만 걸었다가 되돌린다.
+   낙하 거리 `--fall`은 요소마다 달라 JS가 무대 바닥까지의 거리를 재서 넣는다. */
+
+.is-gravity .contact-finale-meta,
+.is-gravity .contact-finale-copy,
+.is-gravity .contact-terminal,
+.is-gravity .contact-link-dock,
+.is-gravity .contact-finale-bottom { animation: contact-gravity-fall 2.6s linear both; }
+
+/* 기본값이 right center라 회전이 오른쪽 끝을 축으로 돈다. */
+.is-gravity .contact-terminal { transform-origin: center; }
+
+@keyframes contact-gravity-fall {
+  0% { transform: translate3d(0, 0, 0) rotate(0deg); animation-timing-function: cubic-bezier(.5, 0, .85, .4); }
+  34% { transform: translate3d(calc(var(--drift, 0) * 1px), calc(var(--fall, 0) * 1px), 0) rotate(calc(var(--spin, 0) * 1deg)); animation-timing-function: cubic-bezier(.2, .7, .4, 1); }
+  41% { transform: translate3d(calc(var(--drift, 0) * 1px), calc(var(--fall, 0) * 1px - 13px), 0) rotate(calc(var(--spin, 0) * .78deg)); animation-timing-function: cubic-bezier(.6, 0, .8, .5); }
+  48%, 64% { transform: translate3d(calc(var(--drift, 0) * 1px), calc(var(--fall, 0) * 1px), 0) rotate(calc(var(--spin, 0) * 1deg)); animation-timing-function: cubic-bezier(.22, 1, .36, 1); }
+  100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+}
+
+/* ── earthquake ───────────────────────────────────────── */
+/* boom과 달리 충격 한 번이 아니라 커졌다 잦아드는 흔들림이다.
+   진폭 곡선을 CSS로 곱할 방법이 없어 keyframe마다 직접 적는다. */
+
+.contact-finale-stage.is-quaking { animation: contact-quake 3.4s linear both; }
+/* 무대만 흔들면 사진 한 장이 움직이는 것처럼 보인다. 창이 따로 덜그럭거려야 무게가 생긴다. */
+.is-quaking .contact-terminal { animation: contact-quake-rattle .19s linear 18; }
+
+@keyframes contact-quake {
+  0% { transform: translate3d(0, 0, 0); }
+  3% { transform: translate3d(-4px, 3px, 0); }
+  6% { transform: translate3d(5px, -3px, 0); }
+  9% { transform: translate3d(-7px, 5px, 0); }
+  12% { transform: translate3d(8px, -6px, 0); }
+  16% { transform: translate3d(-11px, 7px, 0); }
+  20% { transform: translate3d(12px, -8px, 0); }
+  24% { transform: translate3d(-13px, 9px, 0); }
+  28% { transform: translate3d(12px, -10px, 0); }
+  32% { transform: translate3d(-14px, 8px, 0); }
+  36% { transform: translate3d(13px, -9px, 0); }
+  40% { transform: translate3d(-12px, 10px, 0); }
+  44% { transform: translate3d(14px, -7px, 0); }
+  48% { transform: translate3d(-11px, 9px, 0); }
+  52% { transform: translate3d(12px, -8px, 0); }
+  56% { transform: translate3d(-10px, 6px, 0); }
+  60% { transform: translate3d(9px, -7px, 0); }
+  65% { transform: translate3d(-8px, 5px, 0); }
+  70% { transform: translate3d(7px, -5px, 0); }
+  75% { transform: translate3d(-6px, 4px, 0); }
+  80% { transform: translate3d(5px, -3px, 0); }
+  85% { transform: translate3d(-4px, 3px, 0); }
+  90% { transform: translate3d(3px, -2px, 0); }
+  95% { transform: translate3d(-2px, 1px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+@keyframes contact-quake-rattle {
+  0% { transform: translate3d(0, 0, 0); }
+  25% { transform: translate3d(1.5px, -1px, 0); }
+  50% { transform: translate3d(-1px, 1.5px, 0); }
+  75% { transform: translate3d(1px, 1px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+/* ── flip ─────────────────────────────────────────────── */
+/* 회전으로 드러나는 무대 모서리는 트랙 배경과 같은 `#171918`이라 틈으로 보이지 않는다.
+   그래서 Google `do a barrel roll`과 달리 큰 배율 없이 등배로 돌 수 있다.
+   중간의 약한 확대는 모서리 노출을 줄이면서 카메라가 밀고 들어오는 느낌을 준다. */
+
+.contact-finale-stage.is-flipping { animation: contact-flip 1.15s cubic-bezier(.45, .05, .35, 1) both; }
+
+@keyframes contact-flip {
+  0% { transform: rotate(0turn) scale(1); }
+  50% { transform: rotate(.5turn) scale(1.1); }
+  100% { transform: rotate(1turn) scale(1); }
+}
+
+/* 좁은 화면에서는 헤드라인이 터미널 바로 위라 떨어지는 글자가 창을 덮는다. 흔들림만 남긴다. */
+@media (max-width: 700px) { .is-booming .contact-finale-copy h2 i { animation: none; } }
+
+/* JS에서도 막지만 CSS로 한 겹 더 둔다. */
+@media (prefers-reduced-motion: reduce) {
+  .terminal-fx { display: none; }
+  .contact-finale-stage.is-booming,
+  .contact-finale-stage.is-quaking,
+  .contact-finale-stage.is-flipping,
+  .is-quaking .contact-terminal,
+  .is-gravity .contact-finale-meta,
+  .is-gravity .contact-finale-copy,
+  .is-gravity .contact-terminal,
+  .is-gravity .contact-link-dock,
+  .is-gravity .contact-finale-bottom,
+  .is-booming .contact-finale-copy h2 i,
+  .contact-finale-copy h2.is-returning { animation: none; }
+}

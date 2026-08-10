@@ -3,6 +3,7 @@ import { lazy, Suspense } from 'react'
 const FallIntro = lazy(() => import('./FallIntro'))
 const Resume = lazy(() => import('./Resume'))
 const PortfolioGuidelines = lazy(() => import('./PortfolioGuidelines'))
+const TerminalPage = lazy(() => import('./TerminalPage'))
 
 // 개발 환경에서만 존재한다. 프로덕션 빌드에서는 조건이 false로 접히면서 실험 번들이 산출물에서 빠진다.
 const LabRouter = import.meta.env.DEV ? lazy(() => import('./labs/LabRouter')) : null
@@ -28,6 +29,10 @@ function App() {
 
   if (path === '/guidelines') {
     return <Suspense fallback={<main className="guidelines-loading" />}><PortfolioGuidelines /></Suspense>
+  }
+
+  if (path === '/terminal') {
+    return <Suspense fallback={<main className="terminal-page" />}><TerminalPage /></Suspense>
   }
 
   return <Suspense fallback={<main className="fall-intro" />}><FallIntro /></Suspense>
