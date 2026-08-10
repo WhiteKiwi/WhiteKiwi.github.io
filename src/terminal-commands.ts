@@ -445,6 +445,32 @@ const buildHack = (): { lines: TerminalLine[]; frames: TerminalLine[][] } => {
   return { lines: frames[0], frames }
 }
 
+/* ── whitekiwi ────────────────────────────────────────── */
+
+/**
+ * 유래는 시시하다. 그래서 두 번에 나눈다.
+ *
+ * 처음에는 되묻기만 하고 두 번째부터 실토한다. 감추기만 하면 얄밉고, 바로 말하면 김이 샌다.
+ * 셋업 뒤에 오는 김빠짐이라야 농담이 된다. 되물을 때 안내를 붙이지 않는 이유는,
+ * 되묻는 문장 자체가 한 번 더 쳐보게 만들기 때문이다. 설명하면 그 힘이 사라진다.
+ * 새로고침하면 처음으로 돌아간다. 방문자마다 이 두 박자를 처음부터 겪는 편이 맞다.
+ */
+let whitekiwiAsked = 0
+
+const buildWhitekiwi = (): TerminalLine[] => {
+  whitekiwiAsked += 1
+
+  if (whitekiwiAsked === 1) return [accent('whitekiwi'), plain('  why this name?')]
+
+  return [
+    accent('whitekiwi'),
+    plain('  someone said a colour plus a fruit makes a good handle.'),
+    plain('  so: a colour, and a fruit. that is the whole story.'),
+    plain(''),
+    muted('  the flightless bird that keeps walking came free with it.'),
+  ]
+}
+
 /* ── beer ─────────────────────────────────────────────── */
 
 /**
@@ -571,6 +597,8 @@ const secrets: TerminalLine[] = [
   accent('READ'),
   fixed('  git log         the career as a commit history'),
   fixed('  man kiwi        the manual for the bird'),
+  fixed('  whitekiwi       why this name'),
+  fixed('  why nodejs      an honest answer'),
   fixed('  ping            is anyone out there'),
   fixed('  uptime          how long this has been running'),
   plain(''),
@@ -725,12 +753,24 @@ export const runCommand = (command: string, ctx: CommandContext): CommandResult 
     case 'git status': return { lines: gitStatus }
     case 'git blame': return { lines: [plain('always me.')] }
     case 'whitekiwi':
+      return { lines: buildWhitekiwi() }
+    // 면접 답변처럼 셋을 세우고 마지막에 순서를 뒤집는다. 셋 다 진짜 이유이긴 하다.
+    case 'why nodejs': case 'why node': case 'why node.js':
       return {
         lines: [
-          accent('whitekiwi'),
-          plain('  the name on the door.'),
-          plain('  a kiwi cannot fly, so it walks. that is the whole portfolio.'),
-          muted('  run `whoami` for the parts that fit on a resume.'),
+          accent('why nodejs'),
+          fixed('  1. one language across the whole stack'),
+          fixed('  2. the event loop is genuinely elegant'),
+          fixed('  3. it was already installed'),
+          plain(''),
+          muted('  the honest order is 3, 1, 2.'),
+        ],
+      }
+    case 'why':
+      return {
+        lines: [
+          muted('usage: why <thing>'),
+          plain('  only one thing has an answer so far.'),
         ],
       }
     case 'coffee': case 'brew':
@@ -880,6 +920,9 @@ export const runCommand = (command: string, ctx: CommandContext): CommandResult 
   if (command.startsWith('git status')) return { lines: gitStatus }
   if (command.startsWith('git blame')) return { lines: [plain('always me.')] }
   if (command.startsWith('help ')) return { lines: buildHelp() }
+  if (command.startsWith('why ')) {
+    return { lines: [failure(`why: I have not thought about ${command.slice(4).trim()} that hard.`)] }
+  }
   if (command.startsWith('ping ')) {
     const host = command.slice(5).trim()
     if (pingHosts.includes(host)) return { lines: pingLines }
