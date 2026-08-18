@@ -64,12 +64,10 @@
 
 ## Technical gaps
 
-- [ ] 첫 artifact 기반 GitHub Pages workflow가 성공하고 custom domain·HTTPS·공개 경로가 유지되는지 확인
 - [ ] `role="log" aria-live="polite"` 영역에 긴 출력이 쏟아질 때 스크린리더 대응. `hack`은 16줄을 순차 출력하고 `kiwi`·`sl`은 매 프레임 8—14줄을 교체하므로 라이브 리전이 계속 읽힌다. 요약 한 줄만 남기는 방법을 정한다.
 - [ ] 배포 후 GA4 실시간 보고서에서 `portfolio.whitekiwi.link` page view 유입 확인
 - [ ] 배포 후 GA4 기본 보고서에서 `/`와 `/guidelines/`가 서로 다른 페이지로 잡히는지 확인
-- [ ] 배포 후 `/terminal/`이 실제로 게시되고 GA4에서 별도 경로로 잡히는지, sitemap의 네 주소가 모두 색인되는지 확인
-- [ ] 배포 후 `/labs/eggs`가 실제로 404를 반환하는지 확인
+- [ ] 배포된 `/terminal/`이 GA4에서 별도 경로로 잡히는지, sitemap의 네 주소가 모두 색인되는지 확인
 - [ ] ESLint와 자동 테스트 스크립트 추가
 - [ ] 스크롤 계산을 재사용 가능한 chapter hook/component로 분리
 - [ ] 이미지 크기와 포맷 최적화, preload 정책 결정
