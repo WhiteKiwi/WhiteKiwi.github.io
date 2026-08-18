@@ -270,10 +270,11 @@
 
 - 기존 Gatsby 소스의 보존 브랜치: `archive/20260808`
 - 현재 소스 브랜치: `develop`
-- 배포 산출물 브랜치: `master` / `origin/master`
+- 과거 배포 산출물 브랜치: `master` / `origin/master`
 - 기존 Gatsby CI는 `develop` push 시 Gatsby `public/`을 `master`로 게시했다.
 - 현재 앱은 Vite이므로 산출물 디렉터리는 `dist/`이다.
-- 현재 CI는 `develop` push 또는 수동 실행 시 빌드하고, develop ref일 때만 `dist/`를 orphan `master`에 게시하도록 현대화했다.
+- 2026-08-09 CI를 Vite에 맞춰 `develop` push 또는 수동 실행 시 빌드하고, develop ref일 때만 `dist/`를 orphan `master`에 게시하도록 현대화했다.
+- 2026-08-18 사용자는 branch publishing 대신 GitHub Pages의 custom Actions publishing으로 전환하기로 했다. `develop`에서 빌드한 `dist/`를 Pages artifact로 직접 배포하고 `master`는 더 이상 갱신하지 않는다.
 - 2026-08-09부터 포트폴리오 custom domain은 `portfolio.whitekiwi.link`를 사용하며 Route 53 CNAME으로 `whitekiwi.github.io`에 연결한다.
 
 ## Open questions
@@ -309,7 +310,8 @@
 
 ## Deployment state
 
-- `develop` push에서 `master` 정적 산출물을 만드는 GitHub Actions가 실제 저장소에서 연속 성공했다.
+- 2026-08-18 전환 직전 Pages API의 `build_type`은 `legacy`, publishing source는 `master:/`였다. Actions가 빌드하더라도 최종 배포는 branch publishing인 상태였다.
+- 기존 `develop` push에서 `master` 정적 산출물을 만드는 GitHub Actions는 실제 저장소에서 연속 성공했다.
 - Route 53의 `portfolio.whitekiwi.link` CNAME은 `whitekiwi.github.io`를 가리키고, 배포 workflow도 `CNAME` 파일을 보존한다.
 - GitHub Pages 커스텀 도메인은 등록됐지만 2026-08-09 현재 전용 TLS 인증서 발급을 기다리고 있다. 발급 전 `*.github.io` 인증서 경고를 우회하지 않는다.
 - 2026-08-09 GitHub Pages DNS check가 성공한 뒤 `portfolio.whitekiwi.link` 전용 Let's Encrypt 인증서가 배포됐다. 실제 HTTPS 요청은 200을 반환하고 Pages API의 `https_enforced`도 활성화됐다.

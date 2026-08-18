@@ -374,15 +374,16 @@ pnpm build
 ## Build and deployment
 
 - 소스 브랜치: `develop`
-- 배포 브랜치: `master`
 - `develop` push 시 pnpm lockfile 기준으로 설치하고 `pnpm build`를 실행한다.
-- Vite 산출물인 `dist/`만 `master`에 게시한다. `dist/index.html`, `dist/resume/index.html`, `dist/guidelines/index.html`, `dist/terminal/index.html`이 게시 대상이며 실험 페이지 HTML은 생성되지 않는다.
+- GitHub Pages publishing source는 branch가 아니라 custom GitHub Actions workflow(`build_type: workflow`)다.
+- Vite 산출물인 `dist/`만 GitHub Pages artifact로 업로드한다. `dist/index.html`, `dist/resume/index.html`, `dist/guidelines/index.html`, `dist/terminal/index.html`이 게시 대상이며 실험 페이지 HTML은 생성되지 않는다.
 - `base`는 상대 경로 `./`를 유지한다. 중첩된 `guidelines/index.html`에서도 asset 참조가 자신의 위치를 기준으로 계산된다.
-- `master`는 생성물 전용이므로 직접 수정하지 않는다.
-- `.github/workflows/auto-publish.yml`에서 checkout·mise·Pages 배포 action을 검증한 commit SHA로 고정하고, 사람이 읽을 수 있는 버전은 주석으로 남긴다.
-- 고정된 `peaceiris/actions-gh-pages` action이 `dist/`를 orphan `master`로 게시하고 `.nojekyll`을 생성한다.
-- 배포 action이 `portfolio.whitekiwi.link`를 CNAME으로 함께 게시해 배포마다 custom domain 설정을 유지한다.
-- workflow는 `contents: write`만 요청하고, 동시 배포가 발생하면 이전 실행을 취소한다.
+- build job은 checkout·mise·의존성 설치·빌드·Pages 설정·artifact 업로드를 맡고, deploy job은 build 성공 뒤 `github-pages` environment에 그 artifact를 배포한다.
+- `.github/workflows/auto-publish.yml`에서 checkout·mise·공식 Pages action을 검증한 commit SHA로 고정하고, 사람이 읽을 수 있는 버전은 주석으로 남긴다.
+- build job은 `contents: read`, deploy job은 `pages: write`와 OIDC용 `id-token: write`만 요청한다.
+- `portfolio.whitekiwi.link`와 HTTPS 강제 설정은 GitHub Pages repository settings가 소유한다. artifact 안의 `CNAME` 파일이나 배포 브랜치에 의존하지 않는다.
+- `master`는 과거 branch 기반 배포 기록으로만 남고 workflow는 읽거나 갱신하지 않는다.
+- 동시 배포가 발생하면 이전 실행을 취소한다.
 
 ## Verification
 

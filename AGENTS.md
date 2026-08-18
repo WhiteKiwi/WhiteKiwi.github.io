@@ -55,7 +55,8 @@
 - Keep the `type` lowercase and concise.
 - Write the `message` as an imperative, specific summary.
 - `develop`은 소스 브랜치다.
-- `master`는 CI가 생성한 정적 배포 산출물 브랜치이므로 직접 편집하지 않는다.
+- GitHub Pages는 `develop` push에서 실행되는 GitHub Actions workflow가 `dist/` artifact를 직접 배포한다.
+- `master`는 과거 branch 기반 Pages 배포에 쓰인 보존 브랜치다. 현재 배포 소스로 사용하거나 직접 편집·삭제하지 않는다.
 - `archive/20260808`은 기존 Gatsby 사이트 보존 브랜치다.
 
 ## Tooling
@@ -64,4 +65,3 @@
 - Node.js와 pnpm 버전은 `mise.toml`을 기준으로 한다.
 - 기본 검증은 `pnpm build`와 `git diff --check`다.
 - 사용자 변경을 덮어쓰거나 관련 없는 dirty worktree 파일을 수정하지 않는다.
-
